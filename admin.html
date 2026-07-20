@@ -53,6 +53,8 @@ const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5a
 
 
 
+// Buscar pagamentos pendentes
+
 fetch(API)
 
 .then(res => res.json())
@@ -82,7 +84,6 @@ Nenhum pagamento pendente
 
 `;
 
-
 return;
 
 }
@@ -105,18 +106,25 @@ ${p.email}
 
 
 <p>
+
 ${p.itens}
+
 </p>
 
 
 <p>
+
 Valor: R$ ${p.valor}
+
 </p>
 
 
 <p>
+
 Status: ${p.status}
+
 </p>
+
 
 
 <button class="botao" onclick="aprovar(${p.linha})">
@@ -135,47 +143,77 @@ Status: ${p.status}
 });
 
 
+})
+
+.catch(erro => {
+
+
+document.getElementById("pagamentos").innerHTML = `
+
+<div class="lista">
+
+Erro ao carregar pagamentos
+
+</div>
+
+`;
+
+console.log(erro);
+
+
 });
+
+
 
 
 
 function aprovar(linha){
 
-  fetch(API, {
 
-    method:"POST",
+fetch(API, {
 
-headers:{
-  "Content-Type":"application/json"
-}
 
-    body: JSON.stringify({
+method:"POST",
 
-      acao:"aprovar",
 
-      linha:linha
+body: JSON.stringify({
 
-    })
+acao:"aprovar",
 
-  })
+linha:linha
 
-  .then(res => res.json())
+})
 
-  .then(retorno => {
 
-    alert(retorno.status);
+})
 
-    location.reload();
 
-  })
+.then(res => res.json())
 
-  .catch(erro => {
 
-    console.log(erro);
+.then(retorno => {
 
-    alert("Erro ao aprovar");
 
-  });
+alert(retorno.status);
+
+
+location.reload();
+
+
+})
+
+
+.catch(erro => {
+
+
+console.log(erro);
+
+
+alert("Erro ao aprovar pagamento");
+
+
+});
+
 
 }
 
