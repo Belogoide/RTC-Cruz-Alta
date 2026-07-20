@@ -25,53 +25,14 @@
 </h1>
 
 
-<div class="lista">
-
-<h3 style="color:#D61264;">
-Pagamentos Pendentes
-</h3>
-
-<p style="color:#333;">
-Aguardando validação da tesouraria
-</p>
-
-</div>
-
-
-
 <div id="pagamentos">
 
-
-<div class="lista">
-
-
-<h3 style="color:#D61264;">
-Nilton
-</h3>
-
-
-<p style="color:#333;">
-Mensalidade + Almoço Rotary
+<p style="color:white;text-align:center;">
+Carregando pagamentos...
 </p>
 
 
-<p style="color:#333;">
-Valor: R$ 85,00
-</p>
-
-
-<button class="botao" onclick="aprovar()">
-
-✅ Aprovar
-
-</button>
-
-
 </div>
-
-
-</div>
-
 
 
 <a class="card" href="index.html">
@@ -85,21 +46,110 @@ Valor: R$ 85,00
 
 
 
-
 <script>
 
 
-function aprovar(){
+const API = "https://script.google.com/macros/s/AKfycbxR6FS9n6bK8KUcAqoZ2phDuw6ti0JuvWrXkVpJx7ENfjy4C9gsKYez3Az4LN8YMw9dTw/exec";
 
 
-alert("Pagamento aprovado!");
+
+fetch(API)
+
+.then(res => res.json())
+
+.then(dados => {
+
+
+const area = document.getElementById("pagamentos");
+
+
+area.innerHTML = "";
+
+
+
+if(dados.length === 0){
+
+
+area.innerHTML = `
+
+<div class="lista">
+
+<h3>
+Nenhum pagamento pendente
+</h3>
+
+</div>
+
+`;
+
+
+return;
+
+}
+
+
+
+dados.forEach(p => {
+
+
+area.innerHTML += `
+
+<div class="lista">
+
+
+<h3 style="color:#D61264">
+
+${p.email}
+
+</h3>
+
+
+<p>
+${p.itens}
+</p>
+
+
+<p>
+Valor: R$ ${p.valor}
+</p>
+
+
+<p>
+Status: ${p.status}
+</p>
+
+
+<button class="botao" onclick="aprovar(${p.linha})">
+
+✅ Aprovar
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+});
+
+
+
+function aprovar(linha){
+
+
+alert("Pagamento da linha " + linha + " aprovado");
 
 
 }
 
 
-</script>
 
+</script>
 
 
 </body>
