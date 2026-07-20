@@ -1,0 +1,105 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    background:#0056A8;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.container{
+
+    width:90%;
+    max-width:420px;
+
+    margin:auto;
+    padding-top:40px;
+
+}
+
+.titulo{
+
+    color:white;
+    text-align:center;
+    margin-bottom:30px;
+
+}
+
+.card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    margin-bottom:18px;
+
+    text-align:center;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#0056A8;
+
+    text-decoration:none;
+
+    display:block;
+
+    box-shadow:0 5px 12px rgba(0,0,0,0.25);
+
+}
+
+.card:active{
+
+    transform:scale(0.97);
+
+}
+
+.lista{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    margin-bottom:15px;
+
+}
+
+.botao{
+
+    background:#0056A8;
+
+    color:white;
+
+    border:none;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    width:100%;
+
+    font-size:16px;
+
+}
+
+input, select{
+
+    width:100%;
+
+    padding:15px;
+
+    margin:10px 0;
+
+    border-radius:8px;
+
+    border:1px solid #ccc;
+
+}
