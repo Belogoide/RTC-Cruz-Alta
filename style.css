@@ -67,10 +67,6 @@ body{
 
     box-shadow:0 5px 12px rgba(0,0,0,0.25);
 
-    position:relative;
-
-    z-index:1;
-
 }
 
 
@@ -135,8 +131,10 @@ input, select{
 
 
 
+
+
 /* ==========================
-   TESOURARIA DINÂMICA
+   COBRANÇAS DINÂMICAS
 ========================== */
 
 
@@ -192,11 +190,24 @@ input, select{
 
 
 
-#cobrancas .lista{
 
-    display:flex;
 
-    align-items:center;
+/* ==========================
+   BOTÃO PIX E VOLTAR
+========================== */
+
+
+.espaco-botao{
+
+    margin-bottom:25px;
+
+}
+
+
+
+.voltar{
+
+    margin-top:25px;
 
 }
 
@@ -232,6 +243,8 @@ input, select{
     box-shadow:0 5px 20px rgba(0,0,0,0.35);
 
 }
+
+
 
 
 
