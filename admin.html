@@ -141,9 +141,41 @@ Status: ${p.status}
 
 function aprovar(linha){
 
+  fetch(API, {
 
-alert("Pagamento da linha " + linha + " aprovado");
+    method:"POST",
 
+    headers:{
+      "Content-Type":"text/plain"
+    },
+
+    body: JSON.stringify({
+
+      acao:"aprovar",
+
+      linha:linha
+
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(retorno => {
+
+    alert(retorno.status);
+
+    location.reload();
+
+  })
+
+  .catch(erro => {
+
+    console.log(erro);
+
+    alert("Erro ao aprovar");
+
+  });
 
 }
 
