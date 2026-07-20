@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Tesouraria - RTC Cruz Alta</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1 class="titulo">
+💰 Tesouraria
+</h1>
+
+
+<div class="lista">
+
+<h3 style="color:#D61264;">
+Olá, Associado
+</h3>
+
+<p style="color:#333;">
+Confira suas cobranças pendentes:
+</p>
+
+
+</div>
+
+
+
+<div class="lista">
+
+
+<label style="color:#333;">
+
+<input type="checkbox" 
+class="pagamento"
+value="35">
+
+Mensalidade Julho/2026
+<br>
+<strong>R$ 35,00</strong>
+
+</label>
+
+
+</div>
+
+
+
+
+<div class="lista">
+
+
+<label style="color:#333;">
+
+<input type="checkbox" 
+class="pagamento"
+value="50">
+
+Almoço Rotary
+<br>
+<strong>R$ 50,00</strong>
+
+</label>
+
+
+</div>
+
+
+
+
+<div class="lista">
+
+
+<label style="color:#333;">
+
+<input type="checkbox" 
+class="pagamento"
+value="80">
+
+Camiseta RTC
+<br>
+<strong>R$ 80,00</strong>
+
+</label>
+
+
+</div>
+
+
+
+<div class="lista">
+
+<h3 style="color:#D61264;">
+Total selecionado:
+</h3>
+
+
+<h2 style="color:#333;">
+R$ <span id="total">0</span>,00
+</h2>
+
+
+</div>
+
+
+
+<button class="botao" onclick="pix()">
+
+Já fiz o PIX
+
+</button>
+
+
+
+<br><br>
+
+
+<a class="card" href="index.html">
+
+⬅ Voltar
+
+</a>
+
+
+</div>
+
+
+
+<script>
+
+
+let caixas = document.querySelectorAll(".pagamento");
+
+let total = 0;
+
+
+caixas.forEach(function(caixa){
+
+caixa.addEventListener("change",function(){
+
+
+total = 0;
+
+
+caixas.forEach(function(item){
+
+if(item.checked){
+
+total += Number(item.value);
+
+}
+
+});
+
+
+document.getElementById("total").innerHTML = total;
+
+
+});
+
+
+});
+
+
+
+function pix(){
+
+
+if(total==0){
+
+alert("Selecione uma cobrança antes de confirmar.");
+
+return;
+
+}
+
+
+alert(
+
+"Pagamento informado com sucesso!\n\nValor informado: R$ "+total+",00\n\nO tesoureiro fará a conferência."
+
+);
+
+
+}
+
+
+</script>
+
+
+
+</body>
+
+</html>
