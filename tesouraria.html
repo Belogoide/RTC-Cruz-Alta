@@ -25,69 +25,183 @@
 </h1>
 
 
-<div id="cobrancas">
+<div class="lista">
 
-<p style="color:white;text-align:center;">
-Carregando cobranças...
+<h3 style="color:#D61264;">
+Olá, Associado
+</h3>
+
+<p style="color:#333;">
+Confira suas cobranças pendentes:
 </p>
 
 </div>
 
-
-<div id="pix" style="display:none;">
 
 
 <div class="lista">
 
+<label style="color:#333;">
 
-<h2 style="color:#D61264">
-Pagamento PIX
+<input type="checkbox" 
+class="pagamento"
+value="35">
+
+Mensalidade Julho/2026
+
+<br>
+
+<strong>R$ 35,00</strong>
+
+</label>
+
+</div>
+
+
+
+
+<div class="lista">
+
+<label style="color:#333;">
+
+<input type="checkbox" 
+class="pagamento"
+value="50">
+
+Almoço Rotary
+
+<br>
+
+<strong>R$ 50,00</strong>
+
+</label>
+
+</div>
+
+
+
+
+<div class="lista">
+
+<label style="color:#333;">
+
+<input type="checkbox" 
+class="pagamento"
+value="80">
+
+Camiseta RTC
+
+<br>
+
+<strong>R$ 80,00</strong>
+
+</label>
+
+</div>
+
+
+
+
+<div class="lista">
+
+<h3 style="color:#D61264;">
+Total selecionado:
+</h3>
+
+
+<h2 style="color:#333;">
+R$ <span id="total">0</span>,00
 </h2>
 
 
-<p>
-Valor selecionado:
+</div>
+
+
+
+
+
+<button class="botao" onclick="fazerPix()">
+
+💳 Fazer PIX
+
+</button>
+
+
+
+
+
+<div class="lista" id="pix" style="display:none;">
+
+
+<h3 style="color:#D61264;">
+Pagamento PIX
+</h3>
+
+
+<p style="color:#333;">
+Valor do pagamento:
 </p>
 
 
-<h2 id="valorPix">
-R$ 0,00
+<h2 style="color:#333;">
+R$ <span id="valorPix">0</span>,00
 </h2>
 
 
-<div id="qrcode" style="margin:20px auto;"></div>
 
 
-<p>
+<img 
+
+src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT%20CLUB%20CRUZ%20ALTA6009CRUZ%20ALTA62070503***63046F40"
+
+style="width:250px;display:block;margin:20px auto;"
+
+>
+
+
+
+
+<p style="color:#333;">
 Código PIX:
 </p>
 
 
-<textarea id="codigoPix" 
-style="width:100%;height:120px;border-radius:10px;padding:10px;"
-readonly>
+
+<textarea 
+id="codigoPix"
+readonly
+style="width:100%;height:120px;border-radius:10px;padding:10px;">
+
 00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT CLUB CRUZ ALTA6009CRUZ ALTA62070503***63046F40
+
 </textarea>
+
+
 
 
 <button class="botao" onclick="copiarPix()">
 
-📋 Copiar PIX
+📋 Copiar código PIX
 
 </button>
 
 
-<button class="botao" onclick="informarPagamento()" style="margin-top:10px;">
 
-✅ Informar pagamento realizado
+<br><br>
+
+
+
+<button class="botao" onclick="informarPagamento()">
+
+✅ Já fiz o PIX
 
 </button>
+
 
 
 </div>
 
 
-</div>
 
 
 
@@ -98,7 +212,9 @@ readonly>
 </a>
 
 
+
 </div>
+
 
 
 
@@ -106,63 +222,35 @@ readonly>
 <script>
 
 
-const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
-
-
-
-let selecionados = [];
-
-let emailAssociado = "niltontadeufilho12610@gmail.com";
+let caixas = document.querySelectorAll(".pagamento");
 
 let total = 0;
 
 
 
-fetch(API)
-
-.then(res=>res.json())
-
-.then(dados=>{
+caixas.forEach(function(caixa){
 
 
-const area = document.getElementById("cobrancas");
+caixa.addEventListener("change",function(){
 
 
-area.innerHTML="";
+total = 0;
 
 
-
-dados.forEach(p=>{
-
-
-area.innerHTML += `
+caixas.forEach(function(item){
 
 
-<div class="lista">
+if(item.checked){
+
+total += Number(item.value);
+
+}
 
 
-<label>
+});
 
 
-<input type="checkbox"
-value="${p.valor}"
-onchange="calcular(this,'${p.itens}',${p.valor})">
-
-
-${p.itens}
-
-<br>
-
-R$ ${p.valor}
-
-
-</label>
-
-
-</div>
-
-
-`;
+document.getElementById("total").innerHTML = total;
 
 
 });
@@ -174,38 +262,13 @@ R$ ${p.valor}
 
 
 
-function calcular(check,item,valor){
+
+function fazerPix(){
 
 
-if(check.checked){
+if(total==0){
 
-
-selecionados.push(item);
-
-total += valor;
-
-
-}else{
-
-
-selecionados = selecionados.filter(x=>x != item);
-
-total -= valor;
-
-
-}
-
-
-}
-
-
-
-function abrirPix(){
-
-
-if(total <= 0){
-
-alert("Selecione uma cobrança");
+alert("Selecione uma cobrança antes de fazer o PIX.");
 
 return;
 
@@ -215,32 +278,35 @@ return;
 document.getElementById("pix").style.display="block";
 
 
-document.getElementById("valorPix").innerHTML =
-
-"R$ " + total.toFixed(2).replace(".",",");
-
+document.getElementById("valorPix").innerHTML = total;
 
 
 }
+
+
+
 
 
 
 function copiarPix(){
 
 
-let texto=document.getElementById("codigoPix");
+let codigo = document.getElementById("codigoPix");
 
 
-texto.select();
+codigo.select();
 
 
-navigator.clipboard.writeText(texto.value);
+navigator.clipboard.writeText(codigo.value.trim());
 
 
-alert("PIX copiado");
+alert("Código PIX copiado!");
+
 
 
 }
+
+
 
 
 
@@ -248,44 +314,11 @@ alert("PIX copiado");
 function informarPagamento(){
 
 
-fetch(API,{
+alert(
 
+"Pagamento informado com sucesso!\n\nValor: R$ "+total+",00\n\nA tesouraria fará a conferência."
 
-method:"POST",
-
-
-body:JSON.stringify({
-
-
-acao:"registrarPagamento",
-
-
-email:emailAssociado,
-
-
-itens:selecionados.join(" + "),
-
-
-valor:total
-
-
-})
-
-
-})
-
-
-.then(res=>res.json())
-
-
-.then(retorno=>{
-
-
-alert(retorno.status);
-
-
-});
-
+);
 
 
 }
@@ -293,6 +326,7 @@ alert(retorno.status);
 
 
 </script>
+
 
 
 </body>
