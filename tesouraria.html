@@ -37,6 +37,7 @@ Olá, Associado
 Confira suas cobranças pendentes:
 </p>
 
+
 </div>
 
 
@@ -88,22 +89,24 @@ vertical-align:middle;
 margin-right:8px;
 "
 
-
 >
+
 
 Fazer PIX
 
 
 </button>
 
-  <br><br>
+
+
+
 
 
 <div class="lista" id="pix" style="display:none;">
 
 
-<h3 style="color:#D61264;">
 
+<h3 style="color:#D61264;">
 
 <img
 
@@ -116,24 +119,21 @@ vertical-align:middle;
 margin-right:10px;
 "
 
-
 >
 
-
 Pagamento PIX
-
 
 </h3>
 
 
 
+
 <p style="color:#333;">
-Valor do pagamento:
+Valor:
 </p>
 
 
-
-<h2 style="color:#333;">
+<h2>
 
 R$ <span id="valorPix">0,00</span>
 
@@ -153,7 +153,6 @@ display:block;
 margin:20px auto;
 "
 
-
 >
 
 
@@ -166,21 +165,7 @@ Código PIX:
 
 
 
-
-<textarea
-
-id="codigoPix"
-
-readonly
-
-style="
-width:100%;
-height:120px;
-border-radius:10px;
-padding:10px;
-"
-
->
+<textarea id="codigoPix" readonly>
 
 00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT CLUB CRUZ ALTA6009CRUZ ALTA62070503***63046F40
 
@@ -192,17 +177,13 @@ padding:10px;
 
 <button class="botao" onclick="copiarPix()">
 
-📋 Copiar código PIX
+📋 Copiar PIX
 
 </button>
 
 
 
-
-
 <br><br>
-
-
 
 
 
@@ -211,7 +192,6 @@ padding:10px;
 ✅ Já fiz o PIX
 
 </button>
-
 
 
 
@@ -229,9 +209,19 @@ padding:10px;
 
 
 
+
 </div>
 
-  <script>
+
+
+
+
+
+
+
+
+<script>
+
 
 
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
@@ -240,16 +230,14 @@ const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5a
 
 let total = 0;
 
-let selecionados = [];
-
-
-
 
 
 
 fetch(API)
 
+
 .then(res => res.json())
+
 
 .then(dados => {
 
@@ -270,9 +258,7 @@ area.innerHTML = `
 <div class="lista">
 
 <h3>
-
 Nenhuma cobrança pendente
-
 </h3>
 
 </div>
@@ -282,7 +268,6 @@ Nenhuma cobrança pendente
 return;
 
 }
-
 
 
 
@@ -313,7 +298,6 @@ value="${p.valor}"
 data-item="${p.tipo} - ${p.descricao}"
 
 onchange="atualizarTotal()"
-
 
 >
 
@@ -352,7 +336,6 @@ R$ ${Number(p.valor).toFixed(2).replace(".",",")}
 </div>
 
 
-
 </label>
 
 
@@ -361,7 +344,6 @@ R$ ${Number(p.valor).toFixed(2).replace(".",",")}
 
 
 `;
-
 
 
 });
@@ -389,18 +371,10 @@ document.getElementById("cobrancas").innerHTML =
 
 
 
-
-
 function atualizarTotal(){
 
 
-
 total = 0;
-
-
-selecionados = [];
-
-
 
 
 
@@ -413,16 +387,10 @@ if(item.checked){
 total += Number(item.value);
 
 
-selecionados.push(item.dataset.item);
-
-
 }
 
 
-
 });
-
-
 
 
 
@@ -433,9 +401,6 @@ total.toFixed(2).replace(".",",");
 
 
 }
-
-
-
 
 
 
@@ -458,8 +423,6 @@ return;
 
 
 
-
-
 document.getElementById("pix").style.display="block";
 
 
@@ -467,8 +430,6 @@ document.getElementById("pix").style.display="block";
 document.getElementById("valorPix").innerHTML =
 
 total.toFixed(2).replace(".",",");
-
-
 
 
 
@@ -488,21 +449,15 @@ behavior:"smooth"
 
 
 
-
-
 function copiarPix(){
 
 
 
-let codigo = document.getElementById("codigoPix");
+let codigo = document.getElementById("codigoPix").value.trim();
 
 
 
-codigo.select();
-
-
-
-navigator.clipboard.writeText(codigo.value.trim());
+navigator.clipboard.writeText(codigo);
 
 
 
@@ -518,19 +473,13 @@ alert("Código PIX copiado!");
 
 
 
-
-
 function informarPagamento(){
 
 
 
 alert(
 
-"Pagamento informado com sucesso!\n\nValor: R$ "
-
-+ total.toFixed(2).replace(".",",")
-
-+ "\n\nA tesouraria fará a conferência."
+"Pagamento informado!\n\nA tesouraria fará a conferência."
 
 );
 
@@ -540,11 +489,10 @@ alert(
 
 
 
-
 </script>
 
 
-</body>
 
+</body>
 
 </html>
