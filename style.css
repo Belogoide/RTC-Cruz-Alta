@@ -245,3 +245,42 @@ input, select{
     margin-top:10px;
 
 }
+#pix{
+
+    position:fixed;
+
+    top:50%;
+
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:90%;
+
+    max-width:380px;
+
+    max-height:85vh;
+
+    overflow-y:auto;
+
+    z-index:9999;
+
+}
+
+
+
+#pix .botao{
+
+    margin-bottom:12px;
+
+}
+
+
+
+.card{
+
+    position:relative;
+
+    z-index:1;
+
+}
