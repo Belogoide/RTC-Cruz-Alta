@@ -504,96 +504,77 @@ let enviandoPagamento = false;
 function informarPagamento(){
 
 
-    if(enviandoPagamento){
+let itens = [];
 
-        return;
+
+document.querySelectorAll(".pagamento").forEach(item=>{
+
+
+    if(item.checked){
+
+
+        itens.push(
+            item.dataset.item
+        );
+
 
     }
 
 
-    let itens = [];
-
-
-    document.querySelectorAll(".pagamento").forEach(item=>{
-
-
-        if(item.checked){
-
-            itens.push(item.dataset.item);
-
-        }
-
-
-    });
+});
 
 
 
-    if(itens.length == 0){
+fetch(API,{
 
-        alert("Selecione uma cobrança antes de informar o pagamento.");
+method:"POST",
 
-        return;
+body:JSON.stringify({
 
-    }
+acao:"registrarPagamento",
 
+email:EMAIL_USUARIO,
 
+itens:itens.join(" + "),
 
-    enviandoPagamento = true;
+valor:total
 
-
-
-    fetch(API, {
-
-        method:"POST",
-
-        body:JSON.stringify({
-
-            acao:"registrarPagamento",
-
-            email:"niltontadeufilho12610@gmail.com",
-
-            itens:itens.join(" + "),
-
-            valor:total
-
-        })
-
-    })
+})
 
 
+})
 
-    .then(res=>res.json())
+.then(res=>res.json())
 
-
-    .then(retorno=>{
-
-
-        alert("Pagamento informado!\n\nA tesouraria fará a conferência.");
+.then(dados=>{
 
 
-        fecharPix();
+console.log(dados);
 
 
-        enviandoPagamento = false;
-
-
-    })
+alert(
+"Pagamento informado!\n\nA tesouraria fará a conferência."
+);
 
 
 
-    .catch(erro=>{
+})
+
+.catch(erro=>{
 
 
-        console.log(erro);
+console.log(erro);
 
 
-        alert("Erro ao informar pagamento.");
+alert(
+"Erro ao registrar pagamento"
+);
 
 
-        enviandoPagamento = false;
+});
 
 
-    });
+}
 
 
 
