@@ -255,10 +255,13 @@ onclick="fecharPix()">
 
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
 
+const parametros = new URLSearchParams(
+    window.location.search
+);
 
-// Usuário logado (teste)
 
-const EMAIL_USUARIO = "kaue_hoch@hotmail.com";
+const EMAIL_USUARIO =
+parametros.get("email");
 
 
 let total = 0;
