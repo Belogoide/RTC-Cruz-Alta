@@ -21,16 +21,18 @@
 
 
 <h1 class="titulo">
-🧾 Admin Tesouraria
+🧾 Tesouraria Admin
 </h1>
 
 
 
 <div id="pagamentos">
 
+
 <p style="color:white;text-align:center;">
 Carregando pagamentos...
 </p>
+
 
 </div>
 
@@ -51,31 +53,38 @@ const area = document.getElementById("pagamentos");
 
 
 
+
+
 fetch(API + "?tipo=pagamentos")
 
+.then(res => res.json())
 
-.then(res=>res.json())
-
-
-.then(dados=>{
+.then(dados => {
 
 
-area.innerHTML="";
+
+area.innerHTML = "";
 
 
 
 if(dados.length == 0){
 
 
-area.innerHTML=`
+area.innerHTML = `
+
 
 <div class="lista">
 
+
 <h3>
+
 Nenhum pagamento pendente
+
 </h3>
 
+
 </div>
+
 
 `;
 
@@ -88,64 +97,107 @@ return;
 
 
 
-dados.forEach(p=>{
 
+dados.forEach(p=>{
 
 
 area.innerHTML += `
 
 
+
 <div class="lista">
 
 
-<strong>
 
-📧 ${p.email}
+<h3 style="color:#D61264;">
 
-</strong>
+Pagamento PIX
 
-
-<br><br>
+</h3>
 
 
-<b>Itens:</b>
+
+<p style="color:#333;">
+
+<strong>Email:</strong><br>
+
+${p.email}
+
+</p>
+
+
 
 <br>
+
+
+
+<p style="color:#333;">
+
+<strong>Itens:</strong><br>
 
 ${p.itens}
 
+</p>
 
-<br><br>
 
-
-<b>Valor:</b>
 
 <br>
+
+
+
+<p style="color:#333;">
+
+<strong>Valor:</strong><br>
 
 R$ ${Number(p.valor)
 .toFixed(2)
 .replace(".",",")}
 
+</p>
 
 
-<br><br>
+
+<br>
 
 
-<b>Status:</b>
+
+<p style="color:#333;">
+
+<strong>Status:</strong>
 
 ${p.status}
 
+</p>
+
+
+
+<br>
+
+
+
+<button 
+
+class="botao"
+
+onclick="aprovar(${p.linha})">
+
+✅ Aprovar pagamento
+
+</button>
+
 
 
 <br><br>
 
 
 
-<button class="botao" onclick="aprovar(${p.linha})">
+<button 
 
+class="botao"
 
-✅ Aprovar pagamento
+onclick="negar(${p.linha})">
 
+❌ Negar pagamento
 
 </button>
 
@@ -171,10 +223,19 @@ ${p.status}
 console.log(erro);
 
 
-area.innerHTML="Erro ao carregar pagamentos";
+area.innerHTML = `
+
+<div class="lista">
+
+Erro ao carregar pagamentos
+
+</div>
+
+`;
 
 
 });
+
 
 
 
@@ -201,11 +262,11 @@ acao:"aprovar",
 linha:linha
 
 
-
 })
 
 
 })
+
 
 
 .then(res=>res.json())
@@ -231,6 +292,70 @@ console.log(erro);
 
 
 alert("Erro ao aprovar pagamento");
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+function negar(linha){
+
+
+
+fetch(API,{
+
+
+method:"POST",
+
+
+body:JSON.stringify({
+
+
+acao:"negar",
+
+
+linha:linha
+
+
+})
+
+
+})
+
+
+
+.then(res=>res.json())
+
+
+.then(retorno=>{
+
+
+alert(retorno.status);
+
+
+location.reload();
+
+
+})
+
+
+
+.catch(erro=>{
+
+
+console.log(erro);
+
+
+alert("Erro ao negar pagamento");
 
 
 });
