@@ -256,13 +256,15 @@ onclick="fecharPix()">
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
 
 
+// Usuário logado (teste)
+
+const EMAIL_USUARIO = "kaue_hoch@hotmail.com";
+
 
 let total = 0;
 
 
-
-
-fetch(API)
+fetch(API + "?email=" + EMAIL_USUARIO)
 
 
 .then(res => res.json())
