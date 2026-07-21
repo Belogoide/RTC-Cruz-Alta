@@ -192,7 +192,10 @@ Código PIX:
 
 
 
-<button class="botao" onclick="informarPagamento()">
+<button 
+id="botaoPagamento"
+class="botao" 
+onclick="informarPagamento()">
 
 ✅ Já fiz o PIX
 
@@ -490,94 +493,111 @@ alert("Código PIX copiado!");
 
 
 
+let enviandoPagamento = false;
+
+
 function informarPagamento(){
 
 
-let itens = [];
+    if(enviandoPagamento){
 
-
-document.querySelectorAll(".pagamento").forEach(item=>{
-
-
-    if(item.checked){
-
-
-        itens.push(item.dataset.item);
-
+        return;
 
     }
 
 
-});
+    let itens = [];
+
+
+    document.querySelectorAll(".pagamento").forEach(item=>{
+
+
+        if(item.checked){
+
+            itens.push(item.dataset.item);
+
+        }
+
+
+    });
 
 
 
-if(itens.length == 0){
+    if(itens.length == 0){
 
-    alert("Selecione uma cobrança antes de informar o pagamento.");
+        alert("Selecione uma cobrança antes de informar o pagamento.");
 
-    return;
+        return;
 
-}
-
-
-
-fetch(API, {
+    }
 
 
-    method:"POST",
+
+    enviandoPagamento = true;
 
 
-    body:JSON.stringify({
+
+    fetch(API, {
+
+        method:"POST",
+
+        body:JSON.stringify({
+
+            acao:"registrarPagamento",
+
+            email:"niltontadeufilho12610@gmail.com",
+
+            itens:itens.join(" + "),
+
+            valor:total
+
+        })
+
+    })
 
 
-        acao:"registrarPagamento",
+
+    .then(res=>res.json())
 
 
-        email:"niltontadeufilho12610@gmail.com",
+    .then(retorno=>{
 
 
-        itens:itens.join(" + "),
+        alert("Pagamento informado!\n\nA tesouraria fará a conferência.");
 
 
-        valor:total
+        fecharPix();
+
+
+        enviandoPagamento = false;
 
 
     })
 
 
-})
+
+    .catch(erro=>{
 
 
-.then(res=>res.json())
+        console.log(erro);
 
 
-.then(retorno=>{
+        alert("Erro ao informar pagamento.");
 
 
-    alert("Pagamento informado!\n\nA tesouraria fará a conferência.");
+        enviandoPagamento = false;
 
 
-    fecharPix();
+    });
 
-
-})
-
-
-.catch(erro=>{
-
-
-    console.log(erro);
-
-
-    alert("Erro ao informar pagamento.");
-
-
-});
 
 
 }
 
+function fecharPix(){
 
+    document.getElementById("pix").style.display="none";
+
+}
 
 </script>
