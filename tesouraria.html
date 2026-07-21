@@ -204,7 +204,10 @@ Código PIX:
 
 
 
-<button type="button" class="botao" onclick="fecharPix()">
+<button 
+type="button" 
+class="botao" 
+onclick="fecharPix()">
 
 ❌ Cancelar
 
@@ -511,17 +514,11 @@ document.querySelectorAll(".pagamento").forEach(item=>{
 
 if(itens.length == 0){
 
-
-    alert("Nenhuma cobrança selecionada.");
+    alert("Selecione uma cobrança antes de informar o pagamento.");
 
     return;
 
-
 }
-
-
-
-let descricao = itens.join(" + ");
 
 
 
@@ -540,7 +537,7 @@ fetch(API, {
         email:"niltontadeufilho12610@gmail.com",
 
 
-        itens:descricao,
+        itens:itens.join(" + "),
 
 
         valor:total
@@ -558,9 +555,7 @@ fetch(API, {
 .then(retorno=>{
 
 
-    alert(
-        "Pagamento informado!\n\nA tesouraria fará a conferência."
-    );
+    alert("Pagamento informado!\n\nA tesouraria fará a conferência.");
 
 
     fecharPix();
