@@ -42,7 +42,6 @@ Confira suas cobranças pendentes:
 
 
 
-
 <div id="cobrancas">
 
 
@@ -52,7 +51,6 @@ Carregando cobranças...
 
 
 </div>
-
 
 
 
@@ -76,10 +74,14 @@ R$ <span id="total">0,00</span>
 
 
 
+<div class="espaco-botao">
+
+
 <button class="botao" onclick="fazerPix()">
 
 
-<img
+
+<img 
 
 src="58d1e4c0d00fb74e2963c2b79e79f196.jpg"
 
@@ -90,6 +92,7 @@ vertical-align:middle;
 margin-right:8px;
 "
 
+
 >
 
 
@@ -99,10 +102,15 @@ Fazer PIX
 </button>
 
 
+</div>
+
+
+
 
 
 
 <div class="lista" id="pix" style="display:none;">
+
 
 
 <h3 style="color:#D61264;">
@@ -128,6 +136,8 @@ Pagamento PIX
 </h3>
 
 
+
+
 <p style="color:#333;">
 Valor:
 </p>
@@ -138,6 +148,11 @@ Valor:
 R$ <span id="valorPix">0,00</span>
 
 </h2>
+
+
+
+
+
 <img
 
 src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT%20CLUB%20CRUZ%20ALTA6009CRUZ%20ALTA62070503***63046F40"
@@ -150,15 +165,9 @@ margin:20px auto;
 
 >
 
-
-
-
-
 <p style="color:#333;">
 Código PIX:
 </p>
-
-
 
 
 
@@ -171,7 +180,6 @@ Código PIX:
 
 
 
-
 <button class="botao" onclick="copiarPix()">
 
 📋 Copiar PIX
@@ -180,11 +188,7 @@ Código PIX:
 
 
 
-
-
 <br><br>
-
-
 
 
 
@@ -196,15 +200,11 @@ Código PIX:
 
 
 
-
-
 <br><br>
 
 
 
-
-
-<button class="botao" onclick="fecharPix()">
+<button type="button" class="botao" onclick="fecharPix()">
 
 ❌ Cancelar
 
@@ -218,10 +218,7 @@ Código PIX:
 
 
 
-<br>
-
-
-
+<div class="voltar">
 
 
 <a class="card" href="index.html">
@@ -229,6 +226,9 @@ Código PIX:
 ⬅ Voltar
 
 </a>
+
+
+</div>
 
 
 
@@ -240,8 +240,11 @@ Código PIX:
 
 
 
-<script>
 
+
+
+
+<script>
 
 
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
@@ -253,13 +256,10 @@ let total = 0;
 
 
 
-
 fetch(API)
 
 
-
 .then(res => res.json())
-
 
 
 .then(dados => {
@@ -269,10 +269,7 @@ fetch(API)
 const area = document.getElementById("cobrancas");
 
 
-
 area.innerHTML = "";
-
-
 
 
 
@@ -293,9 +290,7 @@ Nenhuma cobrança pendente
 
 return;
 
-
 }
-
 
 
 
@@ -309,7 +304,6 @@ area.innerHTML += `
 
 
 <div class="lista">
-
 
 
 <label class="item-pagamento">
@@ -329,7 +323,6 @@ data-item="${p.tipo} - ${p.descricao}"
 onchange="atualizarTotal()"
 
 >
-
 
 
 
@@ -366,16 +359,14 @@ R$ ${Number(p.valor).toFixed(2).replace(".",",")}
 </div>
 
 
-
 </label>
-
 
 
 </div>
 
 
-`;
 
+`;
 
 
 });
@@ -383,8 +374,6 @@ R$ ${Number(p.valor).toFixed(2).replace(".",",")}
 
 
 })
-
-
 
 .catch(erro=>{
 
@@ -398,7 +387,13 @@ document.getElementById("cobrancas").innerHTML =
 
 
 });
-  
+
+
+
+
+
+
+
 function atualizarTotal(){
 
 
@@ -439,7 +434,6 @@ total.toFixed(2).replace(".",",");
 function fazerPix(){
 
 
-
 if(total == 0){
 
 
@@ -470,20 +464,11 @@ total.toFixed(2).replace(".",",");
 
 
 
-
 function copiarPix(){
 
 
 
-let codigo = document
-
-.getElementById("codigoPix")
-
-.value
-
-.trim();
-
-
+let codigo = document.getElementById("codigoPix").value.trim();
 
 
 
@@ -502,8 +487,6 @@ alert("Código PIX copiado!");
 
 
 
-
-
 function informarPagamento(){
 
 
@@ -515,9 +498,7 @@ alert(
 );
 
 
-
 }
-
 
 
 
@@ -534,13 +515,4 @@ document.getElementById("pix").style.display="none";
 
 
 
-
-
 </script>
-
-
-
-</body>
-
-
-</html>
