@@ -490,25 +490,95 @@ alert("Código PIX copiado!");
 function informarPagamento(){
 
 
+let itens = [];
 
-alert(
 
-"Pagamento informado!\n\nA tesouraria fará a conferência."
+document.querySelectorAll(".pagamento").forEach(item=>{
 
-);
+
+    if(item.checked){
+
+
+        itens.push(item.dataset.item);
+
+
+    }
+
+
+});
+
+
+
+if(itens.length == 0){
+
+
+    alert("Nenhuma cobrança selecionada.");
+
+    return;
 
 
 }
 
 
 
+let descricao = itens.join(" + ");
 
 
 
-function fecharPix(){
+fetch(API, {
 
 
-document.getElementById("pix").style.display="none";
+    method:"POST",
+
+
+    body:JSON.stringify({
+
+
+        acao:"registrarPagamento",
+
+
+        email:"niltontadeufilho12610@gmail.com",
+
+
+        itens:descricao,
+
+
+        valor:total
+
+
+    })
+
+
+})
+
+
+.then(res=>res.json())
+
+
+.then(retorno=>{
+
+
+    alert(
+        "Pagamento informado!\n\nA tesouraria fará a conferência."
+    );
+
+
+    fecharPix();
+
+
+})
+
+
+.catch(erro=>{
+
+
+    console.log(erro);
+
+
+    alert("Erro ao informar pagamento.");
+
+
+});
 
 
 }
