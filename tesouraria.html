@@ -293,155 +293,129 @@ let enviandoPagamento = false;
 // Busca cobranças do usuário
 
 
-fetch(API + "?email=" + encodeURIComponent(EMAIL_USUARIO))
-
+fetch(API + "?email=" + EMAIL_USUARIO)
 
 .then(res => res.json())
-
 
 .then(dados => {
 
 
+    console.log("Cobranças recebidas:", dados);
 
-const area = document.getElementById("cobrancas");
 
+    const area = document.getElementById("cobrancas");
 
 
-area.innerHTML = "";
+    area.innerHTML = "";
 
 
 
+    if(dados.length === 0){
 
 
-if(dados.length === 0){
+        area.innerHTML = `
 
+        <div class="lista">
 
+            <h3>
+            Nenhuma cobrança pendente
+            </h3>
 
-area.innerHTML = `
+        </div>
 
-<div class="lista">
+        `;
 
-<h3>
-Nenhuma cobrança pendente
-</h3>
+        return;
 
-</div>
+    }
 
-`;
 
-return;
 
 
-}
+    dados.forEach(p => {
 
 
+        area.innerHTML += `
 
 
+        <div class="lista">
 
 
+            <label class="item-pagamento">
 
-dados.forEach(p => {
 
+                <input
 
+                type="checkbox"
 
-area.innerHTML += `
+                class="pagamento"
 
+                value="${p.valor}"
 
-<div class="lista">
+                data-item="${p.tipo} - ${p.descricao}"
 
+                onchange="atualizarTotal()"
 
-<label class="item-pagamento">
+                >
 
 
 
-<input
+                <div>
 
-type="checkbox"
 
-class="pagamento"
+                    <strong>
+                    ${p.tipo}
+                    </strong>
 
-value="${p.valor}"
 
-data-item="${p.tipo} - ${p.descricao}"
+                    <br>
 
-onchange="atualizarTotal()"
 
->
+                    <span>
+                    ${p.descricao}
+                    </span>
 
 
+                    <br>
 
-<div>
 
+                    <strong>
+                    R$ ${Number(p.valor)
+                    .toFixed(2)
+                    .replace(".",",")}
+                    </strong>
 
-<strong>
 
-${p.tipo}
+                </div>
 
-</strong>
 
+            </label>
 
-<br>
 
+        </div>
 
-<span>
 
-${p.descricao}
+        `;
 
-</span>
 
-
-<br>
-
-
-<strong>
-
-R$ ${Number(p.valor)
-.toFixed(2)
-.replace(".",",")}
-
-</strong>
-
-
-</div>
-
-
-</label>
-
-
-</div>
-
-
-`;
-
-
-
-});
-
+    });
 
 
 })
 
+
 .catch(erro=>{
 
 
-console.log(erro);
+    console.log("Erro API:", erro);
 
 
-document.getElementById("cobrancas").innerHTML =
+    document.getElementById("cobrancas").innerHTML =
 
-"Erro ao carregar cobranças";
+    "Erro ao carregar cobranças";
 
 
 });
-
-
-
-
-
-
-
-
-
 function atualizarTotal(){
 
 
