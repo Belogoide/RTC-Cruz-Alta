@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Administração - RTC Cruz Alta</title>
+<title>Admin Tesouraria</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -21,8 +21,9 @@
 
 
 <h1 class="titulo">
-🔐 Administração
+🧾 Admin Tesouraria
 </h1>
+
 
 
 <div id="pagamentos">
@@ -31,15 +32,8 @@
 Carregando pagamentos...
 </p>
 
-
 </div>
 
-
-<a class="card" href="index.html">
-
-⬅ Voltar
-
-</a>
 
 
 </div>
@@ -53,26 +47,27 @@ const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5a
 
 
 
-// Buscar pagamentos pendentes
-
-fetch(API)
-
-.then(res => res.json())
-
-.then(dados => {
-
-
 const area = document.getElementById("pagamentos");
 
 
-area.innerHTML = "";
+
+fetch(API + "?tipo=pagamentos")
+
+
+.then(res=>res.json())
+
+
+.then(dados=>{
+
+
+area.innerHTML="";
 
 
 
-if(dados.length === 0){
+if(dados.length == 0){
 
 
-area.innerHTML = `
+area.innerHTML=`
 
 <div class="lista">
 
@@ -84,84 +79,104 @@ Nenhum pagamento pendente
 
 `;
 
+
 return;
+
 
 }
 
 
 
-dados.forEach(p => {
+
+dados.forEach(p=>{
+
 
 
 area.innerHTML += `
 
+
 <div class="lista">
 
 
-<h3 style="color:#D61264">
+<strong>
 
-${p.email}
+📧 ${p.email}
 
-</h3>
+</strong>
 
 
-<p>
+<br><br>
+
+
+<b>Itens:</b>
+
+<br>
 
 ${p.itens}
 
-</p>
+
+<br><br>
 
 
-<p>
+<b>Valor:</b>
 
-Valor: R$ ${p.valor}
+<br>
 
-</p>
+R$ ${Number(p.valor)
+.toFixed(2)
+.replace(".",",")}
 
 
-<p>
 
-Status: ${p.status}
+<br><br>
 
-</p>
+
+<b>Status:</b>
+
+${p.status}
+
+
+
+<br><br>
 
 
 
 <button class="botao" onclick="aprovar(${p.linha})">
 
-✅ Aprovar
+
+✅ Aprovar pagamento
+
 
 </button>
 
 
+
 </div>
+
 
 
 `;
 
 
+
 });
+
 
 
 })
 
-.catch(erro => {
+.catch(erro=>{
 
-
-document.getElementById("pagamentos").innerHTML = `
-
-<div class="lista">
-
-Erro ao carregar pagamentos
-
-</div>
-
-`;
 
 console.log(erro);
 
 
+area.innerHTML="Erro ao carregar pagamentos";
+
+
 });
+
+
 
 
 
@@ -170,28 +185,33 @@ console.log(erro);
 function aprovar(linha){
 
 
-fetch(API, {
+
+fetch(API,{
 
 
 method:"POST",
 
 
-body: JSON.stringify({
+body:JSON.stringify({
+
 
 acao:"aprovar",
 
+
 linha:linha
 
-})
 
 
 })
 
 
-.then(res => res.json())
+})
 
 
-.then(retorno => {
+.then(res=>res.json())
+
+
+.then(retorno=>{
 
 
 alert(retorno.status);
@@ -203,7 +223,8 @@ location.reload();
 })
 
 
-.catch(erro => {
+
+.catch(erro=>{
 
 
 console.log(erro);
@@ -215,11 +236,13 @@ alert("Erro ao aprovar pagamento");
 });
 
 
+
 }
 
 
 
 </script>
+
 
 
 </body>
