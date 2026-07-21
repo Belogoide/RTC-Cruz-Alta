@@ -55,6 +55,7 @@ Carregando cobranças...
 
 
 
+
 <div class="lista">
 
 
@@ -80,7 +81,6 @@ R$ <span id="total">0,00</span>
 <button class="botao" onclick="fazerPix()">
 
 
-
 <img 
 
 src="58d1e4c0d00fb74e2963c2b79e79f196.jpg"
@@ -103,6 +103,7 @@ Fazer PIX
 
 
 </div>
+
 
 
 
@@ -138,6 +139,7 @@ Pagamento PIX
 
 
 
+
 <p style="color:#333;">
 Valor:
 </p>
@@ -165,6 +167,9 @@ margin:20px auto;
 
 >
 
+
+
+
 <p style="color:#333;">
 Código PIX:
 </p>
@@ -180,6 +185,7 @@ Código PIX:
 
 
 
+
 <button class="botao" onclick="copiarPix()">
 
 📋 Copiar PIX
@@ -188,7 +194,9 @@ Código PIX:
 
 
 
+
 <br><br>
+
 
 
 
@@ -203,7 +211,9 @@ onclick="informarPagamento()">
 
 
 
+
 <br><br>
+
 
 
 
@@ -224,6 +234,7 @@ onclick="fecharPix()">
 
 
 
+
 <div class="voltar">
 
 
@@ -239,35 +250,50 @@ onclick="fecharPix()">
 
 
 
-
 </div>
-
-
-
-
-
-
-
-
-
 <script>
 
 
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
+
+
+// Busca email vindo do index.html
 
 const parametros = new URLSearchParams(
     window.location.search
 );
 
 
-const EMAIL_USUARIO =
-parametros.get("email");
+const EMAIL_USUARIO = parametros.get("email");
+
+
+// valida usuário
+
+if(!EMAIL_USUARIO){
+
+    alert("Email não identificado.");
+
+    window.location.href="index.html";
+
+}
+
+
+console.log("Usuário atual:", EMAIL_USUARIO);
+
 
 
 let total = 0;
 
+let enviandoPagamento = false;
 
-fetch(API + "?email=" + EMAIL_USUARIO)
+
+
+
+
+// Busca cobranças do usuário
+
+
+fetch(API + "?email=" + encodeURIComponent(EMAIL_USUARIO))
 
 
 .then(res => res.json())
@@ -280,11 +306,15 @@ fetch(API + "?email=" + EMAIL_USUARIO)
 const area = document.getElementById("cobrancas");
 
 
+
 area.innerHTML = "";
 
 
 
+
+
 if(dados.length === 0){
+
 
 
 area.innerHTML = `
@@ -301,7 +331,10 @@ Nenhuma cobrança pendente
 
 return;
 
+
 }
+
+
 
 
 
@@ -362,7 +395,9 @@ ${p.descricao}
 
 <strong>
 
-R$ ${Number(p.valor).toFixed(2).replace(".",",")}
+R$ ${Number(p.valor)
+.toFixed(2)
+.replace(".",",")}
 
 </strong>
 
@@ -376,8 +411,8 @@ R$ ${Number(p.valor).toFixed(2).replace(".",",")}
 </div>
 
 
-
 `;
+
 
 
 });
@@ -405,26 +440,38 @@ document.getElementById("cobrancas").innerHTML =
 
 
 
+
+
 function atualizarTotal(){
+
 
 
 total = 0;
 
 
 
-document.querySelectorAll(".pagamento").forEach(item=>{
+
+document.querySelectorAll(".pagamento")
+
+.forEach(item=>{
+
 
 
 if(item.checked){
 
 
+
 total += Number(item.value);
+
 
 
 }
 
 
+
 });
+
+
 
 
 
@@ -442,13 +489,18 @@ total.toFixed(2).replace(".",",");
 
 
 
+
+
 function fazerPix(){
+
 
 
 if(total == 0){
 
 
-alert("Selecione uma cobrança antes de fazer o PIX.");
+alert(
+"Selecione uma cobrança antes de fazer o PIX."
+);
 
 
 return;
@@ -458,11 +510,18 @@ return;
 
 
 
-document.getElementById("pix").style.display="block";
+
+document.getElementById("pix")
+
+.style.display="block";
 
 
 
-document.getElementById("valorPix").innerHTML =
+
+
+document.getElementById("valorPix")
+
+.innerHTML =
 
 total.toFixed(2).replace(".",",");
 
@@ -471,43 +530,42 @@ total.toFixed(2).replace(".",",");
 }
 
 
+function informarPagamento(){
 
 
+if(enviandoPagamento){
 
-
-function copiarPix(){
-
-
-
-let codigo = document.getElementById("codigoPix").value.trim();
-
-
-
-navigator.clipboard.writeText(codigo);
-
-
-
-alert("Código PIX copiado!");
-
-
+    return;
 
 }
 
 
 
+if(total == 0){
+
+    alert("Selecione uma cobrança antes de informar o pagamento.");
+
+    return;
+
+}
 
 
 
-let enviandoPagamento = false;
+enviandoPagamento = true;
 
 
-function informarPagamento(){
+
+document.getElementById("botaoPagamento").disabled = true;
+
 
 
 let itens = [];
 
 
-document.querySelectorAll(".pagamento").forEach(item=>{
+
+document.querySelectorAll(".pagamento")
+
+.forEach(item=>{
 
 
     if(item.checked){
@@ -525,40 +583,96 @@ document.querySelectorAll(".pagamento").forEach(item=>{
 
 
 
+
+
+console.log("Enviando pagamento:");
+
+console.log({
+
+email: EMAIL_USUARIO,
+
+itens: itens,
+
+valor: total
+
+});
+
+
+
+
+
+
 fetch(API,{
 
 method:"POST",
 
 body:JSON.stringify({
 
+
 acao:"registrarPagamento",
+
 
 email:EMAIL_USUARIO,
 
+
 itens:itens.join(" + "),
+
 
 valor:total
 
+
+
 })
 
 
 })
+
+
 
 .then(res=>res.json())
 
+
 .then(dados=>{
+
 
 
 console.log(dados);
 
 
+
 alert(
+
 "Pagamento informado!\n\nA tesouraria fará a conferência."
+
 );
 
 
 
+// fecha o QR Code
+
+fecharPix();
+
+
+
+// limpa seleção
+
+document.querySelectorAll(".pagamento")
+
+.forEach(item=>{
+
+item.checked=false;
+
+});
+
+
+
+atualizarTotal();
+
+
+
 })
+
+
 
 .catch(erro=>{
 
@@ -567,23 +681,93 @@ console.log(erro);
 
 
 alert(
-"Erro ao registrar pagamento"
+"Erro ao registrar pagamento."
 );
+
+
+
+})
+
+
+
+.finally(()=>{
+
+
+enviandoPagamento = false;
+
+
+document.getElementById("botaoPagamento").disabled = false;
+
 
 
 });
 
 
+
+}
+
+
+
+
+
+
+
+
+function copiarPix(){
+
+
+let codigo = document
+
+.getElementById("codigoPix")
+
+.value
+
+.trim();
+
+
+
+
+navigator.clipboard.writeText(codigo);
+
+
+
+alert(
+"Código PIX copiado!"
+);
+
+
+
 }
 
 
 
-}
+
+
+
+
 
 function fecharPix(){
 
-    document.getElementById("pix").style.display="none";
+
+
+document.getElementById("pix")
+
+.style.display="none";
+
+
 
 }
 
+
+
+
+
+
+
 </script>
+
+
+</body>
+
+
+</html>
