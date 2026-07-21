@@ -76,13 +76,10 @@ R$ <span id="total">0,00</span>
 
 
 
-<div class="espaco-botao">
-
-
 <button class="botao" onclick="fazerPix()">
 
 
-<img 
+<img
 
 src="58d1e4c0d00fb74e2963c2b79e79f196.jpg"
 
@@ -102,13 +99,129 @@ Fazer PIX
 </button>
 
 
+
+
+
+<div class="lista" id="pix" style="display:none;">
+
+
+<h3 style="color:#D61264;">
+
+
+<img
+
+src="58d1e4c0d00fb74e2963c2b79e79f196.jpg"
+
+style="
+width:38px;
+height:38px;
+vertical-align:middle;
+margin-right:10px;
+"
+
+>
+
+
+Pagamento PIX
+
+
+</h3>
+
+
+<p style="color:#333;">
+Valor:
+</p>
+
+
+<h2>
+
+R$ <span id="valorPix">0,00</span>
+
+</h2>
+<img
+
+src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT%20CLUB%20CRUZ%20ALTA6009CRUZ%20ALTA62070503***63046F40"
+
+style="
+width:250px;
+display:block;
+margin:20px auto;
+"
+
+>
+
+
+
+
+
+<p style="color:#333;">
+Código PIX:
+</p>
+
+
+
+
+
+<textarea id="codigoPix" readonly>
+
+00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT CLUB CRUZ ALTA6009CRUZ ALTA62070503***63046F40
+
+</textarea>
+
+
+
+
+
+<button class="botao" onclick="copiarPix()">
+
+📋 Copiar PIX
+
+</button>
+
+
+
+
+
+<br><br>
+
+
+
+
+
+<button class="botao" onclick="informarPagamento()">
+
+✅ Já fiz o PIX
+
+</button>
+
+
+
+
+
+<br><br>
+
+
+
+
+
+<button class="botao" onclick="fecharPix()">
+
+❌ Cancelar
+
+</button>
+
+
+
 </div>
 
 
 
 
 
-<div class="lista voltar">
+<br>
+
+
+
 
 
 <a class="card" href="index.html">
@@ -118,17 +231,17 @@ Fazer PIX
 </a>
 
 
+
+
+
 </div>
 
 
-
-
-
-</div>
 
 
 
 <script>
+
 
 
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
@@ -139,10 +252,14 @@ let total = 0;
 
 
 
+
+
 fetch(API)
 
 
+
 .then(res => res.json())
+
 
 
 .then(dados => {
@@ -152,7 +269,9 @@ fetch(API)
 const area = document.getElementById("cobrancas");
 
 
+
 area.innerHTML = "";
+
 
 
 
@@ -181,6 +300,7 @@ return;
 
 
 
+
 dados.forEach(p => {
 
 
@@ -204,13 +324,12 @@ class="pagamento"
 
 value="${p.valor}"
 
-data-id="${p.id}"
-
 data-item="${p.tipo} - ${p.descricao}"
 
 onchange="atualizarTotal()"
 
 >
+
 
 
 
@@ -266,6 +385,7 @@ R$ ${Number(p.valor).toFixed(2).replace(".",",")}
 })
 
 
+
 .catch(erro=>{
 
 
@@ -274,162 +394,11 @@ console.log(erro);
 
 document.getElementById("cobrancas").innerHTML =
 
-`
-
-<div class="lista">
-
-Erro ao carregar cobranças
-
-</div>
-
-`;
+"Erro ao carregar cobranças";
 
 
 });
-
-
-
-
-
-<div class="lista" id="pix" style="display:none;">
-
-
-
-<h3 style="color:#D61264;">
-
-
-<img
-
-src="58d1e4c0d00fb74e2963c2b79e79f196.jpg"
-
-style="
-width:38px;
-height:38px;
-vertical-align:middle;
-margin-right:10px;
-"
-
->
-
-
-Pagamento PIX
-
-
-</h3>
-
-
-
-
-
-<p style="color:#333;">
-Valor:
-</p>
-
-
-
-<h2>
-
-R$ <span id="valorPix">0,00</span>
-
-</h2>
-
-
-
-
-
-<img
-
-src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT%20CLUB%20CRUZ%20ALTA6009CRUZ%20ALTA62070503***63046F40"
-
-style="
-width:250px;
-display:block;
-margin:20px auto;
-"
-
->
-
-
-
-
-
-
-<p style="color:#333;">
-Código PIX:
-</p>
-
-
-
-
-
-<textarea id="codigoPix" readonly>
-
-00020126360014br.gov.bcb.pix0114629423120001715204000053039865802BR5923ROTARACT CLUB CRUZ ALTA6009CRUZ ALTA62070503***63046F40
-
-</textarea>
-
-
-
-
-
-<button class="botao" onclick="copiarPix()">
-
-
-📋 Copiar PIX
-
-
-</button>
-
-
-
-
-<br><br>
-
-
-
-
-
-<button class="botao" onclick="informarPagamento()">
-
-
-✅ Já fiz o PIX
-
-
-</button>
-
-
-
-
-
-<br><br>
-
-
-
-
-
-<button class="botao" onclick="fecharPix()">
-
-
-❌ Cancelar
-
-
-</button>
-
-
-
-
-</div>
-
-
-
-
-
-<script>
-
-
-
-
-
+  
 function atualizarTotal(){
 
 
@@ -500,14 +469,21 @@ total.toFixed(2).replace(".",",");
 
 
 
+
+
 function copiarPix(){
 
 
 
 let codigo = document
+
 .getElementById("codigoPix")
+
 .value
+
 .trim();
+
+
 
 
 
@@ -525,149 +501,33 @@ alert("Código PIX copiado!");
 
 
 
-function fecharPix(){
 
-
-document.getElementById("pix").style.display="none";
-
-
-}
 
 
 function informarPagamento(){
 
 
-let itens = [];
 
-let ids = [];
+alert(
 
+"Pagamento informado!\n\nA tesouraria fará a conferência."
 
-
-
-
-document.querySelectorAll(".pagamento").forEach(item=>{
-
-
-if(item.checked){
-
-
-ids.push(item.dataset.id);
-
-
-itens.push(item.dataset.item);
+);
 
 
 
 }
 
 
-});
 
 
 
 
 
-if(ids.length == 0){
-
-
-alert("Nenhuma cobrança selecionada.");
-
-
-return;
-
-
-}
-
-
-
-
-
-fetch(API, {
-
-
-
-method:"POST",
-
-
-
-headers:{
-
-
-
-"Content-Type":"text/plain"
-
-
-
-},
-
-
-
-body:JSON.stringify({
-
-
-
-acao:"registrarPagamento",
-
-
-
-email:"niltontadeufilho12610@gmail.com",
-
-
-
-ids:ids.join(","),
-
-
-
-itens:itens.join(" + "),
-
-
-
-valor:total
-
-
-
-})
-
-
-
-})
-
-
-
-.then(res=>res.json())
-
-
-
-.then(retorno=>{
-
-
-
-alert(retorno.status);
-
+function fecharPix(){
 
 
 document.getElementById("pix").style.display="none";
-
-
-
-})
-
-
-
-.catch(erro=>{
-
-
-
-console.log(erro);
-
-
-
-alert("Erro ao registrar pagamento");
-
-
-
-});
-
 
 
 }
@@ -684,4 +544,3 @@ alert("Erro ao registrar pagamento");
 
 
 </html>
-
