@@ -158,6 +158,77 @@ Associados
 </h3>
 
 
+<div class="lista">
+
+<h3 style="color:#D61264;">
+Novo Associado
+</h3>
+
+
+<input 
+id="nomeAssociado"
+class="input"
+placeholder="Nome">
+
+
+<br><br>
+
+
+<input 
+id="emailAssociado"
+class="input"
+placeholder="Email">
+
+
+<br><br>
+
+
+<input 
+id="telefoneAssociado"
+class="input"
+placeholder="Telefone">
+
+
+<br><br>
+
+
+<select id="statusAssociado" class="input">
+
+<option value="Ativo">
+Ativo
+</option>
+
+<option value="Afastado">
+Afastado
+</option>
+
+<option value="Desligado">
+Desligado
+</option>
+
+
+</select>
+
+
+<br><br>
+
+
+<button 
+class="botao"
+onclick="criarAssociadoAdmin()">
+
+➕ Criar Associado
+
+</button>
+
+
+</div>
+
+
+
+<br>
+
+
 <div id="listaAssociados">
 
 Carregando associados...
@@ -1002,7 +1073,90 @@ alert("Erro ao criar cobrança");
 
 }
    
+function criarAssociadoAdmin(){
 
+
+let dados = {
+
+
+acao:"criarAssociado",
+
+
+nome:
+document.getElementById("nomeAssociado").value,
+
+
+email:
+document.getElementById("emailAssociado").value,
+
+
+telefone:
+document.getElementById("telefoneAssociado").value,
+
+
+status:
+document.getElementById("statusAssociado").value
+
+
+};
+
+
+
+if(
+dados.nome=="" ||
+dados.email==""
+){
+
+alert("Nome e email são obrigatórios");
+
+return;
+
+}
+
+
+
+fetch(API,{
+
+method:"POST",
+
+body:JSON.stringify(dados)
+
+})
+
+
+.then(res=>res.json())
+
+
+.then(retorno=>{
+
+
+alert(retorno.status);
+
+
+buscarAssociados();
+
+
+document.getElementById("nomeAssociado").value="";
+document.getElementById("emailAssociado").value="";
+document.getElementById("telefoneAssociado").value="";
+document.getElementById("statusAssociado").value="Ativo";
+
+
+})
+
+
+.catch(erro=>{
+
+
+console.log(erro);
+
+alert("Erro ao criar associado");
+
+
+});
+
+
+}
 
 
 </script>
