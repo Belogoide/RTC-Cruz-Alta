@@ -19,7 +19,8 @@ padding:15px;
 
 border-radius:10px;
 
-width:140px;
+flex:1;
+min-width:140px;
 
 text-align:center;
 
@@ -874,15 +875,17 @@ desligados++;
 
 area.innerHTML += `
 
-<div class="lista itemAssociado">
+<div class="lista itemAssociado" style="display:flex;align-items:center;gap:15px;">
 
 <button 
 class="botao"
+style="width:45px;height:45px;"
 onclick="editarAssociado('${a.email}')">
 ✏️
 </button>
 
-<br>
+
+<div>
 
 <strong>${a.nome}</strong>
 
@@ -903,6 +906,8 @@ ${a.status}
 
 </div>
 
+
+</div>
 `;
 
 
