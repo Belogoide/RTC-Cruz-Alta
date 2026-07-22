@@ -390,7 +390,104 @@ Cancelar
 
 
 
+<!-- MODAL EDITAR ASSOCIADO -->
 
+<div id="modalEditar" 
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.5);
+z-index:999;
+align-items:center;
+justify-content:center;
+">
+
+
+<div class="lista" 
+style="
+background:white;
+padding:25px;
+border-radius:15px;
+width:90%;
+max-width:400px;
+">
+
+
+<h3 style="color:#D61264;">
+✏️ Editar Associado
+</h3>
+
+
+<input 
+id="editarNome"
+class="input"
+placeholder="Nome">
+
+
+<br><br>
+
+
+<input 
+id="editarEmail"
+class="input"
+placeholder="Email"
+readonly>
+
+
+<br><br>
+
+
+<input 
+id="editarTelefone"
+class="input"
+placeholder="Telefone">
+
+
+<br><br>
+
+
+<select 
+id="editarStatus"
+class="input">
+
+<option>Ativo</option>
+
+<option>Afastado</option>
+
+<option>Desligado</option>
+
+</select>
+
+
+<br><br>
+
+
+<button 
+class="botao"
+onclick="salvarEdicaoAssociado()">
+
+Salvar
+
+</button>
+
+
+<button 
+class="botao"
+onclick="fecharEdicaoAssociado()">
+
+Cancelar
+
+</button>
+
+
+</div>
+
+
+</div>
 
 
 <div id="cobrancas" class="aba" style="display:none;">
@@ -1344,11 +1441,115 @@ card.style.display="none";
 
 }
 
-   function editarAssociado(email){
+  function editarAssociado(email){
 
-alert("Editar associado: "+email);
+
+fetch(API+"?tipo=associados")
+
+.then(res=>res.json())
+
+.then(dados=>{
+
+
+let associado = dados.find(a=>a.email==email);
+
+
+if(!associado){
+
+alert("Associado não encontrado");
+
+return;
 
 }
+
+
+
+document.getElementById("editarNome").value = associado.nome;
+
+document.getElementById("editarEmail").value = associado.email;
+
+document.getElementById("editarTelefone").value = associado.telefone;
+
+document.getElementById("editarStatus").value = associado.status;
+
+
+
+document.getElementById("modalEditar").style.display="flex";
+
+
+});
+
+
+}
+
+    function fecharEdicaoAssociado(){
+
+document.getElementById("modalEditar").style.display="none";
+
+}
+
+
+
+
+function salvarEdicaoAssociado(){
+
+
+let dados={
+
+
+acao:"editarAssociado",
+
+
+nome:
+document.getElementById("editarNome").value,
+
+
+email:
+document.getElementById("editarEmail").value,
+
+
+telefone:
+document.getElementById("editarTelefone").value,
+
+
+status:
+document.getElementById("editarStatus").value
+
+
+};
+
+
+
+fetch(API,{
+
+method:"POST",
+
+body:JSON.stringify(dados)
+
+})
+
+
+.then(res=>res.json())
+
+
+.then(retorno=>{
+
+
+alert(retorno.status);
+
+
+fecharEdicaoAssociado();
+
+
+buscarAssociados();
+
+
+});
+
+
+}
+
+    
 </script>
 
 
