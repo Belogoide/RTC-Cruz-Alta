@@ -11,7 +11,23 @@
 
 <link rel="stylesheet" href="style.css">
 <style>
+.cardResumo{
 
+background:#f5f5f5;
+
+padding:15px;
+
+border-radius:10px;
+
+width:140px;
+
+text-align:center;
+
+font-size:15px;
+
+box-shadow:0 2px 5px rgba(0,0,0,.15);
+
+}
 .menu-admin{
 
 display:flex;
@@ -147,79 +163,195 @@ Carregando pagamentos...
 
 <div id="associados" class="aba" style="display:none;">
 
-
-<div class="lista">
-
-
-<h3 style="color:#D61264;">
-
-Associados
-
-</h3>
-
-
 <div class="lista">
 
 <h3 style="color:#D61264;">
-Novo Associado
+👥 Associados
 </h3>
 
 
-<input 
+<div id="resumoAssociados" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+
+<div class="cardResumo">
+
+<b>Total</b><br>
+
+<span id="totalAssociados">0</span>
+
+</div>
+
+
+<div class="cardResumo">
+
+<b>Ativos</b><br>
+
+<span id="ativosAssociados">0</span>
+
+</div>
+
+
+<div class="cardResumo">
+
+<b>Afastados</b><br>
+
+<span id="afastadosAssociados">0</span>
+
+</div>
+
+
+<div class="cardResumo">
+
+<b>Desligados</b><br>
+
+<span id="desligadosAssociados">0</span>
+
+</div>
+
+
+</div>
+
+
+
+<input
+
+id="pesquisaAssociado"
+
+class="input"
+
+placeholder="Pesquisar associado..."
+
+onkeyup="filtrarAssociados()"
+
+
+
+>
+
+
+
+<br><br>
+
+
+
+<button
+
+class="botao"
+
+onclick="abrirNovoAssociado()"
+
+>
+
+➕ Novo Associado
+
+</button>
+
+
+
+<div
+
+id="novoAssociado"
+
+style="display:none;margin-top:20px;"
+
+>
+
+
+
+<input
+
 id="nomeAssociado"
-class="input"
-placeholder="Nome">
 
+class="input"
+
+placeholder="Nome"
+
+
+
+>
 
 <br><br>
 
 
-<input 
+
+<input
+
 id="emailAssociado"
-class="input"
-placeholder="Email">
 
+class="input"
+
+placeholder="Email"
+
+
+
+>
 
 <br><br>
 
 
-<input 
+
+<input
+
 id="telefoneAssociado"
-class="input"
-placeholder="Telefone">
 
+class="input"
+
+placeholder="Telefone"
+
+
+
+>
 
 <br><br>
 
 
-<select id="statusAssociado" class="input">
 
-<option value="Ativo">
-Ativo
-</option>
+<select
 
-<option value="Afastado">
-Afastado
-</option>
+id="statusAssociado"
 
-<option value="Desligado">
-Desligado
-</option>
+class="input"
 
+>
+
+<option>Ativo</option>
+
+<option>Afastado</option>
+
+<option>Desligado</option>
 
 </select>
 
 
+
 <br><br>
 
 
-<button 
-class="botao"
-onclick="criarAssociadoAdmin()">
 
-➕ Criar Associado
+<button
+
+class="botao"
+
+onclick="criarAssociadoAdmin()"
+
+>
+
+Salvar
 
 </button>
+
+
+
+<button
+
+class="botao"
+
+onclick="cancelarNovoAssociado()"
+
+>
+
+Cancelar
+
+</button>
+
 
 
 </div>
@@ -231,23 +363,33 @@ onclick="criarAssociadoAdmin()">
 
 <div id="listaAssociados">
 
-Carregando associados...
-
 </div>
 
 
 </div>
 
-
 </div>
-
-
-
-
-
 
 
 <!-- COBRANCAS -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <div id="cobrancas" class="aba" style="display:none;">
@@ -677,11 +819,14 @@ buscarPagamentos();
 
 function buscarAssociados(){
 
-
 const area = document.getElementById("listaAssociados");
 
-
 area.innerHTML="Carregando associados...";
+
+let total=0;
+let ativos=0;
+let afastados=0;
+let desligados=0;
 
 
 
@@ -713,49 +858,50 @@ return;
 
 
 dados.forEach(a=>{
+total++;
 
+if(a.status=="Ativo"){
+ativos++;
+}
+
+if(a.status=="Afastado"){
+afastados++;
+}
+
+if(a.status=="Desligado"){
+desligados++;
+}
 
 area.innerHTML += `
 
+<div class="lista itemAssociado">
 
-<div class="lista">
-
-
-<strong>
-
-${a.nome}
-
-</strong>
-
+<button 
+class="botao"
+onclick="editarAssociado('${a.email}')">
+✏️
+</button>
 
 <br>
 
+<strong>${a.nome}</strong>
+
+<br>
 
 Email:
-
 ${a.email}
 
-
 <br>
-
 
 Telefone:
-
 ${a.telefone}
-
 
 <br>
 
-
 Status:
-
 ${a.status}
 
-
-
 </div>
-
-
 
 `;
 
@@ -763,7 +909,10 @@ ${a.status}
 
 });
 
-
+document.getElementById("totalAssociados").innerHTML = total;
+document.getElementById("ativosAssociados").innerHTML = ativos;
+document.getElementById("afastadosAssociados").innerHTML = afastados;
+document.getElementById("desligadosAssociados").innerHTML = desligados;
 
 })
 
@@ -1158,7 +1307,43 @@ alert("Erro ao criar associado");
 
 }
 
+function abrirNovoAssociado(){
 
+document.getElementById("novoAssociado").style.display="block";
+
+}
+
+
+
+function cancelarNovoAssociado(){
+
+document.getElementById("novoAssociado").style.display="none";
+
+}
+
+   function filtrarAssociados(){
+
+let texto = document.getElementById("pesquisaAssociado").value.toLowerCase();
+
+document.querySelectorAll(".itemAssociado").forEach(card=>{
+
+let nome = card.innerText.toLowerCase();
+
+if(nome.includes(texto)){
+card.style.display="block";
+}else{
+card.style.display="none";
+}
+
+});
+
+}
+
+   function editarAssociado(email){
+
+alert("Editar associado: "+email);
+
+}
 </script>
 
 
