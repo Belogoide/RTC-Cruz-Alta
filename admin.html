@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Admin Tesouraria</title>
+<title>Admin RTC</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -21,72 +21,348 @@
 
 
 <h1 class="titulo">
-🧾 Tesouraria Admin
+🧾 Admin RTC
 </h1>
 
 
 
-<div id="pagamentos">
+<div class="lista">
 
 
-<p style="color:white;text-align:center;">
-Carregando pagamentos...
+<h3 style="color:#D61264;">
+👥 Associados
+</h3>
+
+
+<p>
+Selecione os associados para receber a cobrança:
 </p>
 
 
+<div id="associados">
+
+Carregando associados...
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="lista">
+
+
+<h3 style="color:#D61264;">
+📄 Nova cobrança
+</h3>
+
+
+
+<label>
+Tipo
+</label>
+
+
+<input 
+id="tipo"
+class="input"
+placeholder="Ex: Mensalidade">
+
+
+
+<br><br>
+
+
+
+<label>
+Descrição
+</label>
+
+
+<input 
+id="descricao"
+class="input"
+placeholder="Ex: Mensalidade Julho/2026">
+
+
+
+<br><br>
+
+
+
+<label>
+Valor
+</label>
+
+
+<input 
+id="valor"
+class="input"
+type="number"
+placeholder="50.00">
+
+
+
+<br><br>
+
+
+
+<button 
+class="botao"
+onclick="criarCobranca()">
+
+➕ Criar cobrança
+
+</button>
+
+
+</div>
+
+
+
+
+<div class="lista">
+
+
+<h3 style="color:#D61264;">
+📌 Resultado
+</h3>
+
+
+<div id="resultado">
+
+Nenhuma ação realizada.
+
+</div>
+
+
 </div>
 
 
 
 </div>
-
-
-
 <script>
 
 
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
 
 
-
-const area = document.getElementById("pagamentos");
-
+let listaAssociados = [];
 
 
 
+// BUSCAR ASSOCIADOS
 
-fetch(API + "?tipo=pagamentos")
+fetch(API + "?tipo=associados")
+
 
 .then(res => res.json())
+
 
 .then(dados => {
 
 
-
-area.innerHTML = "";
-
+    console.log("Associados:", dados);
 
 
-if(dados.length == 0){
+    listaAssociados = dados;
 
 
-area.innerHTML = `
+    const area = document.getElementById("associados");
 
 
-<div class="lista">
+    area.innerHTML = "";
 
 
-<h3>
 
-Nenhum pagamento pendente
-
-</h3>
+    if(dados.length == 0){
 
 
-</div>
+        area.innerHTML = "Nenhum associado encontrado";
 
 
-`;
+        return;
+
+
+    }
+
+
+
+
+
+    dados.forEach(a => {
+
+
+
+        area.innerHTML += `
+
+
+        <div class="lista">
+
+
+        <label>
+
+
+        <input
+
+        type="checkbox"
+
+        class="usuario"
+
+        value="${a.email}"
+
+        >
+
+
+
+        <strong>
+
+        ${a.nome}
+
+        </strong>
+
+
+        <br>
+
+
+        <small>
+
+        ${a.email}
+
+        </small>
+
+
+        </label>
+
+
+        </div>
+
+
+        `;
+
+
+
+    });
+
+
+
+})
+
+
+.catch(erro=>{
+
+
+console.log(erro);
+
+
+document.getElementById("associados").innerHTML =
+
+"Erro ao carregar associados";
+
+
+});
+
+
+
+
+
+
+
+
+// CRIAR COBRANÇA
+
+
+function criarCobranca(){
+
+
+
+let emails = [];
+
+
+
+
+
+document.querySelectorAll(".usuario")
+
+.forEach(item=>{
+
+
+
+    if(item.checked){
+
+
+        emails.push(item.value);
+
+
+    }
+
+
+
+});
+
+
+
+
+
+
+if(emails.length == 0){
+
+
+    alert("Selecione pelo menos um associado");
+
+
+    return;
+
+
+}
+
+
+
+
+
+let dados = {
+
+
+acao:"criarCobranca",
+
+
+emails:emails,
+
+
+tipo:document.getElementById("tipo").value,
+
+
+descricao:document.getElementById("descricao").value,
+
+
+valor:Number(
+
+document.getElementById("valor").value
+
+)
+
+
+};
+
+
+
+
+
+if(
+
+dados.tipo == "" ||
+
+dados.descricao == "" ||
+
+dados.valor <= 0
+
+){
+
+
+alert("Preencha todos os campos da cobrança");
 
 
 return;
@@ -98,152 +374,10 @@ return;
 
 
 
-dados.forEach(p=>{
+console.log("Enviando:",dados);
 
 
-area.innerHTML += `
 
-
-
-<div class="lista">
-
-
-
-<h3 style="color:#D61264;">
-
-Pagamento PIX
-
-</h3>
-
-
-
-<p style="color:#333;">
-
-<strong>Email:</strong><br>
-
-${p.email}
-
-</p>
-
-
-
-<br>
-
-
-
-<p style="color:#333;">
-
-<strong>Itens:</strong><br>
-
-${p.itens}
-
-</p>
-
-
-
-<br>
-
-
-
-<p style="color:#333;">
-
-<strong>Valor:</strong><br>
-
-R$ ${Number(p.valor)
-.toFixed(2)
-.replace(".",",")}
-
-</p>
-
-
-
-<br>
-
-
-
-<p style="color:#333;">
-
-<strong>Status:</strong>
-
-${p.status}
-
-</p>
-
-
-
-<br>
-
-
-
-<button 
-
-class="botao"
-
-onclick="aprovar(${p.linha})">
-
-✅ Aprovar pagamento
-
-</button>
-
-
-
-<br><br>
-
-
-
-<button 
-
-class="botao"
-
-onclick="negar(${p.linha})">
-
-❌ Negar pagamento
-
-</button>
-
-
-
-</div>
-
-
-
-`;
-
-
-
-});
-
-
-
-})
-
-.catch(erro=>{
-
-
-console.log(erro);
-
-
-area.innerHTML = `
-
-<div class="lista">
-
-Erro ao carregar pagamentos
-
-</div>
-
-`;
-
-
-});
-
-
-
-
-
-
-
-
-function aprovar(linha){
 
 
 
@@ -253,16 +387,7 @@ fetch(API,{
 method:"POST",
 
 
-body:JSON.stringify({
-
-
-acao:"aprovar",
-
-
-linha:linha
-
-
-})
+body:JSON.stringify(dados)
 
 
 })
@@ -272,13 +397,39 @@ linha:linha
 .then(res=>res.json())
 
 
+
 .then(retorno=>{
+
+
+
+console.log(retorno);
+
+
+
+document.getElementById("resultado").innerHTML = `
+
+
+<div>
+
+
+<strong>
+
+${retorno.status}
+
+</strong>
+
+
+</div>
+
+
+`;
+
 
 
 alert(retorno.status);
 
 
-location.reload();
+
 
 
 })
@@ -291,74 +442,12 @@ location.reload();
 console.log(erro);
 
 
-alert("Erro ao aprovar pagamento");
+alert("Erro ao criar cobrança");
 
 
 });
 
 
-
-}
-
-
-
-
-
-
-
-
-function negar(linha){
-
-
-
-fetch(API,{
-
-
-method:"POST",
-
-
-body:JSON.stringify({
-
-
-acao:"negar",
-
-
-linha:linha
-
-
-})
-
-
-})
-
-
-
-.then(res=>res.json())
-
-
-.then(retorno=>{
-
-
-alert(retorno.status);
-
-
-location.reload();
-
-
-})
-
-
-
-.catch(erro=>{
-
-
-console.log(erro);
-
-
-alert("Erro ao negar pagamento");
-
-
-});
 
 
 
@@ -367,9 +456,7 @@ alert("Erro ao negar pagamento");
 
 
 </script>
-
-
-
-</body>
+  </body>
 
 </html>
+  
