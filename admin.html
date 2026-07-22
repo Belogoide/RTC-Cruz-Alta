@@ -26,20 +26,87 @@
 
 
 
+<div class="menu-admin">
+
+
+<button class="botao" onclick="abrirAba('pagamentos')">
+
+💰 Pagamentos
+
+</button>
+
+
+<button class="botao" onclick="abrirAba('associados')">
+
+👥 Associados
+
+</button>
+
+
+<button class="botao" onclick="abrirAba('cobrancas')">
+
+📄 Cobranças
+
+</button>
+
+
+</div>
+
+
+
+
+
+<!-- PAGAMENTOS -->
+
+
+<div id="pagamentos" class="aba">
+
+
 <div class="lista">
 
 
 <h3 style="color:#D61264;">
-👥 Associados
+
+Pagamentos Pendentes
+
 </h3>
 
 
-<p>
-Selecione os associados para receber a cobrança:
-</p>
+<div id="listaPagamentos">
+
+Carregando pagamentos...
+
+</div>
 
 
-<div id="associados">
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- ASSOCIADOS -->
+
+
+<div id="associados" class="aba" style="display:none;">
+
+
+<div class="lista">
+
+
+<h3 style="color:#D61264;">
+
+Associados
+
+</h3>
+
+
+<div id="listaAssociados">
 
 Carregando associados...
 
@@ -49,60 +116,70 @@ Carregando associados...
 </div>
 
 
+</div>
 
+
+
+
+
+
+
+<!-- COBRANCAS -->
+
+
+<div id="cobrancas" class="aba" style="display:none;">
 
 
 <div class="lista">
 
 
 <h3 style="color:#D61264;">
-📄 Nova cobrança
+
+Criar Cobrança
+
 </h3>
 
 
 
-<label>
-Tipo
-</label>
+<div id="selecionarAssociados">
+
+Carregando associados...
+
+</div>
+
+
+
+<br>
+
 
 
 <input 
 id="tipo"
 class="input"
-placeholder="Ex: Mensalidade">
+placeholder="Tipo (Ex: Evento)">
 
 
 
 <br><br>
 
-
-
-<label>
-Descrição
-</label>
 
 
 <input 
 id="descricao"
 class="input"
-placeholder="Ex: Mensalidade Julho/2026">
+placeholder="Descrição">
 
 
 
 <br><br>
 
-
-
-<label>
-Valor
-</label>
 
 
 <input 
 id="valor"
 class="input"
 type="number"
-placeholder="50.00">
+placeholder="Valor">
 
 
 
@@ -114,33 +191,13 @@ placeholder="50.00">
 class="botao"
 onclick="criarCobranca()">
 
-➕ Criar cobrança
+Criar cobrança
 
 </button>
 
 
-</div>
-
-
-
-
-<div class="lista">
-
-
-<h3 style="color:#D61264;">
-📌 Resultado
-</h3>
-
-
-<div id="resultado">
-
-Nenhuma ação realizada.
 
 </div>
-
-
-</div>
-
 
 
 </div>
@@ -150,171 +207,52 @@ Nenhuma ação realizada.
 const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
 
 
-let listaAssociados = [];
 
+// CONTROLE DAS ABAS
 
+function abrirAba(nome){
 
-// BUSCAR ASSOCIADOS
 
-fetch(API + "?tipo=associados")
+document.querySelectorAll(".aba")
 
+.forEach(aba=>{
 
-.then(res => res.json())
 
-
-.then(dados => {
-
-
-    console.log("Associados:", dados);
-
-
-    listaAssociados = dados;
-
-
-    const area = document.getElementById("associados");
-
-
-    area.innerHTML = "";
-
-
-
-    if(dados.length == 0){
-
-
-        area.innerHTML = "Nenhum associado encontrado";
-
-
-        return;
-
-
-    }
-
-
-
-
-
-    dados.forEach(a => {
-
-
-
-        area.innerHTML += `
-
-
-        <div class="lista">
-
-
-        <label>
-
-
-        <input
-
-        type="checkbox"
-
-        class="usuario"
-
-        value="${a.email}"
-
-        >
-
-
-
-        <strong>
-
-        ${a.nome}
-
-        </strong>
-
-
-        <br>
-
-
-        <small>
-
-        ${a.email}
-
-        </small>
-
-
-        </label>
-
-
-        </div>
-
-
-        `;
-
-
-
-    });
-
-
-
-})
-
-
-.catch(erro=>{
-
-
-console.log(erro);
-
-
-document.getElementById("associados").innerHTML =
-
-"Erro ao carregar associados";
+aba.style.display="none";
 
 
 });
 
 
 
+document.getElementById(nome)
+
+.style.display="block";
 
 
 
+if(nome=="pagamentos"){
 
+buscarPagamentos();
 
-// CRIAR COBRANÇA
-
-
-function criarCobranca(){
-
-
-
-let emails = [];
+}
 
 
 
+if(nome=="associados"){
 
+buscarAssociados();
 
-document.querySelectorAll(".usuario")
-
-.forEach(item=>{
-
-
-
-    if(item.checked){
-
-
-        emails.push(item.value);
-
-
-    }
+}
 
 
 
-});
+if(nome=="cobrancas"){
 
+carregarAssociadosCobranca();
 
+}
 
-
-
-
-if(emails.length == 0){
-
-
-    alert("Selecione pelo menos um associado");
-
-
-    return;
 
 
 }
@@ -323,7 +261,579 @@ if(emails.length == 0){
 
 
 
-let dados = {
+
+
+// =========================
+// PAGAMENTOS
+// =========================
+
+
+
+function buscarPagamentos(){
+
+
+
+const area = document.getElementById("listaPagamentos");
+
+
+
+area.innerHTML="Carregando...";
+
+
+
+
+fetch(API+"?tipo=pagamentos")
+
+.then(res=>res.json())
+
+.then(dados=>{
+
+
+
+area.innerHTML="";
+
+
+
+if(dados.length==0){
+
+
+
+area.innerHTML=`
+
+<div class="lista">
+
+Nenhum pagamento pendente
+
+</div>
+
+`;
+
+return;
+
+
+}
+
+
+
+
+dados.forEach(p=>{
+
+
+
+area.innerHTML += `
+
+
+<div class="lista">
+
+
+
+<h3 style="color:#D61264;">
+
+Pagamento PIX
+
+</h3>
+
+
+
+
+<p>
+
+<strong>Email:</strong><br>
+
+${p.email}
+
+</p>
+
+
+
+<p>
+
+<strong>Itens:</strong><br>
+
+${p.itens}
+
+</p>
+
+
+
+<p>
+
+<strong>Valor:</strong><br>
+
+R$ ${Number(p.valor)
+
+.toFixed(2)
+
+.replace(".",",")}
+
+</p>
+
+
+
+
+<p>
+
+<strong>Status:</strong>
+
+${p.status}
+
+</p>
+
+
+
+<button
+
+class="botao"
+
+onclick="aprovar(${p.linha})">
+
+✅ Aprovar
+
+</button>
+
+
+
+<br><br>
+
+
+
+<button
+
+class="botao"
+
+onclick="negar(${p.linha})">
+
+❌ Negar
+
+</button>
+
+
+
+
+</div>
+
+
+
+`;
+
+
+
+});
+
+
+
+})
+
+.catch(erro=>{
+
+
+console.log(erro);
+
+
+area.innerHTML="Erro ao carregar pagamentos";
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+function aprovar(linha){
+
+
+
+fetch(API,{
+
+
+method:"POST",
+
+
+body:JSON.stringify({
+
+
+acao:"aprovar",
+
+
+linha:linha
+
+
+})
+
+
+})
+
+
+
+.then(res=>res.json())
+
+.then(retorno=>{
+
+
+alert(retorno.status);
+
+
+buscarPagamentos();
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+function negar(linha){
+
+
+
+fetch(API,{
+
+
+method:"POST",
+
+
+body:JSON.stringify({
+
+
+acao:"negar",
+
+
+linha:linha
+
+
+})
+
+
+})
+
+
+
+.then(res=>res.json())
+
+.then(retorno=>{
+
+
+alert(retorno.status);
+
+
+buscarPagamentos();
+
+
+});
+
+
+
+}
+
+
+
+
+// inicia pagamentos ao abrir
+
+buscarPagamentos();
+
+
+
+</script>
+    // =========================
+// ASSOCIADOS
+// =========================
+
+
+function buscarAssociados(){
+
+
+const area = document.getElementById("listaAssociados");
+
+
+area.innerHTML="Carregando associados...";
+
+
+
+fetch(API+"?tipo=associados")
+
+
+.then(res=>res.json())
+
+
+.then(dados=>{
+
+
+
+area.innerHTML="";
+
+
+
+if(dados.length==0){
+
+
+area.innerHTML="Nenhum associado encontrado";
+
+
+return;
+
+
+}
+
+
+
+dados.forEach(a=>{
+
+
+area.innerHTML += `
+
+
+<div class="lista">
+
+
+<strong>
+
+${a.nome}
+
+</strong>
+
+
+<br>
+
+
+Email:
+
+${a.email}
+
+
+<br>
+
+
+Telefone:
+
+${a.telefone}
+
+
+<br>
+
+
+Status:
+
+${a.status}
+
+
+
+</div>
+
+
+
+`;
+
+
+
+});
+
+
+
+})
+
+.catch(erro=>{
+
+
+console.log(erro);
+
+
+area.innerHTML="Erro ao carregar associados";
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =========================
+// COBRANÇAS
+// =========================
+
+
+
+function carregarAssociadosCobranca(){
+
+
+
+const area = document.getElementById("selecionarAssociados");
+
+
+
+area.innerHTML="Carregando associados...";
+
+
+
+
+fetch(API+"?tipo=associados")
+
+
+.then(res=>res.json())
+
+
+.then(dados=>{
+
+
+area.innerHTML="";
+
+
+
+dados.forEach(a=>{
+
+
+
+area.innerHTML += `
+
+
+<div>
+
+
+<label>
+
+
+<input
+
+type="checkbox"
+
+class="usuarioCobranca"
+
+value="${a.email}"
+
+>
+
+
+<strong>
+
+${a.nome}
+
+</strong>
+
+
+<br>
+
+
+<small>
+
+${a.email}
+
+</small>
+
+
+</label>
+
+
+
+</div>
+
+
+<br>
+
+
+`;
+
+
+
+});
+
+
+
+})
+
+.catch(erro=>{
+
+
+console.log(erro);
+
+
+area.innerHTML="Erro ao carregar associados";
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+function criarCobranca(){
+
+
+
+let emails=[];
+
+
+
+
+document.querySelectorAll(".usuarioCobranca")
+
+
+.forEach(item=>{
+
+
+if(item.checked){
+
+
+emails.push(item.value);
+
+
+}
+
+
+});
+
+
+
+
+
+if(emails.length==0){
+
+
+alert("Selecione pelo menos um associado");
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+let dados={
 
 
 acao:"criarCobranca",
@@ -351,30 +861,25 @@ document.getElementById("valor").value
 
 
 
+
 if(
 
-dados.tipo == "" ||
+dados.tipo=="" ||
 
-dados.descricao == "" ||
+dados.descricao=="" ||
 
-dados.valor <= 0
+dados.valor<=0
 
 ){
 
 
-alert("Preencha todos os campos da cobrança");
+alert("Preencha os dados da cobrança");
 
 
 return;
 
 
 }
-
-
-
-
-
-console.log("Enviando:",dados);
 
 
 
@@ -393,42 +898,38 @@ body:JSON.stringify(dados)
 })
 
 
-
 .then(res=>res.json())
-
 
 
 .then(retorno=>{
 
 
 
-console.log(retorno);
-
-
-
-document.getElementById("resultado").innerHTML = `
-
-
-<div>
-
-
-<strong>
-
-${retorno.status}
-
-</strong>
-
-
-</div>
-
-
-`;
-
-
-
 alert(retorno.status);
 
 
+
+// limpa formulário
+
+
+document.getElementById("tipo").value="";
+
+document.getElementById("descricao").value="";
+
+document.getElementById("valor").value="";
+
+
+
+// remove seleção
+
+
+document.querySelectorAll(".usuarioCobranca")
+
+.forEach(item=>{
+
+item.checked=false;
+
+});
 
 
 
@@ -449,14 +950,12 @@ alert("Erro ao criar cobrança");
 
 
 
-
-
 }
-
-
-
-</script>
-  </body>
+    </body>
 
 </html>
-  
+
+
+
+
+</div>
