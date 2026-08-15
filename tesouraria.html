@@ -251,6 +251,7 @@ onclick="fecharPix()">
 
 
 </div>
+<script src="ui.js"></script>
 <script>
 
 
@@ -271,7 +272,7 @@ const EMAIL_USUARIO = parametros.get("email");
 
 if(!EMAIL_USUARIO){
 
-    alert("Email não identificado.");
+    uiAlert("Email não identificado.");
 
     window.location.href="index.html";
 
@@ -472,7 +473,7 @@ function fazerPix(){
 if(total == 0){
 
 
-alert(
+uiAlert(
 "Selecione uma cobrança antes de fazer o PIX."
 );
 
@@ -517,7 +518,7 @@ if(enviandoPagamento){
 
 if(total == 0){
 
-    alert("Selecione uma cobrança antes de informar o pagamento.");
+    uiAlert("Selecione uma cobrança antes de informar o pagamento.");
 
     return;
 
@@ -614,7 +615,7 @@ console.log(dados);
 
 
 
-alert(
+uiAlert(
 
 "Pagamento informado!\n\nA tesouraria fará a conferência."
 
@@ -654,7 +655,7 @@ atualizarTotal();
 console.log(erro);
 
 
-alert(
+uiAlert(
 "Erro ao registrar pagamento."
 );
 
@@ -705,7 +706,7 @@ navigator.clipboard.writeText(codigo);
 
 
 
-alert(
+uiAlert(
 "Código PIX copiado!"
 );
 

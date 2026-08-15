@@ -55,26 +55,26 @@ RTC Cruz Alta
 </div>
 
 
+<script src="ui.js"></script>
 <script src="app.js"></script>
 <script>
 
 function abrirTesouraria(){
 
 
-    let email = prompt(
-        "Digite seu email cadastrado:"
-    );
+    uiPrompt(
+        "Digite seu email cadastrado:",
+        "",
+        "Acessar tesouraria"
+    ).then(email => {
 
+        if(!email){
+            return;
+        }
 
-    if(!email){
-
-        return;
-
-    }
-
-
-    window.location.href =
-    "tesouraria.html?email=" + email;
+        window.location.href =
+        "tesouraria.html?email=" + encodeURIComponent(email);
+    });
 
 
 }

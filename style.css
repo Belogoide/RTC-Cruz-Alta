@@ -287,6 +287,70 @@ input, select{
     background:#6b7280;
 }
 
+.ui-modal-overlay{
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.55);
+}
+
+.ui-modal{
+    width:min(100%, 420px);
+    background:#fff;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:0 12px 32px rgba(0,0,0,.3);
+}
+
+.ui-modal-titulo{
+    margin:0 0 10px;
+    color:#D61264;
+    font-size:21px;
+}
+
+.ui-modal-mensagem{
+    margin:0;
+    color:#333;
+    line-height:1.5;
+    white-space:pre-line;
+}
+
+.ui-modal-entrada{
+    display:none;
+    width:100%;
+    margin-top:18px;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+.ui-modal-acoes{
+    display:flex;
+    gap:12px;
+    margin-top:22px;
+}
+
+.ui-modal-acoes .botao{
+    flex:1;
+    width:auto;
+    margin:0;
+}
+
+.ui-modal-acoes .botao-secundario{
+    background:#6b7280;
+}
+
+@media (max-width:420px){
+    .ui-modal-acoes{
+        flex-direction:column-reverse;
+    }
+}
+
 button.card{
 
     width:100%;

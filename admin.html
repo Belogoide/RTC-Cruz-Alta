@@ -573,6 +573,7 @@ Criar cobrança
 
 
 </div>
+<script src="ui.js"></script>
 <script>
 
 
@@ -849,7 +850,7 @@ linha:linha
 .then(retorno=>{
 
 
-alert(retorno.status);
+uiAlert(retorno.status);
 
 
 buscarPagamentos();
@@ -899,7 +900,7 @@ linha:linha
 .then(retorno=>{
 
 
-alert(retorno.status);
+uiAlert(retorno.status);
 
 
 buscarPagamentos();
@@ -1200,7 +1201,7 @@ emails.push(item.value);
 if(emails.length==0){
 
 
-alert("Selecione pelo menos um associado");
+uiAlert("Selecione pelo menos um associado");
 
 
 return;
@@ -1254,7 +1255,7 @@ dados.valor<=0
 ){
 
 
-alert("Preencha os dados da cobrança");
+uiAlert("Preencha os dados da cobrança");
 
 
 return;
@@ -1286,7 +1287,7 @@ body:JSON.stringify(dados)
 
 
 
-alert(retorno.status);
+uiAlert(retorno.status);
 
 
 
@@ -1324,7 +1325,7 @@ item.checked=false;
 console.log(erro);
 
 
-alert("Erro ao criar cobrança");
+uiAlert("Erro ao criar cobrança");
 
 
 });
@@ -1367,7 +1368,7 @@ dados.nome=="" ||
 dados.email==""
 ){
 
-alert("Nome e email são obrigatórios");
+uiAlert("Nome e email são obrigatórios");
 
 return;
 
@@ -1390,7 +1391,7 @@ body:JSON.stringify(dados)
 .then(retorno=>{
 
 
-alert(retorno.status);
+uiAlert(retorno.status);
 
 
 buscarAssociados();
@@ -1410,7 +1411,7 @@ document.getElementById("statusAssociado").value="Ativo";
 
 console.log(erro);
 
-alert("Erro ao criar associado");
+uiAlert("Erro ao criar associado");
 
 
 });
@@ -1456,7 +1457,7 @@ const dados = await resposta.json();
 const associado = dados.find(a => String(a.email).toLowerCase() === String(email).toLowerCase());
 
 if(!associado){
-alert("Associado não encontrado.");
+uiAlert("Associado não encontrado.");
 return;
 }
 
@@ -1469,7 +1470,7 @@ document.getElementById("editarNome").focus();
 
 } catch(erro) {
 console.error("Erro ao carregar associado:", erro);
-alert("Não foi possível carregar os dados do associado. Tente novamente.");
+uiAlert("Não foi possível carregar os dados do associado. Tente novamente.");
 }
 
 }
@@ -1507,13 +1508,13 @@ status:document.getElementById("editarStatus").value
 };
 
 if(!dados.nome){
-alert("Informe o nome do associado.");
+uiAlert("Informe o nome do associado.");
 document.getElementById("editarNome").focus();
 return;
 }
 
 if(!dados.email){
-alert("O associado não possui um e-mail identificado. Feche o modal e carregue os dados novamente.");
+uiAlert("O associado não possui um e-mail identificado. Feche o modal e carregue os dados novamente.");
 return;
 }
 
@@ -1527,12 +1528,12 @@ body:JSON.stringify(dados)
 });
 if(!resposta.ok) throw new Error("Falha na comunicação com a API.");
 const retorno = await resposta.json();
-alert(retorno.status || "Associado atualizado com sucesso.");
+uiAlert(retorno.status || "Associado atualizado com sucesso.");
 fecharEdicaoAssociado();
 buscarAssociados();
 } catch(erro) {
 console.error("Erro ao editar associado:", erro);
-alert("Não foi possível atualizar o associado. Tente novamente.");
+uiAlert("Não foi possível atualizar o associado. Tente novamente.");
 botao.disabled = false;
 botao.textContent = "Atualizar";
 }
