@@ -470,23 +470,27 @@ class="input">
 <br><br>
 
 
+<div class="modal-acoes">
+
 <button 
 id="botaoSalvarEdicao"
 class="botao"
 onclick="salvarEdicaoAssociado()">
 
-Salvar
+Atualizar
 
 </button>
 
 
 <button 
-class="botao"
+class="botao botao-secundario"
 onclick="fecharEdicaoAssociado()">
 
 Cancelar
 
 </button>
+
+</div>
 
 
 </div>
@@ -1508,9 +1512,8 @@ document.getElementById("editarNome").focus();
 return;
 }
 
-if(!dados.email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(dados.email)){
-alert("Informe um email válido.");
-document.getElementById("editarEmail").focus();
+if(!dados.email){
+alert("O associado não possui um e-mail identificado. Feche o modal e carregue os dados novamente.");
 return;
 }
 
@@ -1529,7 +1532,7 @@ fecharEdicaoAssociado();
 buscarAssociados();
 } catch(erro) {
 console.error("Erro ao editar associado:", erro);
-alert("Não foi possível salvar as alterações. Tente novamente.");
+alert("Não foi possível atualizar o associado. Tente novamente.");
 botao.disabled = false;
 botao.textContent = "Atualizar";
 }

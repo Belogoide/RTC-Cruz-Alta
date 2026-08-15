@@ -271,6 +271,22 @@ input, select{
     margin-top:12px;
 
 }
+.modal-acoes{
+    display:flex;
+    gap:12px;
+    margin-top:12px;
+}
+
+.modal-acoes .botao{
+    flex:1;
+    width:auto;
+    margin-top:0;
+}
+
+.botao-secundario{
+    background:#6b7280;
+}
+
 button.card{
 
     width:100%;
