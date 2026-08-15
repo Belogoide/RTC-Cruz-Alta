@@ -393,6 +393,10 @@ Cancelar
 <!-- MODAL EDITAR ASSOCIADO -->
 
 <div id="modalEditar" 
+role="dialog"
+aria-modal="true"
+aria-labelledby="tituloEditarAssociado"
+onclick="fecharEdicaoAoClicarFora(event)"
 style="
 display:none;
 position:fixed;
@@ -417,7 +421,7 @@ max-width:400px;
 ">
 
 
-<h3 style="color:#D61264;">
+<h3 id="tituloEditarAssociado" style="color:#D61264;">
 ✏️ Editar Associado
 </h3>
 
@@ -467,6 +471,7 @@ class="input">
 
 
 <button 
+id="botaoSalvarEdicao"
 class="botao"
 onclick="salvarEdicaoAssociado()">
 
@@ -1425,128 +1430,109 @@ document.getElementById("novoAssociado").style.display="none";
 
    function filtrarAssociados(){
 
-let texto = document.getElementById("pesquisaAssociado").value.toLowerCase();
+let texto = document.getElementById("pesquisaAssociado").value.trim().toLowerCase();
 
 document.querySelectorAll(".itemAssociado").forEach(card=>{
 
-let nome = card.innerText.toLowerCase();
-
-if(nome.includes(texto)){
-card.style.display="block";
-}else{
-card.style.display="none";
-}
+let conteudo = card.innerText.toLowerCase();
+card.style.display = conteudo.includes(texto) ? "flex" : "none";
 
 });
 
 }
 
-  function editarAssociado(email){
+  async function editarAssociado(email){
 
+try {
 
-fetch(API+"?tipo=associados")
+const resposta = await fetch(API+"?tipo=associados");
+if(!resposta.ok) throw new Error("Não foi possível carregar os associados.");
 
-.then(res=>res.json())
-
-.then(dados=>{
-
-
-let associado = dados.find(a=>a.email==email);
-
+const dados = await resposta.json();
+const associado = dados.find(a => String(a.email).toLowerCase() === String(email).toLowerCase());
 
 if(!associado){
-
-alert("Associado não encontrado");
-
+alert("Associado não encontrado.");
 return;
-
 }
 
-
-
-document.getElementById("editarNome").value = associado.nome;
-
-document.getElementById("editarEmail").value = associado.email;
-
-document.getElementById("editarTelefone").value = associado.telefone;
-
-document.getElementById("editarStatus").value = associado.status;
-
-
-
+document.getElementById("editarNome").value = associado.nome || "";
+document.getElementById("editarEmail").value = associado.email || "";
+document.getElementById("editarTelefone").value = associado.telefone || "";
+document.getElementById("editarStatus").value = associado.status || "Ativo";
 document.getElementById("modalEditar").style.display="flex";
+document.getElementById("editarNome").focus();
 
-
-});
-
+} catch(erro) {
+console.error("Erro ao carregar associado:", erro);
+alert("Não foi possível carregar os dados do associado. Tente novamente.");
+}
 
 }
 
     function fecharEdicaoAssociado(){
 
 document.getElementById("modalEditar").style.display="none";
+document.getElementById("botaoSalvarEdicao").disabled=false;
+document.getElementById("botaoSalvarEdicao").textContent="Atualizar";
 
 }
 
+function fecharEdicaoAoClicarFora(event){
+if(event.target.id === "modalEditar") fecharEdicaoAssociado();
+}
 
-
-
-function salvarEdicaoAssociado(){
-
-
-let dados={
-
-
-acao:"editarAssociado",
-
-
-nome:
-document.getElementById("editarNome").value,
-
-
-email:
-document.getElementById("editarEmail").value,
-
-
-telefone:
-document.getElementById("editarTelefone").value,
-
-
-status:
-document.getElementById("editarStatus").value
-
-
-};
-
-
-
-fetch(API,{
-
-method:"POST",
-
-body:JSON.stringify(dados)
-
-})
-
-
-.then(res=>res.json())
-
-
-.then(retorno=>{
-
-
-alert(retorno.status);
-
-
+document.addEventListener("keydown", event => {
+if(event.key === "Escape" && document.getElementById("modalEditar").style.display === "flex"){
 fecharEdicaoAssociado();
-
-
-buscarAssociados();
-
-
+}
 });
 
 
+
+
+async function salvarEdicaoAssociado(){
+
+const botao = document.getElementById("botaoSalvarEdicao");
+const dados={
+acao:"editarAssociado",
+nome:document.getElementById("editarNome").value.trim(),
+email:document.getElementById("editarEmail").value.trim(),
+telefone:document.getElementById("editarTelefone").value.trim(),
+status:document.getElementById("editarStatus").value
+};
+
+if(!dados.nome){
+alert("Informe o nome do associado.");
+document.getElementById("editarNome").focus();
+return;
+}
+
+if(!dados.email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(dados.email)){
+alert("Informe um email válido.");
+document.getElementById("editarEmail").focus();
+return;
+}
+
+botao.disabled = true;
+botao.textContent = "Atualizando...";
+
+try {
+const resposta = await fetch(API,{
+method:"POST",
+body:JSON.stringify(dados)
+});
+if(!resposta.ok) throw new Error("Falha na comunicação com a API.");
+const retorno = await resposta.json();
+alert(retorno.status || "Associado atualizado com sucesso.");
+fecharEdicaoAssociado();
+buscarAssociados();
+} catch(erro) {
+console.error("Erro ao editar associado:", erro);
+alert("Não foi possível salvar as alterações. Tente novamente.");
+botao.disabled = false;
+botao.textContent = "Atualizar";
+}
 }
 
     
