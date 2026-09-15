@@ -77,6 +77,35 @@ body{
 
 }
 
+.card-rotapadel{
+    background:linear-gradient(135deg,#071c34,#0056A8);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    text-transform:uppercase;
+}
+.card-rotapadel span{display:flex;flex-direction:column;gap:4px;}
+.card-rotapadel small{font-size:10px;letter-spacing:2px;color:#ffcf3f;}
+
+.pagina-inscricao{background:linear-gradient(145deg,#071c34 0%,#0056A8 52%,#D61264 130%);color:#122033;padding:24px 0 50px;}
+.inscricao-shell{width:min(94%,900px);margin:auto;}
+.link-voltar{display:inline-block;color:#fff;text-decoration:none;font-weight:bold;margin:4px 0 28px;opacity:.9;}
+.inscricao-header{color:#fff;max-width:650px;margin-bottom:25px;}
+.eyebrow{font-size:11px;letter-spacing:2.5px;font-weight:800;color:#ffcf3f;margin:0 0 10px;}
+.inscricao-header h1{font-size:clamp(38px,7vw,68px);line-height:.95;margin:0 0 18px;letter-spacing:-2px;}
+.inscricao-header h1 span{color:#ffcf3f;}
+.subtitulo{font-size:17px;line-height:1.5;margin:0;opacity:.9;}
+.status-vagas,.painel-formulario{background:#fff;border-radius:20px;padding:24px;margin:0 0 18px;box-shadow:0 12px 28px rgba(0,0,0,.16);}
+.status-vagas-topo{display:flex;justify-content:space-between;gap:15px;font-weight:700;color:#071c34;margin-bottom:12px;}
+.status-vagas-topo strong{color:#D61264;}
+.barra-vagas{height:10px;background:#e8edf3;border-radius:20px;overflow:hidden;}.barra-vagas span{display:block;height:100%;width:0;background:linear-gradient(90deg,#0056A8,#D61264);border-radius:20px;transition:width .3s;}
+.status-vagas small{display:block;color:#6b7280;margin-top:8px;}
+.secao-titulo{display:flex;align-items:center;gap:14px;margin-bottom:22px;}.secao-titulo h2{font-size:21px;margin:0;color:#071c34;}.secao-titulo p{margin:4px 0 0;color:#6b7280;font-size:14px;}.numero{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#fff0f6;color:#D61264;font-weight:800;}
+.participantes-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;}.participante-card{border:1px solid #dfe5ed;border-radius:14px;padding:18px;}.participante-card legend,fieldset>legend{font-weight:800;color:#0056A8;padding:0 7px;}.form-inscricao label{display:block;font-size:13px;font-weight:700;color:#344054;margin-top:12px;}.form-inscricao input:not([type=radio]):not([type=checkbox]){display:block;margin:7px 0 0;width:100%;padding:13px;border:1px solid #d5dce6;border-radius:9px;font-size:15px;outline-color:#0056A8;}.form-inscricao fieldset{border:0;padding:0;margin:0;}.opcoes-grid,.categorias-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:15px;}.opcao,.categoria{position:relative;border:1px solid #d5dce6;border-radius:12px;padding:15px!important;margin:0!important;cursor:pointer;text-align:center;transition:.2s;}.opcao:has(input:checked),.categoria:has(input:checked){border-color:#D61264;background:#fff5f9;box-shadow:0 0 0 2px #ffd0e2;}.opcao input,.categoria input{position:absolute;opacity:0;}.opcao span{display:block;font-size:23px;color:#D61264;margin-bottom:5px;}.opcao strong,.categoria strong{display:block;font-size:15px;color:#071c34;}.opcao small,.categoria span{display:block;color:#6b7280;font-size:11px;margin-top:4px;}.categoria{display:flex;flex-direction:column;align-items:center;gap:3px;padding:18px!important;}.categoria strong{font-size:28px;color:#0056A8;}.categoria-fieldset{margin-top:24px!important;}.valor-inscricao{display:flex;justify-content:space-between;align-items:center;background:#f5f8fc;border-radius:12px;padding:17px;margin:0 0 14px;color:#344054;}.valor-inscricao strong{font-size:20px;color:#0056A8;}.aviso-pix{display:flex;gap:12px;align-items:flex-start;background:#fff9e8;padding:14px;border-radius:10px;color:#5b4a15;font-size:13px;line-height:1.4;}.aviso-pix p{margin:0;}.pix-icone{background:#2bb673;color:#fff;font-weight:900;border-radius:5px;padding:4px 6px;font-size:11px;}.aceite{display:flex!important;gap:9px;align-items:flex-start;margin:18px 0!important;font-weight:400!important;line-height:1.4;}.aceite input{margin-top:2px;accent-color:#D61264;}.botao-inscricao{display:flex;justify-content:space-between;align-items:center;background:#D61264;font-weight:800;}.botao-inscricao span{font-size:21px;}.seguranca{text-align:center;font-size:11px;color:#8a94a3;margin:14px 0 0;}.modal-overlay{position:fixed;inset:0;background:rgba(3,14,29,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:20;}.modal-sucesso{position:relative;background:#fff;border-radius:20px;width:min(100%,440px);padding:32px;text-align:center;box-shadow:0 18px 50px #00152e66;}.fechar-modal{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:28px;color:#788397;cursor:pointer;}.check-sucesso{margin:0 auto 20px;width:58px;height:58px;display:grid;place-items:center;border-radius:50%;background:#e5f8ee;color:#15945c;font-size:34px;font-weight:900;}.modal-sucesso h2{margin:0 0 10px;color:#071c34;font-size:32px;}.modal-sucesso>p:not(.eyebrow){color:#637083;line-height:1.5;}.protocolo{background:#eef4fa;color:#0056A8;border-radius:8px;padding:11px;font-weight:800;margin:18px 0;}.pix-pendente{display:flex;flex-direction:column;gap:6px;text-align:left;background:#fff9e8;border-radius:10px;padding:14px;font-size:13px;margin-bottom:18px;color:#5b4a15;}.pix-pendente span{line-height:1.4;}
+@media(max-width:640px){.pagina-inscricao{padding-top:16px}.participantes-grid{grid-template-columns:1fr}.opcoes-grid,.categorias-grid{gap:7px}.opcao,.categoria{padding:12px 7px!important}.status-vagas,.painel-formulario{padding:18px}.inscricao-header h1{font-size:48px}.modal-sucesso{padding:28px 20px}}
+
 
 
 .lista{
