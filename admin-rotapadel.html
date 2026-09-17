@@ -110,7 +110,7 @@ th{font-size:12px;color:var(--muted);text-transform:uppercase}
   <div class="card">
     <div class="match-top">
       <div><h2 style="margin:0">Status do torneio</h2><p class="muted">Visão geral das categorias e vagas.</p></div>
-      <button class="btn alt" onclick="carregar()">↻ Atualizar</button>
+      <button class="btn alt" onclick="carregar()">↻ Atualizar</button><span id="ultimaAtualizacao" class="muted" style="align-self:center;font-size:12px">Atualização automática: 15s</span>
     </div>
     <div id="statusGeral" class="notice warn">Carregando...</div>
   </div>
@@ -214,6 +214,9 @@ const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmp
 const CATEGORIAS=['Misto A','Misto B','Misto C','Feminino A','Feminino B','Feminino C','Masculino A','Masculino B','Masculino C'];
 let adminChave=sessionStorage.getItem('rtc_rotapadel_admin_chave')||'';
 let estado={duplas:[],jogos:[],release:null,avisos:[]};
+let intervaloAtualizacao=null;
+let atualizando=false;
+const INTERVALO_ATUALIZACAO=15000;
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
@@ -258,6 +261,7 @@ async function entrar(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('painel').classList.remove('hidden');
     await carregar();
+    iniciarAtualizacaoAutomatica();
   }catch(e){
     adminChave='';
     sessionStorage.removeItem('rtc_rotapadel_admin_chave');
@@ -265,7 +269,9 @@ async function entrar(){
   }
 }
 
-async function carregar(){
+async function carregar(silencioso=false){
+  if(atualizando)return;
+  atualizando=true;
   try{
     const d=await apiGet({tipo:'torneioAdmin'});
     estado.duplas=d.duplas||d.inscricoes||[];
@@ -277,9 +283,18 @@ async function carregar(){
     renderCategorias();
     renderConfig();
     renderAvisos();
+    const u=document.getElementById('ultimaAtualizacao');
+    if(u) u.textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR')+' · automático a cada 15s';
   }catch(e){
-    alert(e.message||'Não foi possível carregar o painel.');
+    if(!silencioso) alert(e.message||'Não foi possível carregar o painel.');
+  }finally{
+    atualizando=false;
   }
+}
+
+function iniciarAtualizacaoAutomatica(){
+  if(intervaloAtualizacao) clearInterval(intervaloAtualizacao);
+  intervaloAtualizacao=setInterval(()=>carregar(true),INTERVALO_ATUALIZACAO);
 }
 
 function preencherSelects(){
