@@ -11,12 +11,26 @@
 .pix-qr img{width:220px;height:220px;object-fit:contain;border-radius:10px;background:#fff}
 .pix-copia-cola{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .pix-copia-cola input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #ddd;border-radius:8px;font-size:12px}
-.pix-copia-cola button{width:100%;white-space:nowrap}
+.pix-copia-cola button{width:100%;white-space:nowrap;text-align:center}
 .pagamento-confirmado{display:none;margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08)}
 .pagamento-confirmado.ativo{display:block}
-.comprovante-status{margin:8px 0;font-size:14px}
+.comprovante-status{margin:8px 0;font-size:14px;word-break:break-word}
+.comprovante-finalizado{display:none;margin:12px 0 0;padding:14px;border-radius:10px;background:#e5f8ee;color:#176b48;line-height:1.45;text-align:center}
+.comprovante-finalizado.ativo{display:block}
 #comprovante{display:none}
 .pix-oculto{display:none!important}
+#novaInscricao{display:none;margin-top:14px;text-align:center}
+.modal-sucesso{max-height:calc(100vh - 24px);overflow-y:auto}
+.modal-sucesso .botao{display:flex;justify-content:center;align-items:center;text-align:center}
+@media(max-width:640px){
+  .modal-overlay{padding:12px}
+  .modal-sucesso{padding:22px 16px;width:100%;max-height:calc(100vh - 24px)}
+  .modal-sucesso h2{font-size:27px}
+  .pix-confirmacao{padding:14px;margin-top:14px}
+  .pix-qr img{width:180px;height:180px}
+  .protocolo{margin:12px 0}
+  .modal-sucesso .botao{min-height:48px}
+}
 </style>
 </head>
 <body class="pagina-inscricao">
@@ -112,6 +126,7 @@
         <button class="botao" type="button" id="selecionarComprovante">Anexar comprovante</button>
         <p class="comprovante-status" id="comprovanteStatus">Nenhum comprovante selecionado.</p>
         <button class="botao" type="button" id="enviarComprovante" style="display:none">Enviar comprovante</button>
+        <div id="comprovanteFinalizado" class="comprovante-finalizado"></div>
       </div>
 
       <button class="botao" type="button" id="jaPaguei" style="margin-top:14px">Já fiz o pagamento</button>
@@ -196,9 +211,12 @@ form.addEventListener('submit', async (event) => {
     prepararPix();
     document.getElementById('pagamentoConfirmado').classList.remove('ativo');
     document.getElementById('enviarComprovante').style.display = 'none';
-    document.getElementById('selecionarComprovante').style.display = 'inline-flex';
+    document.getElementById('selecionarComprovante').style.display = 'flex';
     document.getElementById('comprovante').value = '';
     document.getElementById('comprovanteStatus').textContent = 'Nenhum comprovante selecionado.';
+    document.getElementById('comprovanteFinalizado').classList.remove('ativo');
+    document.getElementById('comprovanteFinalizado').textContent = '';
+    document.getElementById('novaInscricao').style.display = 'none';
     comprovanteSelecionado = null;
     restaurarAreaPix();
     sucesso.setAttribute('aria-hidden', 'false');
@@ -253,7 +271,8 @@ document.getElementById('comprovante').addEventListener('change', (event) => {
   }
   comprovanteSelecionado = arquivo;
   document.getElementById('comprovanteStatus').textContent = `Arquivo selecionado: ${arquivo.name}`;
-  document.getElementById('enviarComprovante').style.display = 'inline-flex';
+  document.getElementById('selecionarComprovante').style.display = 'none';
+  document.getElementById('enviarComprovante').style.display = 'flex';
 });
 
 document.getElementById('enviarComprovante').addEventListener('click', () => {
@@ -283,20 +302,27 @@ document.getElementById('enviarComprovante').addEventListener('click', () => {
     .then(resposta => resposta.json())
     .then(retorno => {
       if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível enviar o comprovante.');
-      document.getElementById('comprovanteStatus').textContent = 'Comprovante enviado. Aguardando conferência do pagamento.';
+      document.getElementById('comprovanteStatus').textContent = 'Comprovante enviado com sucesso.';
       botao.style.display = 'none';
+      botao.disabled = false;
       document.getElementById('selecionarComprovante').style.display = 'none';
+      const finalizado = document.getElementById('comprovanteFinalizado');
+      finalizado.textContent = 'Obrigado por participar do torneio RotaPadel! Seu comprovante foi enviado e ficará aguardando a conferência do pagamento.';
+      finalizado.classList.add('ativo');
+      document.getElementById('novaInscricao').style.display = 'flex';
     })
     .catch(erro => {
       alert(erro.message || 'Não foi possível enviar o comprovante.');
       botao.disabled = false;
       botao.textContent = 'Enviar comprovante';
+      botao.style.display = 'flex';
     });
   };
   leitor.onerror = () => {
     alert('Não foi possível ler o comprovante.');
     botao.disabled = false;
     botao.textContent = 'Enviar comprovante';
+    botao.style.display = 'flex';
   };
   leitor.readAsDataURL(comprovanteSelecionado);
 });
@@ -307,7 +333,11 @@ function fechar() {
 }
 
 document.getElementById('fecharModal').addEventListener('click', fechar);
-document.getElementById('novaInscricao').addEventListener('click', fechar);
+document.getElementById('novaInscricao').addEventListener('click', () => {
+  fechar();
+  form.reset();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 atualizarVagas();
 </script>
 </body>
