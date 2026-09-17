@@ -299,7 +299,14 @@ function renderJogos(){
   });
   document.getElementById('sDuplas').textContent=duplas.size;
 
-  const aoVivo=Array.isArray(dados.aoVivo)?dados.aoVivo:[];
+  // Usa aoVivo da API quando disponível e, como fallback, deriva
+  // diretamente dos jogos recebidos. Assim a tela não fica estática
+  // mesmo que a implantação do Apps Script ainda esteja na versão anterior.
+  const listaJogos=Array.isArray(dados.jogos)?dados.jogos:[];
+  const aoVivo=Array.isArray(dados.aoVivo)
+    ? dados.aoVivo
+    : listaJogos.filter(j=>String(j.status||'').trim().toLowerCase()==='em jogo');
+
   document.getElementById('liveBody').innerHTML=aoVivo.length
     ? aoVivo.map(j=>
         '<div style="padding:8px 0;border-top:1px solid var(--line)">'+
@@ -412,7 +419,7 @@ function formatarDataHora(valor){
 
 render();
 carregarDados();
-setInterval(carregarDados,30000);
+setInterval(carregarDados,5000);
 </script>
 </body>
 </html>
