@@ -110,7 +110,7 @@ th{font-size:12px;color:var(--muted);text-transform:uppercase}
   <div class="card">
     <div class="match-top">
       <div><h2 style="margin:0">Status do torneio</h2><p class="muted">Visão geral das categorias e vagas.</p></div>
-      <button class="btn alt" onclick="carregar()">↻ Atualizar</button><span id="ultimaAtualizacao" class="muted" style="align-self:center;font-size:12px">Atualização automática: 15s</span>
+      <button class="btn alt" onclick="carregar()">↻ Atualizar</button><span id="ultimaAtualizacao" class="muted" style="align-self:center;font-size:12px">Atualização manual</span>
     </div>
     <div id="statusGeral" class="notice warn">Carregando...</div>
   </div>
@@ -214,9 +214,7 @@ const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmp
 const CATEGORIAS=['Misto A','Misto B','Misto C','Feminino A','Feminino B','Feminino C','Masculino A','Masculino B','Masculino C'];
 let adminChave=sessionStorage.getItem('rtc_rotapadel_admin_chave')||'';
 let estado={duplas:[],jogos:[],release:null,avisos:[]};
-let intervaloAtualizacao=null;
 let atualizando=false;
-const INTERVALO_ATUALIZACAO=15000;
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
@@ -225,6 +223,19 @@ function aba(id,b){
   document.getElementById(id).classList.remove('hidden');
   document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
+}
+
+function mostrarSucesso(text,tipo='ok'){
+  let el=document.getElementById('confirmacaoSalvar');
+  if(!el){
+    el=document.createElement('div');
+    el.id='confirmacaoSalvar';
+    document.querySelector('#jogos .card:last-child').prepend(el);
+  }
+  el.className='notice '+tipo;
+  el.textContent=text;
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(tipo==='ok') setTimeout(()=>{if(el)el.remove();},6000);
 }
 
 function msg(id,text,tipo='warn'){
@@ -261,7 +272,6 @@ async function entrar(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('painel').classList.remove('hidden');
     await carregar();
-    iniciarAtualizacaoAutomatica();
   }catch(e){
     adminChave='';
     sessionStorage.removeItem('rtc_rotapadel_admin_chave');
@@ -284,17 +294,12 @@ async function carregar(silencioso=false){
     renderConfig();
     renderAvisos();
     const u=document.getElementById('ultimaAtualizacao');
-    if(u) u.textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR')+' · automático a cada 15s';
+    if(u) u.textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR');
   }catch(e){
     if(!silencioso) alert(e.message||'Não foi possível carregar o painel.');
   }finally{
     atualizando=false;
   }
-}
-
-function iniciarAtualizacaoAutomatica(){
-  if(intervaloAtualizacao) clearInterval(intervaloAtualizacao);
-  intervaloAtualizacao=setInterval(()=>carregar(true),INTERVALO_ATUALIZACAO);
 }
 
 function preencherSelects(){
@@ -398,11 +403,24 @@ async function salvarJogo(id){
     placar2:[s1b,s2b,s3b].join('-')
   };
 
+  const botao=document.querySelector('#listaJogos button[onclick*='+JSON.stringify(id)+']');
+  if(botao){botao.disabled=true;botao.textContent='Salvando...';}
   try{
-    await apiPost('editarJogoRotaPadel',dados);
-    await carregar();
+    const resposta=await apiPost('editarJogoRotaPadel',dados);
+    const jogo=estado.jogos.find(x=>String(x.id)===String(id));
+    if(jogo){
+      jogo.dataHora=dados.dataHora;
+      jogo.quadra=dados.quadra;
+      jogo.status=dados.status;
+      jogo.set1A=s1a;jogo.set1B=s1b;
+      jogo.set2A=s2a;jogo.set2B=s2b;
+      jogo.set3A=s3a;jogo.set3B=s3b;
+      jogo.placar1=dados.placar1;jogo.placar2=dados.placar2;
+    }
+    renderJogos();
+    mostrarSucesso('Partida salva com sucesso. O participante verá a alteração na próxima atualização da página dele.');
   }catch(e){
-    alert(e.message||'Não foi possível salvar a partida.');
+    mostrarSucesso(e.message||'Não foi possível salvar a partida.','err');
   }
 }
 
