@@ -17,6 +17,9 @@
 .comprovante-status{margin:8px 0;font-size:14px;word-break:break-word}
 .comprovante-finalizado{display:none;margin:12px 0 0;padding:14px;border-radius:10px;background:#e5f8ee;color:#176b48;line-height:1.45;text-align:center}
 .comprovante-finalizado.ativo{display:block}
+.confirmacao-grupo{display:none;margin-top:14px;padding:18px;border-radius:12px;background:#f8f8f8;text-align:center;line-height:1.5}
+.confirmacao-grupo.ativo{display:block}
+.confirmacao-grupo .botao{margin-top:12px;width:100%;text-decoration:none}
 #comprovante{display:none}
 .pix-oculto{display:none!important}
 #novaInscricao{display:none;margin-top:14px;text-align:center}
@@ -126,6 +129,12 @@
         <p class="comprovante-status" id="comprovanteStatus">Nenhum comprovante selecionado.</p>
         <button class="botao" type="button" id="enviarComprovante" style="display:none">Enviar comprovante</button>
         <div id="comprovanteFinalizado" class="comprovante-finalizado"></div>
+        <div id="confirmacaoGrupo" class="confirmacao-grupo">
+          <strong>Inscrição confirmada!</strong>
+          <p>Obrigado por participar do Rota Padel. Seu comprovante foi enviado e ficará aguardando a conferência do pagamento.</p>
+          <p>Para receber os avisos e informações oficiais do torneio, entre no grupo oficial do WhatsApp.</p>
+          <a class="botao" href="https://chat.whatsapp.com/H1FUXbg5TVV6LqeHCq3J66" target="_blank" rel="noopener noreferrer">Entrar no grupo oficial do WhatsApp</a>
+        </div>
       </div>
 
       <button class="botao" type="button" id="jaPaguei" style="margin-top:14px">Já fiz o pagamento</button>
@@ -215,6 +224,7 @@ form.addEventListener('submit', async (event) => {
     document.getElementById('comprovanteStatus').textContent = 'Nenhum comprovante selecionado.';
     document.getElementById('comprovanteFinalizado').classList.remove('ativo');
     document.getElementById('comprovanteFinalizado').textContent = '';
+    document.getElementById('confirmacaoGrupo').classList.remove('ativo');
     document.getElementById('novaInscricao').style.display = 'none';
     comprovanteSelecionado = null;
     restaurarAreaPix();
@@ -328,8 +338,9 @@ document.getElementById('enviarComprovante').addEventListener('click', async () 
     if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível enviar o comprovante.');
 
     status.textContent = '';
-    document.getElementById('comprovanteFinalizado').textContent = 'Obrigado por participar do Rota Padel! Seu comprovante foi enviado e ficará aguardando a conferência do pagamento.';
+    document.getElementById('comprovanteFinalizado').textContent = 'Comprovante enviado com sucesso.';
     document.getElementById('comprovanteFinalizado').classList.add('ativo');
+    document.getElementById('confirmacaoGrupo').classList.add('ativo');
     botao.style.display = 'none';
     document.getElementById('selecionarComprovante').style.display = 'none';
     document.getElementById('novaInscricao').style.display = 'flex';
