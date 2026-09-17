@@ -275,14 +275,24 @@ function obterTorneioPorProtocolo(protocolo, adminSolicitado) {
 function endpointTorneio_(params) {
   const protocolo = String((params && params.protocolo) || '').trim();
   const adminSolicitado = String((params && params.admin) || '') === '1';
-
-  // Admin real deve ser validado pelo e-mail da conta executora.
   const email = String(Session.getEffectiveUser().getEmail() || '').toLowerCase();
-  const adminAutorizado = adminSolicitado &&
-    email === 'rotaractclubcruzalta@gmail.com';
+  const adminAutorizado = adminSolicitado && email === EMAIL_RTC;
+  return obterTorneioPorProtocolo(adminAutorizado ? '' : protocolo, adminAutorizado);
+}
 
-  return obterTorneioPorProtocolo(
-    adminAutorizado ? '' : protocolo,
-    adminAutorizado
-  );
+/* =========================================================
+   FUNÇÕES PARA INTEGRAR AO CÓDIGO.GS PRINCIPAL
+========================================================= */
+
+function respostaJsonRotaPadel_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGetTorneio_(parametros) {
+  return respostaJsonRotaPadel_(endpointTorneio_(parametros || {}));
+}
+
+function doPostTorneio_(dados) {
+  return respostaJsonRotaPadel_(endpointTorneio_(dados || {}));
 }
