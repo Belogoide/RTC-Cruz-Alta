@@ -5,83 +5,399 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rota Padel — Torneio</title>
 <style>
-:root{--pink:#D61264;--blue:#0056A8;--bg:#f5f7fb;--text:#18212b;--muted:#667085;--card:#fff;--line:#e5e7eb}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text)}a{text-decoration:none;color:inherit}.wrap{max-width:1050px;margin:auto;padding:18px}.top{background:var(--pink);color:#fff;padding:28px 18px;border-radius:0 0 24px 24px}.top h1{margin:0;font-size:32px}.top p{margin:7px 0 0;opacity:.9}.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}.tabs button{border:0;background:#fff;border:1px solid var(--line);padding:11px 14px;border-radius:12px;font-weight:700;white-space:nowrap;cursor:pointer}.tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 4px 18px #00000008}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{padding:15px;background:#f8fafc;border-radius:14px}.stat b{display:block;font-size:24px;color:var(--blue);margin-top:5px}.input{width:100%;padding:13px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px}.btn{border:0;border-radius:10px;padding:12px 15px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}.btn.alt{background:#eef4fb;color:var(--blue)}.muted{color:var(--muted)}.lock{text-align:center;padding:35px 15px}.lock strong{display:block;font-size:20px;margin-bottom:8px}.match{display:grid;grid-template-columns:80px 1fr 120px 1fr;gap:10px;align-items:center;border-top:1px solid var(--line);padding:13px 0}.match:first-child{border-top:0}.pill{display:inline-block;padding:5px 8px;border-radius:99px;background:#eef4fb;color:var(--blue);font-size:12px;font-weight:700}.live{border:2px solid var(--pink)}.live h2{color:var(--pink)}.hidden{display:none!important}.admin{border:2px dashed var(--pink);background:#fff7fa}.admin input{max-width:360px}.bracket{overflow:auto}.rounds{display:flex;gap:14px;min-width:760px}.round{flex:1}.round h3{font-size:14px;text-align:center}.game{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;margin:22px 0}.game div{padding:5px 0;border-bottom:1px solid #eee}.game div:last-child{border:0}@media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}.match{grid-template-columns:65px 1fr}.match .court{grid-column:2}.match .status{grid-column:2}}
+:root{--pink:#D61264;--blue:#0056A8;--bg:#f5f7fb;--text:#18212b;--muted:#667085;--card:#fff;--line:#e5e7eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text)}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1050px;margin:auto;padding:18px}
+.top{background:var(--pink);color:#fff;padding:28px 18px;border-radius:0 0 24px 24px}
+.top h1{margin:0;font-size:32px}
+.top p{margin:7px 0 0;opacity:.9}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}
+.tabs button{border:0;background:#fff;border:1px solid var(--line);padding:11px 14px;border-radius:12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 4px 18px #00000008}
+.grid3{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{padding:15px;background:#f8fafc;border-radius:14px}
+.stat b{display:block;font-size:24px;color:var(--blue);margin-top:5px}
+.input{width:100%;padding:13px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px}
+.btn{border:0;border-radius:10px;padding:12px 15px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
+.btn.alt{background:#eef4fb;color:var(--blue)}
+.muted{color:var(--muted)}
+.lock{text-align:center;padding:35px 15px}
+.lock strong{display:block;font-size:20px;margin-bottom:8px}
+.match{display:grid;grid-template-columns:145px 1fr 120px 120px;gap:10px;align-items:center;border-top:1px solid var(--line);padding:13px 0}
+.match:first-child{border-top:0}
+.pill{display:inline-block;padding:5px 8px;border-radius:99px;background:#eef4fb;color:var(--blue);font-size:12px;font-weight:700}
+.live{border:2px solid var(--pink)}
+.live h2{color:var(--pink)}
+.hidden{display:none!important}
+.bracket{overflow:auto}
+.rounds{display:flex;gap:14px;min-width:760px}
+.round{flex:1}
+.round h3{font-size:14px;text-align:center}
+.game{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;margin:22px 0}
+.game div{padding:5px 0;border-bottom:1px solid #eee}
+.game div:last-child{border:0}
+.error{color:#b42318;background:#fef3f2;border:1px solid #fecdca;padding:12px;border-radius:10px}
+@media(max-width:700px){
+.grid3{grid-template-columns:repeat(2,1fr)}
+.match{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><a href="index.html">← RTC Cruz Alta</a><h1>🎾 Rota Padel</h1><p>Chaveamento, jogos, avisos e resultados</p></div></header>
+<header class="top">
+  <div class="wrap">
+    <a href="index.html">← RTC Cruz Alta</a>
+    <h1>🎾 Rota Padel</h1>
+    <p>Chaveamento, jogos, avisos e resultados</p>
+  </div>
+</header>
+
 <main class="wrap">
-<section class="card"><strong>Seu protocolo</strong><p class="muted">Informe uma vez. O protocolo ficará salvo neste dispositivo.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="protocolo" class="input" placeholder="Ex.: RP-ABC123"><button class="btn" onclick="salvarProtocolo()">Entrar</button><button class="btn alt" onclick="trocarProtocolo()">Trocar protocolo</button></div><p id="salvo" class="muted"></p></section>
-<nav class="tabs"><button class="active" onclick="aba('inicio',this)">🏠 Torneio</button><button onclick="aba('jogos',this)">📅 Jogos</button><button onclick="aba('chave',this)">🏆 Chaveamento</button><button onclick="aba('resultados',this)">📊 Resultados</button><button onclick="aba('extras',this)">📢 Extras</button></nav>
+<section class="card">
+  <strong>Seu protocolo</strong>
+  <p class="muted">Informe uma vez. O protocolo ficará salvo neste dispositivo.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <input id="protocolo" class="input" placeholder="Ex.: RP-ABC123" autocomplete="off">
+    <button class="btn" onclick="salvarProtocolo()">Entrar</button>
+    <button class="btn alt" onclick="trocarProtocolo()">Trocar protocolo</button>
+  </div>
+  <p id="salvo" class="muted"></p>
+  <div id="mensagem" class="hidden"></div>
+</section>
+
+<nav class="tabs">
+  <button class="active" onclick="aba('inicio',this)">🏠 Torneio</button>
+  <button onclick="aba('jogos',this)">📅 Jogos</button>
+  <button onclick="aba('chave',this)">🏆 Chaveamento</button>
+  <button onclick="aba('resultados',this)">📊 Resultados</button>
+  <button onclick="aba('extras',this)">📢 Extras</button>
+</nav>
+
 <section id="inicio">
-<div id="bloqueio" class="card lock"><strong>🔒 Torneio ainda não liberado</strong><span>O acesso dos participantes será liberado em <b>10/10 às 14:00</b>.</span><p class="muted">O administrador pode acessar e testar antes da liberação.</p></div>
-<div id="conteudo" class="hidden">
-<div class="grid3"><div class="stat">Categoria<b id="sCategoria">—</b></div><div class="stat">Duplas<b id="sDuplas">0</b></div><div class="stat">Partidas<b id="sPartidas">0</b></div><div class="stat">Finalizadas<b id="sFinalizadas">0</b></div></div>
-<div id="aoVivo" class="card live"><h2>🔴 Agora em quadra</h2><div id="liveBody" class="muted">Nenhuma partida em andamento.</div></div>
-<div class="card"><h2>🎯 Meu próximo jogo</h2><div id="meuJogo" class="muted">Informe seu protocolo para consultar.</div></div>
-</div></section>
-<section id="jogos" class="hidden"><div class="card"><h2>📅 Programação</h2><div id="listaJogos"></div></div></section>
-<section id="chave" class="hidden"><div class="card"><h2>🏆 Chaveamento</h2><div class="bracket"><div id="bracket" class="rounds"></div></div></div></section>
-<section id="resultados" class="hidden"><div class="card"><h2>📊 Resultados</h2><p class="muted">Somente partidas finalizadas aparecem aqui.</p><div id="listaResultados"></div></div></section>
-<section id="extras" class="hidden"><div class="card"><h2>📢 Avisos e informações</h2><div id="avisos">Nenhum aviso publicado.</div></div><div class="card"><h2>📍 Rota Padel</h2><p>Horários, quadras, regulamento, premiação e informações oficiais serão publicados nesta área.</p><a class="btn" href="https://chat.whatsapp.com/H1FUXbg5TVV6LqeHCq3J66" target="_blank">WhatsApp oficial</a></div></section>
-<section id="admin" class="card admin"><h2>🔐 Área administrativa</h2><p>Modo administrador. Acesso de teste por <b>?admin=1</b>, validado no servidor pela conta do clube.</p><div id="adminPainel" class="hidden"><hr><p><b>Modo teste ativo.</b> O administrador pode visualizar o torneio antes da liberação.</p><label>Data/hora de início do teste<br><input id="testeData" class="input" type="datetime-local" value="2026-10-10T14:00"></label><button class="btn" style="margin-top:10px" onclick="aplicarTeste()">Aplicar horário</button><p class="muted">O horário definitivo será controlado pelo backend.</p></div></section>
+  <div id="bloqueio" class="card lock">
+    <strong>🔒 Torneio ainda não liberado</strong>
+    <span>O acesso dos participantes será liberado em <b>10/10/2026 às 14:00</b>.</span>
+  </div>
+
+  <div id="semProtocolo" class="card lock hidden">
+    <strong>Informe seu protocolo</strong>
+    <span>Use o protocolo da sua inscrição para visualizar somente a sua categoria e chaveamento.</span>
+  </div>
+
+  <div id="conteudo" class="hidden">
+    <div class="grid3">
+      <div class="stat">Categoria<b id="sCategoria">—</b></div>
+      <div class="stat">Duplas<b id="sDuplas">0</b></div>
+      <div class="stat">Partidas<b id="sPartidas">0</b></div>
+      <div class="stat">Finalizadas<b id="sFinalizadas">0</b></div>
+    </div>
+
+    <div id="aoVivo" class="card live">
+      <h2>🔴 Agora em quadra</h2>
+      <div id="liveBody" class="muted">Nenhuma partida em andamento.</div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Meu próximo jogo</h2>
+      <div id="meuJogo" class="muted">Nenhum jogo localizado.</div>
+    </div>
+  </div>
+</section>
+
+<section id="jogos" class="hidden">
+  <div class="card">
+    <h2>📅 Programação</h2>
+    <div id="listaJogos"></div>
+  </div>
+</section>
+
+<section id="chave" class="hidden">
+  <div class="card">
+    <h2>🏆 Chaveamento</h2>
+    <p id="categoriaChave" class="muted"></p>
+    <div class="bracket">
+      <div id="bracket" class="rounds"></div>
+    </div>
+  </div>
+</section>
+
+<section id="resultados" class="hidden">
+  <div class="card">
+    <h2>📊 Resultados</h2>
+    <p class="muted">Somente partidas finalizadas aparecem aqui.</p>
+    <div id="listaResultados"></div>
+  </div>
+</section>
+
+<section id="extras" class="hidden">
+  <div class="card">
+    <h2>📢 Avisos e informações</h2>
+    <div id="avisos">Nenhum aviso publicado.</div>
+  </div>
+  <div class="card">
+    <h2>📍 Rota Padel</h2>
+    <p id="infoEvento">Horários, quadras, regulamento, premiação e informações oficiais serão publicados nesta área.</p>
+    <a id="whatsapp" class="btn" href="https://chat.whatsapp.com/H1FUXbg5TVV6LqeHCq3J66" target="_blank" rel="noopener">WhatsApp oficial</a>
+  </div>
+</section>
 </main>
+
 <script>
-const RELEASE=new Date('2026-10-10T14:00:00-03:00');
 const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec';
-let admin=false,release=RELEASE,protocolo=localStorage.getItem('rtc_rotapadel_protocolo')||'';
-let jogos=JSON.parse(localStorage.getItem('rtc_rotapadel_jogos')||'null')||[
-{hora:'14:00',quadra:'Quadra 1',categoria:'A',fase:'Quartas',dupla1:'Dupla 1',dupla2:'Dupla 8',status:'Agendado'},
-{hora:'14:00',quadra:'Quadra 2',categoria:'A',fase:'Quartas',dupla1:'Dupla 4',dupla2:'Dupla 5',status:'Agendado'},
-{hora:'14:45',quadra:'Quadra 1',categoria:'B',fase:'Quartas',dupla1:'Dupla 2',dupla2:'Dupla 7',status:'Agendado'},
-{hora:'14:45',quadra:'Quadra 2',categoria:'B',fase:'Quartas',dupla1:'Dupla 3',dupla2:'Dupla 6',status:'Agendado'}];
-let resultados=JSON.parse(localStorage.getItem('rtc_rotapadel_resultados')||'[]');
-function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function salvarProtocolo(){const v=document.getElementById('protocolo').value.trim();if(!v)return alert('Informe o protocolo.');protocolo=v;localStorage.setItem('rtc_rotapadel_protocolo',v);document.getElementById('salvo').textContent='Protocolo salvo neste dispositivo: '+v;render()}
-function trocarProtocolo(){localStorage.removeItem('rtc_rotapadel_protocolo');protocolo='';document.getElementById('protocolo').value='';document.getElementById('salvo').textContent='';render()}
-function aba(id,b){document.querySelectorAll('main>section[id]').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
-function liberar(){return admin||new Date()>=release}
-function render(){const ok=liberar();document.getElementById('bloqueio').classList.toggle('hidden',ok);document.getElementById('conteudo').classList.toggle('hidden',!ok);document.getElementById('salvo').textContent=protocolo?'Protocolo salvo neste dispositivo: '+protocolo:'';document.getElementById('protocolo').value=protocolo;renderJogos();renderResultados();renderChave();}
+const RELEASE=new Date('2026-10-10T14:00:00-03:00');
+let protocolo=localStorage.getItem('rtc_rotapadel_protocolo')||'';
+let dados=null;
+
+function esc(s){
+  return String(s??'').replace(/[&<>"']/g,m=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[m]));
+}
+
+function salvarProtocolo(){
+  const v=document.getElementById('protocolo').value.trim();
+  if(!v){
+    mostrarMensagem('Informe o protocolo da inscrição.','erro');
+    return;
+  }
+  protocolo=v;
+  localStorage.setItem('rtc_rotapadel_protocolo',v);
+  carregarDados();
+}
+
+function trocarProtocolo(){
+  localStorage.removeItem('rtc_rotapadel_protocolo');
+  protocolo='';
+  dados=null;
+  document.getElementById('protocolo').value='';
+  document.getElementById('salvo').textContent='';
+  render();
+}
+
+function mostrarMensagem(texto,tipo=''){
+  const el=document.getElementById('mensagem');
+  el.className=tipo==='erro'?'error':'muted';
+  el.textContent=texto;
+}
+
+function aba(id,b){
+  document.querySelectorAll('main>section[id]').forEach(x=>x.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+}
+
+function liberado(){
+  return new Date()>=RELEASE;
+}
+
+function render(){
+  const ok=liberado();
+  document.getElementById('bloqueio').classList.toggle('hidden',ok);
+  document.getElementById('semProtocolo').classList.toggle('hidden',!ok || !!protocolo);
+  document.getElementById('conteudo').classList.toggle('hidden',!ok || !protocolo);
+  document.getElementById('protocolo').value=protocolo;
+  document.getElementById('salvo').textContent=protocolo?'Protocolo salvo neste dispositivo: '+protocolo:'';
+
+  if(!dados){
+    renderVazio();
+    return;
+  }
+
+  document.getElementById('conteudo').classList.remove('hidden');
+  document.getElementById('sCategoria').textContent=dados.categoria||'—';
+  renderJogos();
+  renderResultados();
+  renderChave();
+  renderExtras();
+}
+
+function renderVazio(){
+  document.getElementById('listaJogos').innerHTML='<p class="muted">Informe seu protocolo para consultar.</p>';
+  document.getElementById('listaResultados').innerHTML='<p class="muted">Informe seu protocolo para consultar.</p>';
+  document.getElementById('bracket').innerHTML='<p class="muted">Informe seu protocolo para consultar.</p>';
+  document.getElementById('liveBody').textContent='Nenhuma partida em andamento.';
+  document.getElementById('meuJogo').textContent='Informe seu protocolo para consultar.';
+}
+
 async function carregarDados(){
-  if(!liberar()) return;
+  render();
+
+  if(!liberado() || !protocolo) return;
+
+  mostrarMensagem('Consultando seu torneio...');
+
   try{
-    const qs=admin?'acao=torneio&admin=1':'acao=torneio&protocolo='+encodeURIComponent(protocolo);
-    const r=await fetch(API+'?'+qs,{cache:'no-store'});
-    const d=await r.json();
-    if(!d.ok) throw new Error(d.erro||'Não foi possível carregar o torneio.');
-    if(!d.liberado && !admin){ render(); return; }
-    jogos=d.jogos||[]; resultados=d.resultados||[]; aoVivo=d.aoVivo||[];
-    const cat=jogos[0]?.categoria||'—';
-    document.getElementById('sCategoria').textContent=cat;
-    renderJogos(); renderResultados(); renderChave();
+    const url=API+'?tipo=torneio&protocolo='+encodeURIComponent(protocolo);
+    const resposta=await fetch(url,{cache:'no-store'});
+    const d=await resposta.json();
+
+    if(!d.ok){
+      throw new Error(d.erro||d.error||'Protocolo não localizado.');
+    }
+
+    if(d.liberado===false){
+      render();
+      return;
+    }
+
+    dados=d;
+    mostrarMensagem('');
+    render();
   }catch(e){
-    document.getElementById('listaJogos').innerHTML='<p class="muted">Não foi possível carregar os dados do torneio.</p>';
-    document.getElementById('bracket').innerHTML='<p class="muted">Chaveamento indisponível.</p>';
+    dados=null;
+    render();
+    mostrarMensagem(e.message||'Não foi possível carregar o torneio.','erro');
     console.error(e);
   }
 }
+
 function renderJogos(){
-  const lista=admin?jogos:jogos.filter(j=>!jogos[0]?.categoria || j.categoria===jogos[0].categoria);
-  document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>`<div class="match"><b>${esc(j.dataHora||'')}</b><div><b>${esc(j.dupla1)}</b> × <b>${esc(j.dupla2)}</b><br><span class="pill">${esc(j.categoria)} · ${esc(j.fase)}</span></div><div class="court">${esc(j.quadra)}</div><span class="status pill">${esc(j.status)}</span></div>`).join(''):'<p class="muted">Nenhum jogo encontrado.</p>';
+  const lista=Array.isArray(dados.jogos)?dados.jogos:[];
+  document.getElementById('listaJogos').innerHTML=lista.length
+    ? lista.map(j=>{
+        const finalizado=String(j.status||'').toLowerCase()==='finalizado';
+        const placar=finalizado && (j.placar1!=='' || j.placar2!=='')
+          ? '<br><b>Resultado: '+esc(j.placar1)+' × '+esc(j.placar2)+'</b>'
+          : '';
+        return '<div class="match">'+
+          '<b>'+esc(formatarDataHora(j.dataHora))+'</b>'+
+          '<div><b>'+esc(j.dupla1||'A definir')+'</b> × <b>'+esc(j.dupla2||'A definir')+'</b>'+
+          '<br><span class="pill">'+esc(j.fase||'')+'</span></div>'+
+          '<div>'+esc(j.quadra||'Quadra a definir')+'</div>'+
+          '<span class="status pill">'+esc(j.status||'Agendado')+'</span>'+
+          placar+
+        '</div>';
+      }).join('')
+    : '<p class="muted">O chaveamento desta categoria ainda não foi gerado.</p>';
+
   document.getElementById('sPartidas').textContent=lista.length;
-  document.getElementById('sFinalizadas').textContent=lista.filter(j=>j.status==='Finalizado').length;
-  document.getElementById('sDuplas').textContent=new Set(lista.flatMap(j=>[j.dupla1,j.dupla2].filter(Boolean))).size;
-  const live=aoVivo[0];
-  document.getElementById('liveBody').innerHTML=live?`<b>${esc(live.dupla1)}</b> × <b>${esc(live.dupla2)}</b><br>${esc(live.quadra)} · ${esc(live.categoria)} · ${esc(live.fase)}<br><small>Resultado será publicado somente após finalizar a partida.</small>`:'Nenhuma partida em andamento.';
-  const meu=lista.find(j=>protocolo && [j.dupla1,j.dupla2].some(x=>String(x).toLowerCase().includes(protocolo.toLowerCase())));
-  document.getElementById('meuJogo').innerHTML=meu?`<b>${esc(meu.dataHora||'')}</b> · ${esc(meu.quadra)}<br>${esc(meu.dupla1)} × ${esc(meu.dupla2)}`:'Nenhum jogo localizado para este protocolo ainda.';
+  document.getElementById('sFinalizadas').textContent=lista.filter(j=>String(j.status||'').toLowerCase()==='finalizado').length;
+
+  const duplas=new Set();
+  lista.forEach(j=>{
+    if(j.dupla1 && !String(j.dupla1).toLowerCase().startsWith('vencedor')) duplas.add(j.dupla1);
+    if(j.dupla2 && !String(j.dupla2).toLowerCase().startsWith('vencedor')) duplas.add(j.dupla2);
+  });
+  document.getElementById('sDuplas').textContent=duplas.size;
+
+  const aoVivo=Array.isArray(dados.aoVivo)?dados.aoVivo:[];
+  document.getElementById('liveBody').innerHTML=aoVivo.length
+    ? aoVivo.map(j=>
+        '<div style="padding:8px 0;border-top:1px solid var(--line)">'+
+        '<b>'+esc(j.dupla1||'A definir')+'</b> × <b>'+esc(j.dupla2||'A definir')+'</b>'+
+        '<br>'+esc(j.quadra||'')+' · '+esc(j.fase||'')+
+        '<br><small>Partida em andamento. O resultado será publicado após a finalização.</small>'+
+        '</div>'
+      ).join('')
+    : 'Nenhuma partida em andamento.';
+
+  const meu=dados.meuJogo || encontrarMeuJogo(lista);
+  document.getElementById('meuJogo').innerHTML=meu
+    ? '<b>'+esc(formatarDataHora(meu.dataHora))+'</b> · '+esc(meu.quadra||'Quadra a definir')+
+      '<br>'+esc(meu.dupla1||'A definir')+' × '+esc(meu.dupla2||'A definir')+
+      '<br><span class="pill">'+esc(meu.fase||'')+' · '+esc(meu.status||'Agendado')+'</span>'
+    : 'Nenhum próximo jogo localizado.';
 }
+
+function encontrarMeuJogo(lista){
+  if(!dados || !dados.inscricao) return lista.find(j=>j.status==='Agendado')||null;
+  const nomes=[
+    dados.inscricao.participante1,
+    dados.inscricao.participante2,
+    dados.inscricao.dupla
+  ].filter(Boolean).map(x=>String(x).toLowerCase());
+
+  return lista.find(j=>{
+    const a=String(j.dupla1||'').toLowerCase();
+    const b=String(j.dupla2||'').toLowerCase();
+    return nomes.some(n=>a.includes(n)||b.includes(n));
+  })||null;
+}
+
 function renderResultados(){
-  document.getElementById('listaResultados').innerHTML=resultados.length?resultados.map(r=>`<div class="match"><b>${esc(r.categoria)}</b><div>${esc(r.dupla1)} × ${esc(r.dupla2)}</div><b>${esc(r.placar1)} × ${esc(r.placar2)}</b><span>${esc(r.fase)}</span></div>`).join(''):'<p class="muted">Nenhuma partida finalizada.</p>';
+  const resultados=Array.isArray(dados.resultados)
+    ? dados.resultados
+    : (Array.isArray(dados.jogos)?dados.jogos.filter(j=>String(j.status||'').toLowerCase()==='finalizado'):[]);
+
+  document.getElementById('listaResultados').innerHTML=resultados.length
+    ? resultados.map(r=>
+        '<div class="match">'+
+        '<b>'+esc(r.categoria||dados.categoria||'')+'</b>'+
+        '<div>'+esc(r.dupla1||'')+' × '+esc(r.dupla2||'')+'</div>'+
+        '<b>'+esc(r.placar1??'')+' × '+esc(r.placar2??'')+'</b>'+
+        '<span>'+esc(r.fase||'')+'</span>'+
+        '</div>'
+      ).join('')
+    : '<p class="muted">Nenhuma partida finalizada.</p>';
 }
+
 function renderChave(){
-  const grupos={}; jogos.forEach(j=>(grupos[j.fase]??=[]).push(j));
-  document.getElementById('bracket').innerHTML=Object.entries(grupos).map(([fase,arr])=>`<div class="round"><h3>${esc(fase)}</h3>${arr.map(j=>`<div class="game"><div>${esc(j.dupla1)}</div><div>${esc(j.dupla2)}</div><small>${esc(j.dataHora||'')} · ${esc(j.quadra)}</small></div>`).join('')}</div>`).join('');
+  const lista=Array.isArray(dados.jogos)?dados.jogos:[];
+  document.getElementById('categoriaChave').textContent=dados.categoria?'Categoria: '+dados.categoria:'';
+
+  const ordem=['Quartas de final','Quartas','Semifinal 1','Semifinal 2','Semifinais','Final'];
+  const grupos={};
+
+  lista.forEach(j=>{
+    const fase=j.fase||'Outros';
+    if(!grupos[fase]) grupos[fase]=[];
+    grupos[fase].push(j);
+  });
+
+  const fases=Object.keys(grupos).sort((a,b)=>{
+    const ia=ordem.findIndex(x=>a.toLowerCase()===x.toLowerCase());
+    const ib=ordem.findIndex(x=>b.toLowerCase()===x.toLowerCase());
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+
+  document.getElementById('bracket').innerHTML=fases.length
+    ? fases.map(fase=>
+        '<div class="round"><h3>'+esc(fase)+'</h3>'+
+        grupos[fase].sort((a,b)=>(Number(a.ordem)||0)-(Number(b.ordem)||0)).map(j=>
+          '<div class="game">'+
+          '<div>'+esc(j.dupla1||'A definir')+'</div>'+
+          '<div>'+esc(j.dupla2||'A definir')+'</div>'+
+          '<small>'+esc(formatarDataHora(j.dataHora))+' · '+esc(j.quadra||'Quadra a definir')+'</small>'+
+          '<br><span class="pill">'+esc(j.status||'Agendado')+'</span>'+
+          '</div>'
+        ).join('')+
+        '</div>'
+      ).join('')
+    : '<p class="muted">Chaveamento ainda não disponível.</p>';
 }
-function entrarAdmin(){admin=true;document.getElementById('adminPainel').classList.remove('hidden');render();carregarDados();}
-function aplicarTeste(){const v=document.getElementById('testeData').value;if(!v)return;release=new Date(v);alert('Horário de teste aplicado nesta sessão.');render();carregarDados();}
-if(new URLSearchParams(location.search).get('admin')==='1'){document.getElementById('admin').classList.remove('hidden')}else{document.getElementById('admin').classList.add('hidden')}
-render();carregarDados();setInterval(carregarDados,30000);
+
+function renderExtras(){
+  const extras=dados.extras||{};
+  const avisos=Array.isArray(dados.avisos)?dados.avisos:[];
+
+  document.getElementById('avisos').innerHTML=avisos.length
+    ? avisos.map(a=>'<div class="card" style="margin:8px 0"><b>'+esc(a.titulo||'Aviso')+'</b><p>'+esc(a.texto||a.mensagem||'')+'</p></div>').join('')
+    : 'Nenhum aviso publicado.';
+
+  if(extras.whatsapp){
+    document.getElementById('whatsapp').href=extras.whatsapp;
+  }
+
+  const valor=extras.valorInscricao;
+  if(valor){
+    document.getElementById('infoEvento').textContent='Inscrição: R$ '+Number(valor).toFixed(2).replace('.',',')+'. Consulte nesta área os horários, quadras e informações oficiais.';
+  }
+}
+
+function formatarDataHora(valor){
+  if(!valor) return 'Horário a definir';
+  const d=new Date(valor);
+  if(Number.isNaN(d.getTime())) return String(valor);
+  return d.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+}
+
+render();
+carregarDados();
+setInterval(carregarDados,30000);
 </script>
 </body>
 </html>
