@@ -1,91 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>RTC Cruz Alta</title>
-
 <link rel="stylesheet" href="style.css">
-
 <link rel="manifest" href="manifest.json">
-
 </head>
-
-
 <body>
-
-
 <div class="container">
-
-
-<h1 class="titulo">
-RTC Cruz Alta
-</h1>
-
-
-<a class="card card-rotapadel" href="inscricao-rotapadel.html">
-🎾 <span><small>TORNEIO</small>Inscrição Rota Padel</span>
-</a>
-
-
-<button class="card" onclick="abrirTesouraria()">
-💰 Tesouraria
-</button>
-
-
-<a class="card" href="cronograma.html">
-📅 Cronograma
-</a>
-
-
-<a class="card" href="projetos.html">
-📌 Projetos
-</a>
-
-
-<a class="card" href="dqa.html">
-🏆 DQA
-</a>
-
-
-<a class="card" href="atas.html">
-📄 Atas
-</a>
-
-
+<h1 class="titulo">RTC Cruz Alta</h1>
+<a class="card card-rotapadel" href="inscricao-rotapadel.html">🎾 <span><small>TORNEIO</small>Inscrição Rota Padel</span></a>
+<a class="card" href="torneio-rotapadel.html">🏆 <span><small>TORNEIO</small>Chaveamento e Jogos Rota Padel</span></a>
+<button class="card" onclick="abrirTesouraria()">💰 Tesouraria</button>
+<a class="card" href="cronograma.html">📅 Cronograma</a>
+<a class="card" href="projetos.html">📌 Projetos</a>
+<a class="card" href="dqa.html">🏆 DQA</a>
+<a class="card" href="atas.html">📄 Atas</a>
 </div>
-
-
 <script src="ui.js"></script>
 <script src="app.js"></script>
 <script>
-
 function abrirTesouraria(){
-
-
-    uiPrompt(
-        "Digite seu email cadastrado:",
-        "",
-        "Acessar tesouraria"
-    ).then(email => {
-
-        if(!email){
-            return;
-        }
-
-        window.location.href =
-        "tesouraria.html?email=" + encodeURIComponent(email);
-    });
-
-
+ uiPrompt("Digite seu email cadastrado:","","Acessar tesouraria").then(email=>{
+  if(!email)return;
+  window.location.href="tesouraria.html?email="+encodeURIComponent(email);
+ });
 }
-
 </script>
-
 </body>
-
 </html>
