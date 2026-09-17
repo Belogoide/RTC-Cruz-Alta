@@ -79,7 +79,7 @@ a{text-decoration:none;color:inherit}
 <section id="inicio">
   <div id="bloqueio" class="card lock">
     <strong>🔒 Torneio ainda não liberado</strong>
-    <span>O acesso dos participantes será liberado em <b>10/10/2026 às 14:00</b>.</span>
+    <span>O acesso dos participantes será liberado em <b id="dataLiberacao">verificando...</b>.</span>
   </div>
 
   <div id="semProtocolo" class="card lock hidden">
@@ -147,7 +147,7 @@ a{text-decoration:none;color:inherit}
 
 <script>
 const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec';
-const RELEASE=new Date('2026-10-10T14:00:00-03:00');
+let releaseServidor=null;
 let protocolo=localStorage.getItem('rtc_rotapadel_protocolo')||'';
 let dados=null;
 
@@ -191,11 +191,20 @@ function aba(id,b){
 }
 
 function liberado(){
-  return new Date()>=RELEASE;
+  return !!releaseServidor && new Date()>=releaseServidor;
+}
+
+function atualizarDataLiberacao(){
+  const el=document.getElementById('dataLiberacao');
+  if(!el) return;
+  el.textContent=releaseServidor
+    ? releaseServidor.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})
+    : 'verificando...';
 }
 
 function render(){
   const ok=liberado();
+  atualizarDataLiberacao();
   document.getElementById('bloqueio').classList.toggle('hidden',ok);
   document.getElementById('semProtocolo').classList.toggle('hidden',!ok || !!protocolo);
   document.getElementById('conteudo').classList.toggle('hidden',!ok || !protocolo);
@@ -226,7 +235,7 @@ function renderVazio(){
 async function carregarDados(){
   render();
 
-  if(!liberado() || !protocolo) return;
+  if(!protocolo) return;
 
   mostrarMensagem('Consultando seu torneio...');
 
@@ -235,11 +244,17 @@ async function carregarDados(){
     const resposta=await fetch(url,{cache:'no-store'});
     const d=await resposta.json();
 
-    if(!d.ok){
-      throw new Error(d.erro||d.error||'Protocolo não localizado.');
+    if(!d.ok && d.sucesso!==true){
+      throw new Error(d.erro||d.error||d.mensagem||'Protocolo não localizado.');
+    }
+
+    if(d.release){
+      const r=new Date(d.release);
+      if(!Number.isNaN(r.getTime())) releaseServidor=r;
     }
 
     if(d.liberado===false){
+      dados=null;
       render();
       return;
     }
