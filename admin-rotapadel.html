@@ -256,7 +256,10 @@ async function apiGet(params){
 
 async function apiPost(acao,dados={}){
   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({acao,chave:adminChave,dados})});
-  const d=await r.json();
+  const texto=await r.text();
+  if(!texto.trim()) throw new Error('O servidor não retornou resposta. Verifique a implantação do Apps Script.');
+  let d;
+  try{d=JSON.parse(texto);}catch(e){throw new Error('Resposta inválida do Apps Script: '+texto.slice(0,200));}
   if(d.autorizado===false) throw new Error(d.mensagem||'Acesso administrativo não autorizado.');
   if(d.status!=='ok' && d.sucesso!==true && d.ok!==true) throw new Error(d.mensagem||d.erro||'Operação não concluída.');
   return d;
@@ -344,7 +347,7 @@ function renderJogos(){
       '<div class="match-teams">'+esc(j.dupla1||'A definir')+' × '+esc(j.dupla2||'A definir')+'</div>'+
       '<div class="grid2"><div><label>Data/hora</label><input id="data_'+esc(j.id)+'" class="input" type="datetime-local" value="'+valorLocal(j.dataHora)+'"></div><div><label>Quadra</label><input id="quadra_'+esc(j.id)+'" class="input" value="'+esc(j.quadra||'')+'"></div></div>'+
       '<div class="score" style="margin-top:10px"><div><label>Status</label><select id="status_'+esc(j.id)+'" class="select"><option>Agendado</option><option>Em jogo</option><option>Finalizado</option></select></div><div><label>1º set A</label><input id="s1a_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set1A??'')+'"></div><div><label>1º set B</label><input id="s1b_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set1B??'')+'"></div><div><label>2º set A</label><input id="s2a_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set2A??'')+'"></div><div><label>2º set B</label><input id="s2b_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set2B??'')+'"></div><div><label>3º set A</label><input id="s3a_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set3A??'')+'"></div><div><label>3º set B</label><input id="s3b_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set3B??'')+'"></div></div>'+
-      '<div class="actions" style="margin-top:10px"><button class="btn" onclick='salvarJogo('+JSON.stringify(j.id)+')'>Salvar partida</button></div>'+
+      '<div class="actions" style="margin-top:10px"><button class="btn" data-jogo-id="'+esc(j.id)+'" onclick="salvarJogo(this.dataset.jogoId)">Salvar partida</button></div>'+
       '</div>';
   }).join(''):'<p class="muted">Nenhuma partida encontrada.</p>';
   lista.forEach(j=>{const s=document.getElementById('status_'+j.id);if(s)s.value=j.status||'Agendado';});
@@ -403,7 +406,7 @@ async function salvarJogo(id){
     placar2:[s1b,s2b,s3b].join('-')
   };
 
-  const botao=document.querySelector('#listaJogos button[onclick*='+JSON.stringify(id)+']');
+  const botao=document.querySelector('#listaJogos button[data-jogo-id="'+CSS.escape(String(id))+'"]');
   if(botao){botao.disabled=true;botao.textContent='Salvando...';}
   try{
     const resposta=await apiPost('editarJogoRotaPadel',dados);
