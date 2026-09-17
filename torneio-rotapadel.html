@@ -16,7 +16,7 @@
 <section id="inicio">
 <div id="bloqueio" class="card lock"><strong>🔒 Torneio ainda não liberado</strong><span>O acesso dos participantes será liberado em <b>10/10 às 14:00</b>.</span><p class="muted">O administrador pode acessar e testar antes da liberação.</p></div>
 <div id="conteudo" class="hidden">
-<div class="grid3"><div class="stat">Duplas<b id="sDuplas">0</b></div><div class="stat">Partidas<b id="sPartidas">0</b></div><div class="stat">Finalizadas<b id="sFinalizadas">0</b></div></div>
+<div class="grid3"><div class="stat">Categoria<b id="sCategoria">—</b></div><div class="stat">Duplas<b id="sDuplas">0</b></div><div class="stat">Partidas<b id="sPartidas">0</b></div><div class="stat">Finalizadas<b id="sFinalizadas">0</b></div></div>
 <div id="aoVivo" class="card live"><h2>🔴 Agora em quadra</h2><div id="liveBody" class="muted">Nenhuma partida em andamento.</div></div>
 <div class="card"><h2>🎯 Meu próximo jogo</h2><div id="meuJogo" class="muted">Informe seu protocolo para consultar.</div></div>
 </div></section>
@@ -24,7 +24,7 @@
 <section id="chave" class="hidden"><div class="card"><h2>🏆 Chaveamento</h2><div class="bracket"><div id="bracket" class="rounds"></div></div></div></section>
 <section id="resultados" class="hidden"><div class="card"><h2>📊 Resultados</h2><p class="muted">Somente partidas finalizadas aparecem aqui.</p><div id="listaResultados"></div></div></section>
 <section id="extras" class="hidden"><div class="card"><h2>📢 Avisos e informações</h2><div id="avisos">Nenhum aviso publicado.</div></div><div class="card"><h2>📍 Rota Padel</h2><p>Horários, quadras, regulamento, premiação e informações oficiais serão publicados nesta área.</p><a class="btn" href="https://chat.whatsapp.com/H1FUXbg5TVV6LqeHCq3J66" target="_blank">WhatsApp oficial</a></div></section>
-<section id="admin" class="card admin"><h2>🔐 Área administrativa</h2><p>Modo administrador para testes. Acesso direto pelo parâmetro <b>?admin=1</b>.</p><input id="adminSenha" class="input" placeholder="Senha administrativa" type="password"><button class="btn" onclick="entrarAdmin()">Liberar testes</button><div id="adminPainel" class="hidden"><hr><p><b>Modo teste ativo.</b> Você pode visualizar o torneio antes de 10/10.</p><label>Data/hora de início do teste<br><input id="testeData" class="input" type="datetime-local" value="2026-10-10T14:00"></label><button class="btn" style="margin-top:10px" onclick="aplicarTeste()">Aplicar horário</button><p class="muted">Os jogos e o chaveamento desta primeira versão são carregados da configuração local. A integração com as abas administrativas do Sheets entra no próximo passo.</p></div></section>
+<section id="admin" class="card admin"><h2>🔐 Área administrativa</h2><p>Modo administrador. Acesso de teste por <b>?admin=1</b>, validado no servidor pela conta do clube.</p><div id="adminPainel" class="hidden"><hr><p><b>Modo teste ativo.</b> O administrador pode visualizar o torneio antes da liberação.</p><label>Data/hora de início do teste<br><input id="testeData" class="input" type="datetime-local" value="2026-10-10T14:00"></label><button class="btn" style="margin-top:10px" onclick="aplicarTeste()">Aplicar horário</button><p class="muted">O horário definitivo será controlado pelo backend.</p></div></section>
 </main>
 <script>
 const RELEASE=new Date('2026-10-10T14:00:00-03:00');
@@ -42,13 +42,46 @@ function trocarProtocolo(){localStorage.removeItem('rtc_rotapadel_protocolo');pr
 function aba(id,b){document.querySelectorAll('main>section[id]').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
 function liberar(){return admin||new Date()>=release}
 function render(){const ok=liberar();document.getElementById('bloqueio').classList.toggle('hidden',ok);document.getElementById('conteudo').classList.toggle('hidden',!ok);document.getElementById('salvo').textContent=protocolo?'Protocolo salvo neste dispositivo: '+protocolo:'';document.getElementById('protocolo').value=protocolo;renderJogos();renderResultados();renderChave();}
-function renderJogos(){document.getElementById('listaJogos').innerHTML=jogos.map((j,i)=>`<div class="match"><b>${esc(j.hora)}</b><div><b>${esc(j.dupla1)}</b> × <b>${esc(j.dupla2)}</b><br><span class="pill">${esc(j.categoria)} · ${esc(j.fase)}</span></div><div class="court">${esc(j.quadra)}</div><span class="status pill">${esc(j.status)}</span></div>`).join('');document.getElementById('sPartidas').textContent=jogos.length;document.getElementById('sFinalizadas').textContent=jogos.filter(j=>j.status==='Finalizado').length;document.getElementById('sDuplas').textContent=new Set(jogos.flatMap(j=>[j.dupla1,j.dupla2])).size;const live=jogos.find(j=>j.status==='Em jogo');document.getElementById('liveBody').innerHTML=live?`<b>${esc(live.dupla1)}</b> × <b>${esc(live.dupla2)}</b><br>${esc(live.quadra)} · ${esc(live.categoria)} · ${esc(live.fase)}<br><small>Resultado será publicado somente após finalizar a partida.</small>`:'Nenhuma partida em andamento.';const meu=jogos.find(j=>protocolo&&([j.dupla1,j.dupla2].some(x=>x.toLowerCase().includes(protocolo.toLowerCase()))));document.getElementById('meuJogo').innerHTML=meu?`<b>${esc(meu.hora)}</b> · ${esc(meu.quadra)}<br>${esc(meu.dupla1)} × ${esc(meu.dupla2)}`:'Nenhum jogo localizado para este protocolo ainda.'}
-function renderResultados(){document.getElementById('listaResultados').innerHTML=resultados.length?resultados.map(r=>`<div class="match"><b>${esc(r.categoria)}</b><div>${esc(r.dupla1)} × ${esc(r.dupla2)}</div><b>${esc(r.placar)}</b><span>${esc(r.fase)}</span></div>`).join(''):'<p class="muted">Nenhuma partida finalizada.</p>'}
-function renderChave(){const grupos={};jogos.forEach(j=>(grupos[j.fase]??=[]).push(j));document.getElementById('bracket').innerHTML=Object.entries(grupos).map(([fase,arr])=>`<div class="round"><h3>${esc(fase)}</h3>${arr.map(j=>`<div class="game"><div>${esc(j.dupla1)}</div><div>${esc(j.dupla2)}</div><small>${esc(j.hora)} · ${esc(j.quadra)}</small></div>`).join('')}</div>`).join('')}
-function entrarAdmin(){const senha=document.getElementById('adminSenha').value;if(senha!=='RTCADMIN')return alert('Senha administrativa inválida.');admin=true;document.getElementById('adminPainel').classList.remove('hidden');render()}
-function aplicarTeste(){const v=document.getElementById('testeData').value;if(!v)return;release=new Date(v);alert('Horário de teste aplicado nesta sessão.');render()}
+async function carregarDados(){
+  if(!liberar()) return;
+  try{
+    const qs=admin?'acao=torneio&admin=1':'acao=torneio&protocolo='+encodeURIComponent(protocolo);
+    const r=await fetch(API+'?'+qs,{cache:'no-store'});
+    const d=await r.json();
+    if(!d.ok) throw new Error(d.erro||'Não foi possível carregar o torneio.');
+    if(!d.liberado && !admin){ render(); return; }
+    jogos=d.jogos||[]; resultados=d.resultados||[]; aoVivo=d.aoVivo||[];
+    const cat=jogos[0]?.categoria||'—';
+    document.getElementById('sCategoria').textContent=cat;
+    renderJogos(); renderResultados(); renderChave();
+  }catch(e){
+    document.getElementById('listaJogos').innerHTML='<p class="muted">Não foi possível carregar os dados do torneio.</p>';
+    document.getElementById('bracket').innerHTML='<p class="muted">Chaveamento indisponível.</p>';
+    console.error(e);
+  }
+}
+function renderJogos(){
+  const lista=admin?jogos:jogos.filter(j=>!jogos[0]?.categoria || j.categoria===jogos[0].categoria);
+  document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>`<div class="match"><b>${esc(j.dataHora||'')}</b><div><b>${esc(j.dupla1)}</b> × <b>${esc(j.dupla2)}</b><br><span class="pill">${esc(j.categoria)} · ${esc(j.fase)}</span></div><div class="court">${esc(j.quadra)}</div><span class="status pill">${esc(j.status)}</span></div>`).join(''):'<p class="muted">Nenhum jogo encontrado.</p>';
+  document.getElementById('sPartidas').textContent=lista.length;
+  document.getElementById('sFinalizadas').textContent=lista.filter(j=>j.status==='Finalizado').length;
+  document.getElementById('sDuplas').textContent=new Set(lista.flatMap(j=>[j.dupla1,j.dupla2].filter(Boolean))).size;
+  const live=aoVivo[0];
+  document.getElementById('liveBody').innerHTML=live?`<b>${esc(live.dupla1)}</b> × <b>${esc(live.dupla2)}</b><br>${esc(live.quadra)} · ${esc(live.categoria)} · ${esc(live.fase)}<br><small>Resultado será publicado somente após finalizar a partida.</small>`:'Nenhuma partida em andamento.';
+  const meu=lista.find(j=>protocolo && [j.dupla1,j.dupla2].some(x=>String(x).toLowerCase().includes(protocolo.toLowerCase())));
+  document.getElementById('meuJogo').innerHTML=meu?`<b>${esc(meu.dataHora||'')}</b> · ${esc(meu.quadra)}<br>${esc(meu.dupla1)} × ${esc(meu.dupla2)}`:'Nenhum jogo localizado para este protocolo ainda.';
+}
+function renderResultados(){
+  document.getElementById('listaResultados').innerHTML=resultados.length?resultados.map(r=>`<div class="match"><b>${esc(r.categoria)}</b><div>${esc(r.dupla1)} × ${esc(r.dupla2)}</div><b>${esc(r.placar1)} × ${esc(r.placar2)}</b><span>${esc(r.fase)}</span></div>`).join(''):'<p class="muted">Nenhuma partida finalizada.</p>';
+}
+function renderChave(){
+  const grupos={}; jogos.forEach(j=>(grupos[j.fase]??=[]).push(j));
+  document.getElementById('bracket').innerHTML=Object.entries(grupos).map(([fase,arr])=>`<div class="round"><h3>${esc(fase)}</h3>${arr.map(j=>`<div class="game"><div>${esc(j.dupla1)}</div><div>${esc(j.dupla2)}</div><small>${esc(j.dataHora||'')} · ${esc(j.quadra)}</small></div>`).join('')}</div>`).join('');
+}
+function entrarAdmin(){admin=true;document.getElementById('adminPainel').classList.remove('hidden');render();carregarDados();}
+function aplicarTeste(){const v=document.getElementById('testeData').value;if(!v)return;release=new Date(v);alert('Horário de teste aplicado nesta sessão.');render();carregarDados();}
 if(new URLSearchParams(location.search).get('admin')==='1'){document.getElementById('admin').classList.remove('hidden')}else{document.getElementById('admin').classList.add('hidden')}
-render();setInterval(render,30000);
+render();carregarDados();setInterval(carregarDados,30000);
 </script>
 </body>
 </html>
