@@ -93,7 +93,6 @@
       <div class="aviso-pix"><span class="pix-icone">PIX</span><p>O pagamento da inscrição é de R$ 50,00. O QR Code e o Pix copia e cola serão exibidos após o registro.</p></div>
       <label class="aceite"><input type="checkbox" name="aceite" required><span>Declaro que os dados estão corretos e aceito o regulamento da competição.</span></label>
       <button class="botao botao-inscricao" type="submit">Continuar para pagamento <span>→</span></button>
-      <p class="seguranca">🔒 Seus dados ficam salvos apenas neste dispositivo até a configuração do banco.</p>
     </section>
   </form>
 </main>
@@ -256,34 +255,60 @@ document.getElementById('selecionarComprovante').addEventListener('click', () =>
 });
 
 document.getElementById('comprovante').addEventListener('change', (event) => {
-  const arquivo = event.target.files[0];
-  if (!arquivo) return;
-  const tiposPermitidos = ['image/jpeg','image/png','image/webp','application/pdf'];
+  const arquivo = event.target.files?.[0];
+  const status = document.getElementById('comprovanteStatus');
+  const botaoEnviar = document.getElementById('enviarComprovante');
+  const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+  const limiteBytes = 8 * 1024 * 1024;
+
+  if (!arquivo) {
+    comprovanteSelecionado = null;
+    status.textContent = 'Nenhum comprovante selecionado.';
+    botaoEnviar.style.display = 'none';
+    document.getElementById('selecionarComprovante').style.display = 'flex';
+    return;
+  }
+
   if (!tiposPermitidos.includes(arquivo.type)) {
-    alert('Envie um comprovante em PDF, JPG, PNG ou WEBP.');
+    comprovanteSelecionado = null;
     event.target.value = '';
+    status.textContent = 'Formato não permitido. Use PDF, JPG, JPEG, PNG ou WEBP.';
+    botaoEnviar.style.display = 'none';
+    document.getElementById('selecionarComprovante').style.display = 'flex';
     return;
   }
-  if (arquivo.size > 8 * 1024 * 1024) {
-    alert('O comprovante deve ter no máximo 8 MB.');
+
+  if (arquivo.size > limiteBytes) {
+    comprovanteSelecionado = null;
     event.target.value = '';
+    status.textContent = 'O comprovante deve ter no máximo 8 MB.';
+    botaoEnviar.style.display = 'none';
+    document.getElementById('selecionarComprovante').style.display = 'flex';
     return;
   }
+
   comprovanteSelecionado = arquivo;
-  document.getElementById('comprovanteStatus').textContent = `Arquivo selecionado: ${arquivo.name}`;
+  status.textContent = `Comprovante selecionado: ${arquivo.name}`;
   document.getElementById('selecionarComprovante').style.display = 'none';
-  document.getElementById('enviarComprovante').style.display = 'flex';
+  botaoEnviar.style.display = 'flex';
 });
 
-document.getElementById('enviarComprovante').addEventListener('click', () => {
-  if (!comprovanteSelecionado || !inscricaoAtual) return;
-  const leitor = new FileReader();
+document.getElementById('enviarComprovante').addEventListener('click', async () => {
+  if (!comprovanteSelecionado || !inscricaoAtual?.id) return;
+
   const botao = document.getElementById('enviarComprovante');
+  const status = document.getElementById('comprovanteStatus');
   botao.disabled = true;
-  botao.textContent = 'Preparando envio...';
-  leitor.onload = () => {
-    const base64Completo = String(leitor.result || '');
-    const base64 = base64Completo.includes(',') ? base64Completo.split(',')[1] : base64Completo;
+  botao.textContent = 'Enviando...';
+
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const leitor = new FileReader();
+      leitor.onload = () => resolve(String(leitor.result).split(',')[1]);
+      leitor.onerror = reject;
+      leitor.readAsDataURL(comprovanteSelecionado);
+    });
+
     const payload = {
       acao: 'enviarComprovanteRotaPadel',
       dados: {
@@ -294,50 +319,50 @@ document.getElementById('enviarComprovante').addEventListener('click', () => {
       }
     };
 
-    fetch(API, {
+    const resposta = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
-    })
-    .then(resposta => resposta.json())
-    .then(retorno => {
-      if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível enviar o comprovante.');
-      document.getElementById('comprovanteStatus').textContent = 'Comprovante enviado com sucesso.';
-      botao.style.display = 'none';
-      botao.disabled = false;
-      document.getElementById('selecionarComprovante').style.display = 'none';
-      const finalizado = document.getElementById('comprovanteFinalizado');
-      finalizado.textContent = 'Obrigado por participar do torneio RotaPadel! Seu comprovante foi enviado e ficará aguardando a conferência do pagamento.';
-      finalizado.classList.add('ativo');
-      document.getElementById('novaInscricao').style.display = 'flex';
-    })
-    .catch(erro => {
-      alert(erro.message || 'Não foi possível enviar o comprovante.');
-      botao.disabled = false;
-      botao.textContent = 'Enviar comprovante';
-      botao.style.display = 'flex';
     });
-  };
-  leitor.onerror = () => {
-    alert('Não foi possível ler o comprovante.');
+    const retorno = await resposta.json();
+    if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível enviar o comprovante.');
+
+    status.textContent = '';
+    document.getElementById('comprovanteFinalizado').textContent = 'Obrigado por participar do Rota Padel! Seu comprovante foi enviado e ficará aguardando a conferência do pagamento.';
+    document.getElementById('comprovanteFinalizado').classList.add('ativo');
+    botao.style.display = 'none';
+    document.getElementById('selecionarComprovante').style.display = 'none';
+    document.getElementById('novaInscricao').style.display = 'flex';
+    comprovanteSelecionado = null;
+  } catch (erro) {
+    console.error(erro);
+    status.textContent = erro.message || 'Não foi possível enviar o comprovante.';
     botao.disabled = false;
     botao.textContent = 'Enviar comprovante';
-    botao.style.display = 'flex';
-  };
-  leitor.readAsDataURL(comprovanteSelecionado);
+  }
 });
 
-function fechar() {
+document.getElementById('novaInscricao').addEventListener('click', () => {
   sucesso.style.display = 'none';
   sucesso.setAttribute('aria-hidden', 'true');
-}
-
-document.getElementById('fecharModal').addEventListener('click', fechar);
-document.getElementById('novaInscricao').addEventListener('click', () => {
-  fechar();
+  inscricaoAtual = null;
+  comprovanteSelecionado = null;
   form.reset();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+document.getElementById('fecharModal').addEventListener('click', () => {
+  sucesso.style.display = 'none';
+  sucesso.setAttribute('aria-hidden', 'true');
+});
+
+sucesso.addEventListener('click', (event) => {
+  if (event.target === sucesso) {
+    sucesso.style.display = 'none';
+    sucesso.setAttribute('aria-hidden', 'true');
+  }
+});
+
 atualizarVagas();
 </script>
 </body>
