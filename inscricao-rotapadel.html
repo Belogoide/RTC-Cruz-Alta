@@ -9,13 +9,14 @@
 .pix-confirmacao{margin-top:18px;padding:18px;border:1px solid rgba(0,0,0,.08);border-radius:14px;background:#fff;text-align:left}
 .pix-qr{display:flex;justify-content:center;margin:14px 0}
 .pix-qr img{width:220px;height:220px;object-fit:contain;border-radius:10px;background:#fff}
-.pix-copia-cola{display:flex;gap:8px;margin-top:10px}
-.pix-copia-cola input{flex:1;min-width:0;padding:11px;border:1px solid #ddd;border-radius:8px;font-size:12px}
-.pix-copia-cola button{white-space:nowrap}
+.pix-copia-cola{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pix-copia-cola input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #ddd;border-radius:8px;font-size:12px}
+.pix-copia-cola button{width:100%;white-space:nowrap}
 .pagamento-confirmado{display:none;margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08)}
 .pagamento-confirmado.ativo{display:block}
 .comprovante-status{margin:8px 0;font-size:14px}
 #comprovante{display:none}
+.pix-oculto{display:none!important}
 </style>
 </head>
 <body class="pagina-inscricao">
@@ -93,14 +94,16 @@
     <div class="protocolo" id="protocolo"></div>
 
     <div class="pix-confirmacao">
-      <strong>Pagamento via Pix</strong>
-      <div class="pix-qr"><img id="pixQrCode" alt="QR Code Pix da inscrição"></div>
-      <p><strong>Pix copia e cola</strong></p>
-      <div class="pix-copia-cola">
-        <input id="pixCopiaCola" type="text" readonly>
-        <button class="botao" type="button" id="copiarPix">Copiar</button>
+      <strong id="tituloPagamentoPix">Pagamento via Pix</strong>
+      <div class="pix-qr" id="pixQrArea"><img id="pixQrCode" alt="QR Code Pix da inscrição"></div>
+      <div id="pixCodigoArea">
+        <p><strong>Pix copia e cola</strong></p>
+        <div class="pix-copia-cola">
+          <input id="pixCopiaCola" type="text" readonly>
+          <button class="botao" type="button" id="copiarPix">Copiar Pix</button>
+        </div>
+        <small id="statusPix"></small>
       </div>
-      <small id="statusPix"></small>
 
       <div id="pagamentoConfirmado" class="pagamento-confirmado">
         <strong>Comprovante de pagamento</strong>
@@ -154,6 +157,12 @@ function prepararPix() {
   document.getElementById('pixQrCode').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(PIX_COPIA_COLA);
 }
 
+function restaurarAreaPix() {
+  document.getElementById('pixQrArea').classList.remove('pix-oculto');
+  document.getElementById('pixCodigoArea').classList.remove('pix-oculto');
+  document.getElementById('jaPaguei').style.display = 'inline-flex';
+}
+
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const totalAtual = await buscarVagas();
@@ -186,9 +195,12 @@ form.addEventListener('submit', async (event) => {
     document.getElementById('protocolo').textContent = `Protocolo: ${dados.id}`;
     prepararPix();
     document.getElementById('pagamentoConfirmado').classList.remove('ativo');
-    document.getElementById('jaPaguei').style.display = 'inline-flex';
     document.getElementById('enviarComprovante').style.display = 'none';
+    document.getElementById('selecionarComprovante').style.display = 'inline-flex';
+    document.getElementById('comprovante').value = '';
     document.getElementById('comprovanteStatus').textContent = 'Nenhum comprovante selecionado.';
+    comprovanteSelecionado = null;
+    restaurarAreaPix();
     sucesso.setAttribute('aria-hidden', 'false');
     sucesso.style.display = 'flex';
     form.reset();
@@ -215,6 +227,8 @@ document.getElementById('copiarPix').addEventListener('click', async () => {
 });
 
 document.getElementById('jaPaguei').addEventListener('click', () => {
+  document.getElementById('pixQrArea').classList.add('pix-oculto');
+  document.getElementById('pixCodigoArea').classList.add('pix-oculto');
   document.getElementById('pagamentoConfirmado').classList.add('ativo');
   document.getElementById('jaPaguei').style.display = 'none';
 });
@@ -256,8 +270,8 @@ document.getElementById('enviarComprovante').addEventListener('click', () => {
       dados: {
         id: inscricaoAtual.id,
         nomeArquivo: comprovanteSelecionado.name,
-        mimeType: comprovanteSelecionado.type,
-        arquivoBase64: base64
+        tipoMime: comprovanteSelecionado.type,
+        arquivo: base64
       }
     };
 
