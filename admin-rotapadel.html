@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rota Padel — Administração</title>
+<style>
+:root{--pink:#D61264;--blue:#0056A8;--bg:#f4f6fa;--text:#18212b;--muted:#667085;--card:#fff;--line:#e4e7ec;--ok:#067647;--warn:#b54708;--danger:#b42318}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+.top{background:linear-gradient(135deg,var(--pink),#b30e51);color:#fff;padding:24px 18px;border-radius:0 0 24px 24px}
+.topline{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+.top h1{margin:8px 0 0;font-size:30px}
+.top p{margin:6px 0 0;opacity:.9}
+.badge{display:inline-flex;padding:7px 10px;border-radius:99px;background:#ffffff22;border:1px solid #ffffff44;font-size:12px;font-weight:700}
+.tabs{display:flex;gap:8px;overflow:auto;padding:15px 0}
+.tabs button{border:1px solid var(--line);background:#fff;padding:11px 14px;border-radius:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 4px 18px #00000008}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:#f8fafc;border-radius:14px;padding:15px}
+.stat span{display:block;color:var(--muted);font-size:13px}
+.stat b{display:block;font-size:26px;color:var(--blue);margin-top:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+.input,.select,.textarea{width:100%;padding:12px;border:1px solid #d0d5dd;border-radius:10px;background:#fff}
+.textarea{min-height:110px;resize:vertical}
+.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
+.btn.pink{background:var(--pink)}
+.btn.alt{background:#eef4fb;color:var(--blue)}
+.btn.danger{background:#fef3f2;color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.notice{padding:12px;border-radius:10px;margin-top:10px}
+.notice.ok{background:#ecfdf3;color:var(--ok)}
+.notice.warn{background:#fffaeb;color:var(--warn)}
+.notice.err{background:#fef3f2;color:var(--danger)}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--muted);text-transform:uppercase}
+.pill{display:inline-block;padding:5px 8px;border-radius:99px;background:#eef4fb;color:var(--blue);font-size:12px;font-weight:700}
+.pill.ok{background:#ecfdf3;color:var(--ok)}
+.pill.warn{background:#fffaeb;color:var(--warn)}
+.pill.danger{background:#fef3f2;color:var(--danger)}
+.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.category{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fff}
+.category b{display:block;font-size:18px;color:var(--blue)}
+.category small{color:var(--muted)}
+.match{border:1px solid var(--line);border-radius:13px;padding:13px;margin:9px 0}
+.match-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.match-teams{font-weight:700;margin:9px 0}
+.score{display:grid;grid-template-columns:1fr 90px 90px;gap:8px;align-items:end}
+.login{max-width:440px;margin:60px auto}
+.footer-note{font-size:12px;color:var(--muted);margin-top:14px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.category-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.category-grid{grid-template-columns:1fr}.score{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="topline">
+      <div>
+        <a href="index.html">← RTC Cruz Alta</a>
+        <h1>🎾 Rota Padel — Administração</h1>
+        <p>Controle do torneio, jogos, resultados e liberação.</p>
+      </div>
+      <span class="badge">ÁREA ADMINISTRATIVA</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="login" class="card login">
+  <h2>Acesso administrativo</h2>
+  <p class="muted">Esta página não aparece na página inicial. Acesse diretamente pela URL administrativa.</p>
+  <label for="senha">Chave de acesso</label>
+  <input id="senha" class="input" type="password" autocomplete="current-password" placeholder="Digite a chave administrativa">
+  <div class="actions" style="margin-top:10px">
+    <button class="btn" onclick="entrar()">Entrar</button>
+  </div>
+  <div id="loginMsg"></div>
+</section>
+
+<section id="painel" class="hidden">
+
+<nav class="tabs">
+  <button class="active" onclick="aba('resumo',this)">📊 Resumo</button>
+  <button onclick="aba('jogos',this)">🎾 Jogos</button>
+  <button onclick="aba('categorias',this)">🏆 Categorias</button>
+  <button onclick="aba('config',this)">⚙️ Configuração</button>
+  <button onclick="aba('avisos',this)">📢 Avisos</button>
+</nav>
+
+<section id="resumo">
+  <div class="grid">
+    <div class="stat"><span>Duplas inscritas</span><b id="totalDuplas">0</b></div>
+    <div class="stat"><span>Limite</span><b>54</b></div>
+    <div class="stat"><span>Jogos</span><b id="totalJogos">0</b></div>
+    <div class="stat"><span>Finalizados</span><b id="totalFinalizados">0</b></div>
+  </div>
+
+  <div class="card">
+    <div class="match-top">
+      <div><h2 style="margin:0">Status do torneio</h2><p class="muted">Visão geral das categorias e vagas.</p></div>
+      <button class="btn alt" onclick="carregar()">↻ Atualizar</button>
+    </div>
+    <div id="statusGeral" class="notice warn">Carregando...</div>
+  </div>
+
+  <div class="card">
+    <h2>Preenchimento por categoria</h2>
+    <div id="categoriasResumo" class="category-grid"></div>
+  </div>
+</section>
+
+<section id="jogos" class="hidden">
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <label>Categoria</label>
+        <select id="filtroCategoria" class="select" onchange="renderJogos()">
+          <option value="">Todas as categorias</option>
+        </select>
+      </div>
+      <div>
+        <label>Status</label>
+        <select id="filtroStatus" class="select" onchange="renderJogos()">
+          <option value="">Todos</option>
+          <option>Agendado</option>
+          <option>Em jogo</option>
+          <option>Finalizado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="match-top">
+      <div><h2 style="margin:0">Partidas</h2><p class="muted">Altere horário, quadra, status e resultado.</p></div>
+      <button class="btn" onclick="gerarChaveamento()">Gerar/atualizar chaveamentos</button>
+    </div>
+    <div id="listaJogos"></div>
+  </div>
+</section>
+
+<section id="categorias" class="hidden">
+  <div class="card">
+    <h2>Inscrições por categoria</h2>
+    <p class="muted">Cada categoria comporta até 6 duplas.</p>
+    <div id="tabelaCategorias" class="table-wrap"></div>
+  </div>
+</section>
+
+<section id="config" class="hidden">
+  <div class="card">
+    <h2>Liberação do torneio</h2>
+    <p class="muted">Defina a data e o horário em que os participantes poderão consultar seus jogos.</p>
+    <div class="grid2">
+      <div>
+        <label>Data e hora</label>
+        <input id="release" class="input" type="datetime-local">
+      </div>
+      <div>
+        <label>Status atual</label>
+        <div id="releaseAtual" class="notice warn">Carregando...</div>
+      </div>
+    </div>
+    <div class="actions" style="margin-top:12px">
+      <button class="btn" onclick="salvarLiberacao()">Salvar data de liberação</button>
+      <button class="btn alt" onclick="liberarAgora()">Liberar agora</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Configurações do evento</h2>
+    <div class="grid2">
+      <div><label>Valor da inscrição</label><input id="valor" class="input" value="50,00"></div>
+      <div><label>WhatsApp oficial</label><input id="whatsapp" class="input" value="https://chat.whatsapp.com/H1FUXbg5TVV6LqeHCq3J66"></div>
+    </div>
+    <p class="footer-note">Os campos acima ficam preparados para integração com a configuração do torneio no Apps Script.</p>
+  </div>
+</section>
+
+<section id="avisos" class="hidden">
+  <div class="card">
+    <h2>Novo aviso</h2>
+    <div class="grid2">
+      <div><label>Título</label><input id="avisoTitulo" class="input" placeholder="Ex.: Alteração de horário"></div>
+      <div><label>Categoria (opcional)</label><select id="avisoCategoria" class="select"><option value="">Todas</option></select></div>
+    </div>
+    <label style="margin-top:12px">Mensagem</label>
+    <textarea id="avisoTexto" class="textarea" placeholder="Escreva o aviso que aparecerá para os participantes."></textarea>
+    <div class="actions" style="margin-top:12px"><button class="btn pink" onclick="publicarAviso()">Publicar aviso</button></div>
+  </div>
+  <div class="card">
+    <h2>Avisos publicados</h2>
+    <div id="listaAvisos"><p class="muted">Nenhum aviso carregado.</p></div>
+  </div>
+</section>
+
+</section>
+</main>
+
+<script>
+const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec';
+const CATEGORIAS=['Misto A','Misto B','Misto C','Feminino A','Feminino B','Feminino C','Masculino A','Masculino B','Masculino C'];
+let adminChave=sessionStorage.getItem('rtc_rotapadel_admin_chave')||'';
+let estado={duplas:[],jogos:[],release:null,avisos:[]};
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
+function aba(id,b){
+  document.querySelectorAll('#painel>section').forEach(x=>x.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+}
+
+function msg(id,text,tipo='warn'){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.className='notice '+tipo;
+  el.textContent=text;
+}
+
+async function apiGet(params){
+  const url=API+'?'+new URLSearchParams({...params,chave:adminChave});
+  const r=await fetch(url,{cache:'no-store'});
+  const d=await r.json();
+  if(d.autorizado===false) throw new Error(d.mensagem||'Acesso administrativo não autorizado.');
+  if(d.ok===false && d.sucesso!==true) throw new Error(d.erro||d.mensagem||'Erro na consulta.');
+  return d;
+}
+
+async function apiPost(acao,dados={}){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({acao,chave:adminChave,dados})});
+  const d=await r.json();
+  if(d.autorizado===false) throw new Error(d.mensagem||'Acesso administrativo não autorizado.');
+  if(d.status!=='ok' && d.sucesso!==true && d.ok!==true) throw new Error(d.mensagem||d.erro||'Operação não concluída.');
+  return d;
+}
+
+async function entrar(){
+  const senha=document.getElementById('senha').value.trim();
+  if(!senha){msg('loginMsg','Informe a chave administrativa.','err');return;}
+  adminChave=senha;
+  try{
+    await apiGet({tipo:'torneioAdmin'});
+    sessionStorage.setItem('rtc_rotapadel_admin_chave',adminChave);
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('painel').classList.remove('hidden');
+    await carregar();
+  }catch(e){
+    adminChave='';
+    sessionStorage.removeItem('rtc_rotapadel_admin_chave');
+    msg('loginMsg',e.message||'Chave inválida.','err');
+  }
+}
+
+async function carregar(){
+  try{
+    const d=await apiGet({tipo:'torneioAdmin'});
+    estado.duplas=d.duplas||d.inscricoes||[];
+    estado.jogos=d.jogos||[];
+    estado.release=d.release||null;
+    estado.avisos=d.avisos||[];
+    renderResumo();
+    renderJogos();
+    renderCategorias();
+    renderConfig();
+    renderAvisos();
+  }catch(e){
+    alert(e.message||'Não foi possível carregar o painel.');
+  }
+}
+
+function preencherSelects(){
+  ['filtroCategoria','avisoCategoria'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const atual=el.value;
+    const primeiro=id==='filtroCategoria'?'<option value="">Todas as categorias</option>':'<option value="">Todas</option>';
+    el.innerHTML=primeiro+CATEGORIAS.map(c=>'<option>'+esc(c)+'</option>').join('');
+    el.value=atual;
+  });
+}
+
+function renderResumo(){
+  preencherSelects();
+  document.getElementById('totalDuplas').textContent=estado.duplas.length;
+  document.getElementById('totalJogos').textContent=estado.jogos.length;
+  document.getElementById('totalFinalizados').textContent=estado.jogos.filter(j=>String(j.status||'').toLowerCase()==='finalizado').length;
+  const liberado=estado.release?new Date(estado.release):null;
+  msg('statusGeral',liberado&&!Number.isNaN(liberado.getTime())&&new Date()>=liberado?'Torneio liberado para os participantes.':'Torneio ainda bloqueado para os participantes.',liberado&&new Date()>=liberado?'ok':'warn');
+  document.getElementById('categoriasResumo').innerHTML=CATEGORIAS.map(c=>{
+    const n=estado.duplas.filter(d=>(d.categoriaCompleta||d.categoria||'')===c).length;
+    return '<div class="category"><b>'+esc(c)+'</b><strong>'+n+' / 6 duplas</strong><br><small>'+(n>=6?'Categoria completa':(6-n)+' vagas restantes')+'</small></div>';
+  }).join('');
+}
+
+function renderCategorias(){
+  const rows=CATEGORIAS.map(c=>{
+    const ds=estado.duplas.filter(d=>(d.categoriaCompleta||d.categoria||'')===c);
+    return '<tr><td><b>'+esc(c)+'</b></td><td>'+ds.length+'/6</td><td>'+ds.map((d,i)=>esc(d.dupla||((d.participante1||'')+' × '+(d.participante2||'')))+' <span class="muted">#'+(i+1)+'</span>').join('<br>')+'</td></tr>';
+  }).join('');
+  document.getElementById('tabelaCategorias').innerHTML='<table><thead><tr><th>Categoria</th><th>Vagas</th><th>Duplas</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function renderJogos(){
+  const cat=document.getElementById('filtroCategoria').value;
+  const status=document.getElementById('filtroStatus').value;
+  const lista=estado.jogos.filter(j=>(!cat||j.categoria===cat)&&(!status||j.status===status));
+  document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>{
+    return '<div class="match">'+
+      '<div class="match-top"><span class="pill">'+esc(j.categoria||'')+' · '+esc(j.fase||'')+'</span><span class="pill '+(j.status==='Finalizado'?'ok':j.status==='Em jogo'?'warn':'')+'">'+esc(j.status||'Agendado')+'</span></div>'+
+      '<div class="match-teams">'+esc(j.dupla1||'A definir')+' × '+esc(j.dupla2||'A definir')+'</div>'+
+      '<div class="grid2"><div><label>Data/hora</label><input id="data_'+esc(j.id)+'" class="input" type="datetime-local" value="'+valorLocal(j.dataHora)+'"></div><div><label>Quadra</label><input id="quadra_'+esc(j.id)+'" class="input" value="'+esc(j.quadra||'')+'"></div></div>'+
+      '<div class="score" style="margin-top:10px"><div><label>Status</label><select id="status_'+esc(j.id)+'" class="select"><option>Agendado</option><option>Em jogo</option><option>Finalizado</option></select></div><div><label>Placar 1</label><input id="p1_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.placar1??'')+'"></div><div><label>Placar 2</label><input id="p2_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.placar2??'')+'"></div></div>'+
+      '<div class="actions" style="margin-top:10px"><button class="btn" onclick="salvarJogo('+JSON.stringify(j.id)+')">Salvar partida</button></div>'+
+      '</div>';
+  }).join(''):'<p class="muted">Nenhuma partida encontrada.</p>';
+  lista.forEach(j=>{const s=document.getElementById('status_'+j.id);if(s)s.value=j.status||'Agendado';});
+}
+
+function valorLocal(v){
+  if(!v)return '';
+  const d=new Date(v);
+  if(Number.isNaN(d.getTime()))return '';
+  const p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
+}
+
+function renderConfig(){
+  const d=estado.release?new Date(estado.release):null;
+  if(d&&!Number.isNaN(d.getTime())){
+    document.getElementById('release').value=valorLocal(d);
+    document.getElementById('releaseAtual').textContent='Liberação: '+d.toLocaleString('pt-BR');
+  }else{
+    document.getElementById('releaseAtual').textContent='Data de liberação não configurada.';
+  }
+}
+
+function renderAvisos(){
+  document.getElementById('listaAvisos').innerHTML=estado.avisos.length
+    ? estado.avisos.map(a=>'<div class="match"><b>'+esc(a.titulo||'Aviso')+'</b><p>'+esc(a.texto||a.mensagem||'')+'</p><small class="muted">'+esc(a.categoria||'Todas as categorias')+'</small></div>').join('')
+    : '<p class="muted">Nenhum aviso publicado.</p>';
+}
+
+async function gerarChaveamento(){
+  if(!confirm('Gerar/atualizar os chaveamentos das categorias que já possuem 6 duplas?'))return;
+  try{await apiPost('gerarChaveamentoRotaPadel');await carregar();alert('Chaveamentos atualizados.');}catch(e){alert(e.message);}
+}
+
+async function salvarJogo(id){
+  const dados={
+    id,
+    dataHora:document.getElementById('data_'+id).value,
+    quadra:document.getElementById('quadra_'+id).value.trim(),
+    status:document.getElementById('status_'+id).value,
+    placar1:document.getElementById('p1_'+id).value.trim(),
+    placar2:document.getElementById('p2_'+id).value.trim()
+  };
+  try{await apiPost('editarJogoRotaPadel',dados);await carregar();}catch(e){alert(e.message);}
+}
+
+async function salvarLiberacao(){
+  const v=document.getElementById('release').value;
+  if(!v){alert('Informe a data e hora.');return;}
+  try{await apiPost('definirDataLiberacaoRotaPadel',{dataISO:new Date(v).toISOString()});await carregar();alert('Data de liberação salva.');}catch(e){alert(e.message);}
+}
+
+async function liberarAgora(){
+  if(!confirm('Liberar o torneio imediatamente para os participantes?'))return;
+  try{await apiPost('definirDataLiberacaoRotaPadel',{dataISO:new Date().toISOString()});await carregar();}catch(e){alert(e.message);}
+}
+
+async function publicarAviso(){
+  const titulo=document.getElementById('avisoTitulo').value.trim();
+  const texto=document.getElementById('avisoTexto').value.trim();
+  const categoria=document.getElementById('avisoCategoria').value;
+  if(!titulo||!texto){alert('Preencha título e mensagem.');return;}
+  try{await apiPost('publicarAvisoRotaPadel',{titulo,texto,categoria});document.getElementById('avisoTitulo').value='';document.getElementById('avisoTexto').value='';await carregar();}catch(e){alert(e.message);}
+}
+
+if(adminChave){
+  document.getElementById('senha').value=adminChave;
+  entrar();
+}
+</script>
+</body>
+</html>
