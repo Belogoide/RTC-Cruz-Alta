@@ -74,14 +74,87 @@
 <script>
 const LIMITE = 60;
 const VALOR_INSCRICAO = null;
+const API = "https://script.google.com/macros/s/AKfycbzHAwc4EnLQzIsLAmq9dEYhZP5aQE3mPte-PP7E8TKQLF4I6S_fx_mqEHs_aectv1AMfg/exec";
 const chaveStorage = 'rtc_rotapadel_inscricoes';
 const form = document.getElementById('formInscricao');
 const sucesso = document.getElementById('sucesso');
 const inscricoes = () => JSON.parse(localStorage.getItem(chaveStorage) || '[]');
-function atualizarVagas() { const total = inscricoes().length; document.getElementById('vagasTexto').textContent = `${total} / ${LIMITE} duplas`; document.getElementById('barraVagas').style.width = `${Math.min(total / LIMITE * 100, 100)}%`; document.getElementById('vagasMensagem').textContent = total >= LIMITE ? 'Inscrições encerradas: limite atingido.' : `${LIMITE - total} ${LIMITE - total === 1 ? 'vaga disponível' : 'vagas disponíveis'}.`; document.getElementById('valorPix').textContent = VALOR_INSCRICAO ? VALOR_INSCRICAO.toFixed(2).replace('.', ',') : 'a confirmar'; }
-form.addEventListener('submit', (event) => { event.preventDefault(); const lista = inscricoes(); if (lista.length >= LIMITE) { alert('As 60 duplas já foram preenchidas.'); return; } const dados = Object.fromEntries(new FormData(form).entries()); dados.id = `RP-${Date.now().toString(36).toUpperCase()}`; dados.criadoEm = new Date().toISOString(); lista.push(dados); localStorage.setItem(chaveStorage, JSON.stringify(lista)); document.getElementById('mensagemSucesso').textContent = `${dados.participante1Nome} e ${dados.participante2Nome}, a modalidade ${dados.modalidade} — categoria ${dados.categoria} — foi reservada.`; document.getElementById('protocolo').textContent = `Protocolo: ${dados.id}`; sucesso.setAttribute('aria-hidden', 'false'); sucesso.style.display = 'flex'; atualizarVagas(); form.reset(); });
+
+async function buscarVagas() {
+  try {
+    const resposta = await fetch(API + '?tipo=rotapadel');
+    const dados = await resposta.json();
+    if (typeof dados.total === 'number') return dados.total;
+  } catch (erro) {
+    console.log('Não foi possível consultar as vagas no servidor.', erro);
+  }
+  return inscricoes().length;
+}
+
+async function atualizarVagas() {
+  const total = await buscarVagas();
+  document.getElementById('vagasTexto').textContent = `${total} / ${LIMITE} duplas`;
+  document.getElementById('barraVagas').style.width = `${Math.min(total / LIMITE * 100, 100)}%`;
+  document.getElementById('vagasMensagem').textContent = total >= LIMITE ? 'Inscrições encerradas: limite atingido.' : `${LIMITE - total} ${LIMITE - total === 1 ? 'vaga disponível' : 'vagas disponíveis'}.`;
+  document.getElementById('valorPix').textContent = VALOR_INSCRICAO ? VALOR_INSCRICAO.toFixed(2).replace('.', ',') : 'a confirmar';
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const totalAtual = await buscarVagas();
+  if (totalAtual >= LIMITE) {
+    alert('As 60 duplas já foram preenchidas.');
+    atualizarVagas();
+    return;
+  }
+
+  const dados = Object.fromEntries(new FormData(form).entries());
+  dados.id = `RP-${Date.now().toString(36).toUpperCase()}`;
+  dados.criadoEm = new Date().toISOString();
+  dados.status = 'Pendente';
+
+  const botao = form.querySelector('button[type="submit"]');
+  const textoBotao = botao.innerHTML;
+  botao.disabled = true;
+  botao.innerHTML = 'Registrando...';
+
+  try {
+    const resposta = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ acao: 'registrarRotaPadel', dados: dados })
+    });
+
+    const retorno = await resposta.json();
+
+    if (retorno.status !== 'ok') {
+      throw new Error(retorno.mensagem || 'Não foi possível registrar a inscrição.');
+    }
+
+    const lista = inscricoes();
+    lista.push(dados);
+    localStorage.setItem(chaveStorage, JSON.stringify(lista));
+
+    document.getElementById('mensagemSucesso').textContent = `${dados.participante1Nome} e ${dados.participante2Nome}, a modalidade ${dados.modalidade} — categoria ${dados.categoria} — foi reservada.`;
+    document.getElementById('protocolo').textContent = `Protocolo: ${dados.id}`;
+    sucesso.setAttribute('aria-hidden', 'false');
+    sucesso.style.display = 'flex';
+    form.reset();
+    atualizarVagas();
+  } catch (erro) {
+    console.error(erro);
+    alert(erro.message || 'Não foi possível registrar a inscrição. Tente novamente.');
+  } finally {
+    botao.disabled = false;
+    botao.innerHTML = textoBotao;
+  }
+});
+
 function fechar() { sucesso.style.display = 'none'; sucesso.setAttribute('aria-hidden', 'true'); }
-document.getElementById('fecharModal').addEventListener('click', fechar); document.getElementById('novaInscricao').addEventListener('click', fechar); atualizarVagas();
+document.getElementById('fecharModal').addEventListener('click', fechar);
+document.getElementById('novaInscricao').addEventListener('click', fechar);
+atualizarVagas();
 </script>
 </body>
 </html>
