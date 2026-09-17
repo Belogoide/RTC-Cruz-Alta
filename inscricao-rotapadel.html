@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inscrição Rota Padel | RTC Cruz Alta</title>
 <link rel="stylesheet" href="style.css">
+<style>
+.pix-confirmacao{margin-top:18px;padding:18px;border:1px solid rgba(0,0,0,.08);border-radius:14px;background:#fff;text-align:left}
+.pix-qr{display:flex;justify-content:center;margin:14px 0}
+.pix-qr img{width:220px;height:220px;object-fit:contain;border-radius:10px;background:#fff}
+.pix-copia-cola{display:flex;gap:8px;margin-top:10px}
+.pix-copia-cola input{flex:1;min-width:0;padding:11px;border:1px solid #ddd;border-radius:8px;font-size:12px}
+.pix-copia-cola button{white-space:nowrap}
+.pagamento-confirmado{display:none;margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08)}
+.pagamento-confirmado.ativo{display:block}
+.comprovante-status{margin:8px 0;font-size:14px}
+#comprovante{display:none}
+</style>
 </head>
 <body class="pagina-inscricao">
 <main class="inscricao-shell">
@@ -35,7 +47,7 @@
           <legend>Participante 2</legend>
           <label>Nome completo<input name="participante2Nome" required maxlength="80" placeholder="Ex.: Bruno Lima"></label>
           <label>WhatsApp<input name="participante2Telefone" required inputmode="tel" maxlength="20" placeholder="(55) 99999-9999"></label>
-          <label>E-mail<input name="participante2Email" required type="email" maxlength="100" placeholder="voce@email.com"></label>
+          <label>E-mail><input name="participante2Email" required type="email" maxlength="100" placeholder="voce@email.com"></label>
         </fieldset>
       </div>
     </section>
@@ -63,22 +75,60 @@
     <section class="painel-formulario pagamento-info">
       <div class="secao-titulo"><span class="numero">03</span><div><h2>Pagamento da inscrição</h2><p>Após confirmar, você verá as instruções do Pix.</p></div></div>
       <div class="valor-inscricao"><span>Inscrição da dupla</span><strong>R$ <b id="valorPix">50,00</b></strong></div>
-      <div class="aviso-pix"><span class="pix-icone">PIX</span><p>O QR Code de pagamento será emitido e conciliado automaticamente quando a API Pix do Sicoob estiver configurada no servidor seguro do torneio.</p></div>
+      <div class="aviso-pix"><span class="pix-icone">PIX</span><p>O pagamento da inscrição é de R$ 50,00. O QR Code e o Pix copia e cola serão exibidos após o registro.</p></div>
       <label class="aceite"><input type="checkbox" name="aceite" required><span>Declaro que os dados estão corretos e aceito o regulamento da competição.</span></label>
       <button class="botao botao-inscricao" type="submit">Continuar para pagamento <span>→</span></button>
       <p class="seguranca">🔒 Seus dados ficam salvos apenas neste dispositivo até a configuração do banco.</p>
     </section>
   </form>
 </main>
-<div id="sucesso" class="modal-overlay" aria-hidden="true"><div class="modal-sucesso"><button class="fechar-modal" id="fecharModal" aria-label="Fechar">×</button><div class="check-sucesso">✓</div><p class="eyebrow">INSCRIÇÃO REGISTRADA</p><h2>Dupla na rota!</h2><p id="mensagemSucesso"></p><div class="protocolo" id="protocolo"></div><div class="pix-pendente"><strong>Próximo passo: pagamento via Pix</strong><span>O QR Code será exibido assim que a integração Sicoob estiver conectada ao sistema.</span></div><button class="botao" id="novaInscricao">Fazer nova inscrição</button></div></div>
+
+<div id="sucesso" class="modal-overlay" aria-hidden="true">
+  <div class="modal-sucesso">
+    <button class="fechar-modal" id="fecharModal" aria-label="Fechar">×</button>
+    <div class="check-sucesso">✓</div>
+    <p class="eyebrow">INSCRIÇÃO REGISTRADA</p>
+    <h2>Dupla na rota!</h2>
+    <p id="mensagemSucesso"></p>
+    <div class="protocolo" id="protocolo"></div>
+
+    <div class="pix-confirmacao">
+      <strong>Pagamento via Pix</strong>
+      <div class="pix-qr"><img id="pixQrCode" alt="QR Code Pix da inscrição"></div>
+      <p><strong>Pix copia e cola</strong></p>
+      <div class="pix-copia-cola">
+        <input id="pixCopiaCola" type="text" readonly>
+        <button class="botao" type="button" id="copiarPix">Copiar</button>
+      </div>
+      <small id="statusPix"></small>
+
+      <div id="pagamentoConfirmado" class="pagamento-confirmado">
+        <strong>Comprovante de pagamento</strong>
+        <p>Se você já realizou o pagamento, anexe o comprovante abaixo.</p>
+        <input id="comprovante" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
+        <button class="botao" type="button" id="selecionarComprovante">Anexar comprovante</button>
+        <p class="comprovante-status" id="comprovanteStatus">Nenhum comprovante selecionado.</p>
+        <button class="botao" type="button" id="enviarComprovante" style="display:none">Enviar comprovante</button>
+      </div>
+
+      <button class="botao" type="button" id="jaPaguei" style="margin-top:14px">Já fiz o pagamento</button>
+    </div>
+
+    <button class="botao" id="novaInscricao">Fazer nova inscrição</button>
+  </div>
+</div>
+
 <script>
 const LIMITE = 60;
 const VALOR_INSCRICAO = 50;
 const API = "https://script.google.com/macros/s/AKfycbz1-upFCXQr2c1rcT032IJPCbWKRdRGAZbgfbOwb7lvcyw3V_GOeUoBdfrdzCt0fKxn/exec";
+const PIX_COPIA_COLA = "00020126360014br.gov.bcb.pix011462942312000171520400005303986540550.005802BR5925ROTARACT_CLUB_DE_CRUZ_ALT6009Cruz_Alta610998025-13062130509RotaPadel6304EA7A";
 const chaveStorage = 'rtc_rotapadel_inscricoes';
 const form = document.getElementById('formInscricao');
 const sucesso = document.getElementById('sucesso');
 const inscricoes = () => JSON.parse(localStorage.getItem(chaveStorage) || '[]');
+let inscricaoAtual = null;
+let comprovanteSelecionado = null;
 
 async function buscarVagas() {
   try {
@@ -91,11 +141,160 @@ async function buscarVagas() {
   return inscricoes().length;
 }
 
-async function atualizarVagas() { const total = await buscarVagas(); document.getElementById('vagasTexto').textContent = `${total} / ${LIMITE} duplas`; document.getElementById('barraVagas').style.width = `${Math.min(total / LIMITE * 100, 100)}%`; document.getElementById('vagasMensagem').textContent = total >= LIMITE ? 'Inscrições encerradas: limite atingido.' : `${LIMITE - total} ${LIMITE - total === 1 ? 'vaga disponível' : 'vagas disponíveis'}.`; document.getElementById('valorPix').textContent = VALOR_INSCRICAO.toFixed(2).replace('.', ','); }
+async function atualizarVagas() {
+  const total = await buscarVagas();
+  document.getElementById('vagasTexto').textContent = `${total} / ${LIMITE} duplas`;
+  document.getElementById('barraVagas').style.width = `${Math.min(total / LIMITE * 100, 100)}%`;
+  document.getElementById('vagasMensagem').textContent = total >= LIMITE ? 'Inscrições encerradas: limite atingido.' : `${LIMITE - total} ${LIMITE - total === 1 ? 'vaga disponível' : 'vagas disponíveis'}.`;
+  document.getElementById('valorPix').textContent = VALOR_INSCRICAO.toFixed(2).replace('.', ',');
+}
 
-form.addEventListener('submit', async (event) => { event.preventDefault(); const totalAtual = await buscarVagas(); if (totalAtual >= LIMITE) { alert('As 60 duplas já foram preenchidas.'); atualizarVagas(); return; } const dados = Object.fromEntries(new FormData(form).entries()); dados.id = `RP-${Date.now().toString(36).toUpperCase()}`; dados.criadoEm = new Date().toISOString(); dados.status = 'Pendente'; const botao = form.querySelector('button[type="submit"]'); const textoBotao = botao.innerHTML; botao.disabled = true; botao.innerHTML = 'Registrando...'; try { const resposta = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ acao: 'registrarRotaPadel', dados: dados }) }); const retorno = await resposta.json(); if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível registrar a inscrição.'); const lista = inscricoes(); lista.push(dados); localStorage.setItem(chaveStorage, JSON.stringify(lista)); document.getElementById('mensagemSucesso').textContent = `${dados.participante1Nome} e ${dados.participante2Nome}, a modalidade ${dados.modalidade} — categoria ${dados.categoria} — foi reservada.`; document.getElementById('protocolo').textContent = `Protocolo: ${dados.id}`; sucesso.setAttribute('aria-hidden', 'false'); sucesso.style.display = 'flex'; form.reset(); atualizarVagas(); } catch (erro) { console.error(erro); alert(erro.message || 'Não foi possível registrar a inscrição. Tente novamente.'); } finally { botao.disabled = false; botao.innerHTML = textoBotao; } });
-function fechar() { sucesso.style.display = 'none'; sucesso.setAttribute('aria-hidden', 'true'); }
-document.getElementById('fecharModal').addEventListener('click', fechar); document.getElementById('novaInscricao').addEventListener('click', fechar); atualizarVagas();
+function prepararPix() {
+  document.getElementById('pixCopiaCola').value = PIX_COPIA_COLA;
+  document.getElementById('pixQrCode').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(PIX_COPIA_COLA);
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const totalAtual = await buscarVagas();
+  if (totalAtual >= LIMITE) { alert('As 60 duplas já foram preenchidas.'); atualizarVagas(); return; }
+
+  const dados = Object.fromEntries(new FormData(form).entries());
+  dados.id = `RP-${Date.now().toString(36).toUpperCase()}`;
+  dados.criadoEm = new Date().toISOString();
+  dados.status = 'Pendente';
+  inscricaoAtual = dados;
+
+  const botao = form.querySelector('button[type="submit"]');
+  const textoBotao = botao.innerHTML;
+  botao.disabled = true;
+  botao.innerHTML = 'Registrando...';
+
+  try {
+    const resposta = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ acao: 'registrarRotaPadel', dados: dados })
+    });
+    const retorno = await resposta.json();
+    if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível registrar a inscrição.');
+
+    const lista = inscricoes();
+    lista.push(dados);
+    localStorage.setItem(chaveStorage, JSON.stringify(lista));
+    document.getElementById('mensagemSucesso').textContent = `${dados.participante1Nome} e ${dados.participante2Nome}, a modalidade ${dados.modalidade} — categoria ${dados.categoria} — foi reservada.`;
+    document.getElementById('protocolo').textContent = `Protocolo: ${dados.id}`;
+    prepararPix();
+    document.getElementById('pagamentoConfirmado').classList.remove('ativo');
+    document.getElementById('jaPaguei').style.display = 'inline-flex';
+    document.getElementById('enviarComprovante').style.display = 'none';
+    document.getElementById('comprovanteStatus').textContent = 'Nenhum comprovante selecionado.';
+    sucesso.setAttribute('aria-hidden', 'false');
+    sucesso.style.display = 'flex';
+    form.reset();
+    atualizarVagas();
+  } catch (erro) {
+    console.error(erro);
+    alert(erro.message || 'Não foi possível registrar a inscrição. Tente novamente.');
+  } finally {
+    botao.disabled = false;
+    botao.innerHTML = textoBotao;
+  }
+});
+
+document.getElementById('copiarPix').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(PIX_COPIA_COLA);
+    document.getElementById('statusPix').textContent = 'Pix copia e cola copiado.';
+  } catch (erro) {
+    const campo = document.getElementById('pixCopiaCola');
+    campo.select();
+    document.execCommand('copy');
+    document.getElementById('statusPix').textContent = 'Pix copia e cola copiado.';
+  }
+});
+
+document.getElementById('jaPaguei').addEventListener('click', () => {
+  document.getElementById('pagamentoConfirmado').classList.add('ativo');
+  document.getElementById('jaPaguei').style.display = 'none';
+});
+
+document.getElementById('selecionarComprovante').addEventListener('click', () => {
+  document.getElementById('comprovante').click();
+});
+
+document.getElementById('comprovante').addEventListener('change', (event) => {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+  const tiposPermitidos = ['image/jpeg','image/png','image/webp','application/pdf'];
+  if (!tiposPermitidos.includes(arquivo.type)) {
+    alert('Envie um comprovante em PDF, JPG, PNG ou WEBP.');
+    event.target.value = '';
+    return;
+  }
+  if (arquivo.size > 8 * 1024 * 1024) {
+    alert('O comprovante deve ter no máximo 8 MB.');
+    event.target.value = '';
+    return;
+  }
+  comprovanteSelecionado = arquivo;
+  document.getElementById('comprovanteStatus').textContent = `Arquivo selecionado: ${arquivo.name}`;
+  document.getElementById('enviarComprovante').style.display = 'inline-flex';
+});
+
+document.getElementById('enviarComprovante').addEventListener('click', () => {
+  if (!comprovanteSelecionado || !inscricaoAtual) return;
+  const leitor = new FileReader();
+  const botao = document.getElementById('enviarComprovante');
+  botao.disabled = true;
+  botao.textContent = 'Preparando envio...';
+  leitor.onload = () => {
+    const base64Completo = String(leitor.result || '');
+    const base64 = base64Completo.includes(',') ? base64Completo.split(',')[1] : base64Completo;
+    const payload = {
+      acao: 'enviarComprovanteRotaPadel',
+      dados: {
+        id: inscricaoAtual.id,
+        nomeArquivo: comprovanteSelecionado.name,
+        mimeType: comprovanteSelecionado.type,
+        arquivoBase64: base64
+      }
+    };
+
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    })
+    .then(resposta => resposta.json())
+    .then(retorno => {
+      if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível enviar o comprovante.');
+      document.getElementById('comprovanteStatus').textContent = 'Comprovante enviado. Aguardando conferência do pagamento.';
+      botao.style.display = 'none';
+      document.getElementById('selecionarComprovante').style.display = 'none';
+    })
+    .catch(erro => {
+      alert(erro.message || 'Não foi possível enviar o comprovante.');
+      botao.disabled = false;
+      botao.textContent = 'Enviar comprovante';
+    });
+  };
+  leitor.onerror = () => {
+    alert('Não foi possível ler o comprovante.');
+    botao.disabled = false;
+    botao.textContent = 'Enviar comprovante';
+  };
+  leitor.readAsDataURL(comprovanteSelecionado);
+});
+
+function fechar() {
+  sucesso.style.display = 'none';
+  sucesso.setAttribute('aria-hidden', 'true');
+}
+
+document.getElementById('fecharModal').addEventListener('click', fechar);
+document.getElementById('novaInscricao').addEventListener('click', fechar);
+atualizarVagas();
 </script>
 </body>
 </html>
