@@ -92,7 +92,8 @@
 </div>
 
 <div class="card">
-<div class="match-top"><div><h2 style="margin:0">Jogos</h2><p class="muted">Aqui você controla horário, quadra, status e placar.</p></div></div>
+<div class="match-top"><div><h2 style="margin:0">🎾 Controle das partidas</h2><p class="muted">Fluxo: Agendado → Em jogo → Finalizado. Ao salvar, o participante recebe a atualização automaticamente.</p></div></div>
+<div id="aoVivoAdmin" class="notice warn">Nenhuma partida em quadra nesta categoria.</div>
 <div id="listaJogos"></div>
 </div>
 </section>
@@ -135,12 +136,77 @@ function renderResumo(){document.getElementById('totalDuplas').textContent=estad
 function jogosCat(cat){return estado.jogos.filter(j=>j.categoria===cat&&['Chave A','Chave B','Semifinal','Final'].includes(String(j.fase||''))).sort((a,b)=>Number(a.ordem||0)-Number(b.ordem||0));}
 function duplasGrupo(cat,fase){const n=[];jogosCat(cat).filter(j=>j.fase===fase).forEach(j=>[j.dupla1,j.dupla2].forEach(x=>{if(x&&!/^1º|^2º|^Vencedor/.test(String(x))&&!n.includes(x))n.push(x)}));return n;}
 function fill(id,opts,val){const e=document.getElementById(id);e.innerHTML='<option value="">Selecione...</option>'+opts.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');if(val)e.value=val;}
-function renderTorneio(){const c=document.getElementById('categoria');if(!c.options.length)c.innerHTML=CATEGORIAS.map(x=>'<option>'+esc(x)+'</option>').join('');const cat=c.value||CATEGORIAS[0];c.value=cat;const jogos=jogosCat(cat);const sf1=jogos.find(j=>j.fase==='Semifinal'&&Number(j.ordem)===1);const sf2=jogos.find(j=>j.fase==='Semifinal'&&Number(j.ordem)===2);const a=duplasGrupo(cat,'Chave A'),b=duplasGrupo(cat,'Chave B');fill('a1',a,sf1&&sf1.dupla1&&!/^1º/.test(sf1.dupla1)?sf1.dupla1:'');fill('a2',a,sf2&&sf2.dupla2&&!/^2º/.test(sf2.dupla2)?sf2.dupla2:'');fill('b1',b,sf2&&sf2.dupla1&&!/^1º/.test(sf2.dupla1)?sf2.dupla1:'');fill('b2',b,sf1&&sf1.dupla2&&!/^2º/.test(sf1.dupla2)?sf1.dupla2:'');const fase=document.getElementById('fase').value;const lista=jogos.filter(j=>!fase||j.fase===fase);document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>cardJogo(j)).join(''):'<p class="muted">Nenhum jogo nesta categoria.</p>';lista.forEach(j=>{const e=document.getElementById('st_'+j.id);if(e)e.value=j.status||'Agendado';});}
+function renderTorneio(){
+  const c=document.getElementById('categoria');
+  if(!c.options.length)c.innerHTML=CATEGORIAS.map(x=>'<option>'+esc(x)+'</option>').join('');
+  const cat=c.value||CATEGORIAS[0];
+  c.value=cat;
+
+  const jogos=jogosCat(cat);
+  const sf1=jogos.find(j=>j.fase==='Semifinal'&&Number(j.ordem)===1);
+  const sf2=jogos.find(j=>j.fase==='Semifinal'&&Number(j.ordem)===2);
+  const a=duplasGrupo(cat,'Chave A');
+  const b=duplasGrupo(cat,'Chave B');
+
+  fill('a1',a,sf1&&sf1.dupla1&&!/^1º/.test(sf1.dupla1)?sf1.dupla1:'');
+  fill('a2',a,sf2&&sf2.dupla2&&!/^2º/.test(sf2.dupla2)?sf2.dupla2:'');
+  fill('b1',b,sf2&&sf2.dupla1&&!/^1º/.test(sf2.dupla1)?sf2.dupla1:'');
+  fill('b2',b,sf1&&sf1.dupla2&&!/^2º/.test(sf1.dupla2)?sf1.dupla2:'');
+
+  const aoVivo=jogos.filter(j=>String(j.status||'').trim().toLowerCase()==='em jogo');
+  document.getElementById('aoVivoAdmin').className='notice '+(aoVivo.length?'warn':'ok');
+  document.getElementById('aoVivoAdmin').innerHTML=aoVivo.length
+    ? '<b>🔴 Agora em quadra</b><br>'+aoVivo.map(j=>esc(j.quadra||'Quadra a definir')+' — '+esc(j.dupla1||'A definir')+' × '+esc(j.dupla2||'A definir')).join('<br>')
+    : '🟢 Nenhuma partida em quadra nesta categoria.';
+
+  const fase=document.getElementById('fase').value;
+  const lista=jogos.filter(j=>!fase||j.fase===fase);
+  document.getElementById('listaJogos').innerHTML=lista.length
+    ? lista.map(j=>cardJogo(j)).join('')
+    : '<p class="muted">Nenhum jogo nesta categoria.</p>';
+
+  lista.forEach(j=>{
+    const e=document.getElementById('st_'+j.id);
+    if(e)e.value=j.status||'Agendado';
+  });
+}
 function localDate(v){if(!v)return'';const d=new Date(v);if(isNaN(d))return'';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
 function cardJogo(j){
   return '<div class="match"><div class="match-top"><span class="pill">'+esc(j.fase)+' · Jogo '+esc(j.ordem)+'</span><span class="pill '+(j.status==='Finalizado'?'ok':j.status==='Em jogo'?'warn':'')+'">'+esc(j.status||'Agendado')+'</span></div><div style="font-size:17px;font-weight:700;margin:9px 0">'+esc(j.dupla1||'A definir')+'<br><span class="muted">×</span><br>'+esc(j.dupla2||'A definir')+'</div><div class="grid2"><div><label>Horário</label><input id="dt_'+esc(j.id)+'" class="input" type="datetime-local" value="'+localDate(j.dataHora)+'"></div><div><label>Quadra</label><input id="qd_'+esc(j.id)+'" class="input" value="'+esc(j.quadra||'')+'"></div></div><div class="score"><div><label>Status</label><select id="st_'+esc(j.id)+'" class="select"><option>Agendado</option><option>Em jogo</option><option>Finalizado</option></select></div><div><label>1A</label><input id="s1a_'+esc(j.id)+'" class="input" value="'+esc(j.set1A??'')+'"></div><div><label>1B</label><input id="s1b_'+esc(j.id)+'" class="input" value="'+esc(j.set1B??'')+'"></div><div><label>2A</label><input id="s2a_'+esc(j.id)+'" class="input" value="'+esc(j.set2A??'')+'"></div><div><label>2B</label><input id="s2b_'+esc(j.id)+'" class="input" value="'+esc(j.set2B??'')+'"></div><div><label>3A</label><input id="s3a_'+esc(j.id)+'" class="input" value="'+esc(j.set3A??'')+'"></div><div><label>3B</label><input id="s3b_'+esc(j.id)+'" class="input" value="'+esc(j.set3B??'')+'"></div></div><div class="actions" style="margin-top:9px"><button class="btn" data-jogo-id="'+esc(j.id)+'" onclick="salvarJogo(this.dataset.jogoId)">Salvar jogo</button></div></div>';
 }
-async function salvarJogo(id){const g=x=>document.getElementById(x+id)?.value.trim()||'';const dados={id,dataHora:document.getElementById('dt_'+id).value,quadra:document.getElementById('qd_'+id).value.trim(),status:document.getElementById('st_'+id).value,set1A:g('s1a_'),set1B:g('s1b_'),set2A:g('s2a_'),set2B:g('s2b_'),set3A:g('s3a_'),set3B:g('s3b_'),placar1:[g('s1a_'),g('s2a_'),g('s3a_')].filter(Boolean).join('-'),placar2:[g('s1b_'),g('s2b_'),g('s3b_')].filter(Boolean).join('-')};try{await apiPost('editarJogoRotaPadel',dados);msg('geracaoMsg','Jogo salvo.','ok');await carregar();}catch(e){alert(e.message);}}
+async function salvarJogo(id){
+  const g=x=>document.getElementById(x+id)?.value.trim()||'';
+  const status=document.getElementById('st_'+id).value;
+  const quadra=document.getElementById('qd_'+id).value.trim();
+  const set1A=g('s1a_'),set1B=g('s1b_'),set2A=g('s2a_'),set2B=g('s2b_'),set3A=g('s3a_'),set3B=g('s3b_');
+  const placar1=[set1A,set2A,set3A].filter(Boolean).join('-');
+  const placar2=[set1B,set2B,set3B].filter(Boolean).join('-');
+
+  if(status==='Em jogo' && !quadra){
+    alert('Informe a quadra antes de colocar a partida em jogo.');
+    return;
+  }
+
+  if(status==='Finalizado' && (!placar1 || !placar2)){
+    alert('Informe o placar dos sets antes de finalizar a partida.');
+    return;
+  }
+
+  const dados={
+    id,
+    dataHora:document.getElementById('dt_'+id).value,
+    quadra,
+    status,
+    set1A,set1B,set2A,set2B,set3A,set3B,
+    placar1,placar2
+  };
+
+  try{
+    await apiPost('editarJogoRotaPadel',dados);
+    msg('geracaoMsg',status==='Em jogo'?'Partida colocada em quadra.':status==='Finalizado'?'Partida finalizada.':'Jogo salvo.','ok');
+    await carregar();
+  }catch(e){alert(e.message);}
+}
 async function salvarClassificacao(){const cat=document.getElementById('categoria').value,a1=document.getElementById('a1').value,a2=document.getElementById('a2').value,b1=document.getElementById('b1').value,b2=document.getElementById('b2').value;if(!a1||!a2||!b1||!b2){msg('classMsg','Preencha os quatro classificados.','err');return}if(a1===a2||b1===b2){msg('classMsg','1º e 2º da mesma chave não podem ser a mesma dupla.','err');return}const sf1=jogosCat(cat).find(j=>j.fase==='Semifinal'&&Number(j.ordem)===1),sf2=jogosCat(cat).find(j=>j.fase==='Semifinal'&&Number(j.ordem)===2);if(!sf1||!sf2){msg('classMsg','Gere o chaveamento primeiro.','err');return}try{await apiPost('editarJogoRotaPadel',{id:sf1.id,dupla1:a1,dupla2:b2});await apiPost('editarJogoRotaPadel',{id:sf2.id,dupla1:b1,dupla2:a2});msg('classMsg','Classificação salva e semifinais preenchidas.');await carregar();}catch(e){msg('classMsg',e.message,'err');}}
 async function gerarChaveamento(){if(!confirm('Gerar novamente o chaveamento? Isso limpa os jogos existentes e preserva as inscrições.'))return;try{await apiPost('gerarChaveamentoRotaPadel');msg('geracaoMsg','Chaveamento gerado: 9 jogos por categoria.');await carregar();}catch(e){msg('geracaoMsg',e.message,'err');}}
 async function zerarChaveamento(){if(!confirm('Zerar somente os jogos? As inscrições serão preservadas.'))return;try{await apiPost('zerarChaveamentoRotaPadel');msg('zerarMsg','Jogos zerados. As inscrições foram preservadas.');await carregar();}catch(e){msg('zerarMsg',e.message,'err');}}
