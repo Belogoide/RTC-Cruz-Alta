@@ -114,9 +114,9 @@ function gerarChaveamentoRotaPadel() {
   }
 
   const out = [];
+
   RP_CATEGORIAS.forEach(cat => {
     const duplas = inscricoes.filter(x => x.chave === cat).slice(0,6);
-
     if (duplas.length < 6) return;
 
     const nomes = duplas.map((d,i) =>
@@ -125,26 +125,26 @@ function gerarChaveamentoRotaPadel() {
 
     const base = cat.replace(/[^A-Za-z0-9]/g,'-').toUpperCase();
 
-    out.push([
-      base+'-QF1',cat,'Quartas',1,'','',
-      nomes[2],nomes[5],'Agendado','','','',''
-    ]);
-    out.push([
-      base+'-QF2',cat,'Quartas',2,'','',
-      nomes[3],nomes[4],'Agendado','','','',''
-    ]);
-    out.push([
-      base+'-SF1',cat,'Semifinal',3,'','',
-      nomes[0],base+'-QF2','Agendado','','','',''
-    ]);
-    out.push([
-      base+'-SF2',cat,'Semifinal',4,'','',
-      nomes[1],base+'-QF1','Agendado','','','',''
-    ]);
-    out.push([
-      base+'-FINAL',cat,'Final',5,'','',
-      base+'-SF1',base+'-SF2','Agendado','','','',''
-    ]);
+    // CHAVE A: duplas 1, 2 e 3 — todos contra todos.
+    out.push([base+'-A1',cat,'Chave A',1,'','',nomes[0],nomes[1],'Agendado','','','','']);
+    out.push([base+'-A2',cat,'Chave A',2,'','',nomes[0],nomes[2],'Agendado','','','','']);
+    out.push([base+'-A3',cat,'Chave A',3,'','',nomes[1],nomes[2],'Agendado','','','','']);
+
+    // CHAVE B: duplas 4, 5 e 6 — todos contra todos.
+    out.push([base+'-B1',cat,'Chave B',1,'','',nomes[3],nomes[4],'Agendado','','','','']);
+    out.push([base+'-B2',cat,'Chave B',2,'','',nomes[3],nomes[5],'Agendado','','','','']);
+    out.push([base+'-B3',cat,'Chave B',3,'','',nomes[4],nomes[5],'Agendado','','','','']);
+
+    // Semifinais: 1º de uma chave contra 2º da outra.
+    // Os campos ficam como placeholders até a classificação ser definida.
+    out.push([base+'-SF1',cat,'Semifinal',1,'','',
+      '1º Chave A','2º Chave B','Agendado','','','','']);
+    out.push([base+'-SF2',cat,'Semifinal',2,'','',
+      '1º Chave B','2º Chave A','Agendado','','','','']);
+
+    // Final: vencedores das semifinais.
+    out.push([base+'-FINAL',cat,'Final',1,'','',
+      'Vencedor SF1','Vencedor SF2','Agendado','','','','']);
   });
 
   if (out.length) {
