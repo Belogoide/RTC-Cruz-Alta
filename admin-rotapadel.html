@@ -95,6 +95,7 @@ th{font-size:12px;color:var(--muted);text-transform:uppercase}
   <button class="active" onclick="aba('resumo',this)">📊 Resumo</button>
   <button onclick="aba('jogos',this)">🎾 Jogos</button>
   <button onclick="aba('categorias',this)">🏆 Categorias</button>
+  <button onclick="aba('classificacao',this)">📋 Classificação</button>
   <button onclick="aba('config',this)">⚙️ Configuração</button>
   <button onclick="aba('avisos',this)">📢 Avisos</button>
 </nav>
@@ -156,6 +157,26 @@ th{font-size:12px;color:var(--muted);text-transform:uppercase}
     <h2>Inscrições por categoria</h2>
     <p class="muted">Cada categoria comporta até 6 duplas.</p>
     <div id="tabelaCategorias" class="table-wrap"></div>
+  </div>
+</section>
+
+<section id="classificacao" class="hidden">
+  <div class="card">
+    <div class="match-top">
+      <div>
+        <h2 style="margin:0">Classificação</h2>
+        <p class="muted">Selecione a categoria e informe apenas quem terminou em 1º e 2º em cada chave.</p>
+      </div>
+      <div style="min-width:220px">
+        <label>Categoria</label>
+        <select id="classificacaoCategoria" class="select" onchange="renderClassificacao()">
+          <option value="">Selecione uma categoria</option>
+        </select>
+      </div>
+    </div>
+    <div id="classificacaoConteudo">
+      <p class="muted">Selecione uma categoria para começar.</p>
+    </div>
   </div>
 </section>
 
@@ -294,6 +315,8 @@ async function carregar(silencioso=false){
     renderResumo();
     renderJogos();
     renderCategorias();
+    preencherSelectClassificacao();
+    renderClassificacao();
     renderConfig();
     renderAvisos();
     const u=document.getElementById('ultimaAtualizacao');
@@ -303,6 +326,105 @@ async function carregar(silencioso=false){
   }finally{
     atualizando=false;
   }
+}
+
+function contarJogosOficiais(){
+  return estado.jogos.filter(j => /-(A[1-3]|B[1-3]|SF[1-2]|FINAL)$/.test(String(j.id||''))).length;
+}
+
+function preencherSelectClassificacao(){
+  const el=document.getElementById('classificacaoCategoria');
+  if(!el)return;
+  const atual=el.value;
+  el.innerHTML='<option value="">Selecione uma categoria</option>'+CATEGORIAS.map(c=>'<option>'+esc(c)+'</option>').join('');
+  el.value=atual;
+}
+
+function jogosCategoria(cat){
+  return estado.jogos.filter(j=>j.categoria===cat && /-(A[1-3]|B[1-3]|SF[1-2]|FINAL)$/.test(String(j.id||'')));
+}
+
+function opcoesDuplas(cat){
+  const jogos=jogosCategoria(cat);
+  const nomes=[];
+  jogos.filter(j=>j.fase==='Chave A'||j.fase==='Chave B').forEach(j=>{
+    [j.dupla1,j.dupla2].forEach(n=>{
+      if(n && !/^1º|^2º|^Vencedor/.test(String(n)) && !nomes.includes(n)) nomes.push(n);
+    });
+  });
+  return nomes;
+}
+
+function selectClassificacao(id,valor,opcoes){
+  return '<select id="'+id+'" class="select">'+
+    '<option value="">Selecione...</option>'+
+    opcoes.map(o=>'<option value="'+esc(o)+'"'+(o===valor?' selected':'')+'>'+esc(o)+'</option>').join('')+
+    '</select>';
+}
+
+function renderClassificacao(){
+  const cat=document.getElementById('classificacaoCategoria')?.value;
+  const box=document.getElementById('classificacaoConteudo');
+  if(!box)return;
+  if(!cat){
+    box.innerHTML='<p class="muted">Selecione uma categoria para começar.</p>';
+    return;
+  }
+  const jogos=jogosCategoria(cat);
+  const sf1=jogos.find(j=>/-(SF1)$/.test(String(j.id||'')));
+  const sf2=jogos.find(j=>/-(SF2)$/.test(String(j.id||'')));
+  const opts=opcoesDuplas(cat);
+  const grupoA=jogos.filter(j=>j.fase==='Chave A');
+  const grupoB=jogos.filter(j=>j.fase==='Chave B');
+  const todosA=grupoA.every(j=>j.status==='Finalizado');
+  const todosB=grupoB.every(j=>j.status==='Finalizado');
+
+  box.innerHTML=
+    '<div class="grid2" style="margin-top:16px">'+
+      '<div class="card" style="margin:0">'+
+        '<h3>Chave A</h3>'+
+        '<p class="muted">'+(todosA?'Os 3 jogos estão finalizados.':'Finalize os 3 jogos da Chave A antes de classificar.')+'</p>'+
+        '<label>1º lugar</label>'+selectClassificacao('classA1',sf1&&sf1.dupla1&&sf1.dupla1!=='1º Chave A'?sf1.dupla1:'',opts)+
+        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classA2',sf2&&sf2.dupla2&&sf2.dupla2!=='2º Chave A'?sf2.dupla2:'',opts)+
+      '</div>'+
+      '<div class="card" style="margin:0">'+
+        '<h3>Chave B</h3>'+
+        '<p class="muted">'+(todosB?'Os 3 jogos estão finalizados.':'Finalize os 3 jogos da Chave B antes de classificar.')+'</p>'+
+        '<label>1º lugar</label>'+selectClassificacao('classB1',sf2&&sf2.dupla1&&sf2.dupla1!=='1º Chave B'?sf2.dupla1:'',opts)+
+        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classB2',sf1&&sf1.dupla2&&sf1.dupla2!=='2º Chave B'?sf1.dupla2:'',opts)+
+      '</div>'+
+    '</div>'+
+    '<div class="actions" style="margin-top:14px">'+
+      '<button class="btn" onclick="salvarClassificacao()">Salvar classificados e liberar semifinais</button>'+
+    '</div>'+
+    '<div class="notice warn" style="margin-top:12px">O sistema não calcula desempate. Se houver empate de critérios, escolha manualmente os 1º e 2º lugares conforme a regra definida pela organização.</div>'+
+    '<div class="card" style="margin-top:14px">'+
+      '<h3>Semifinais</h3>'+
+      '<p><b>SF1:</b> '+esc(sf1?.dupla1||'1º Chave A')+' × '+esc(sf1?.dupla2||'2º Chave B')+'</p>'+
+      '<p><b>SF2:</b> '+esc(sf2?.dupla1||'1º Chave B')+' × '+esc(sf2?.dupla2||'2º Chave A')+'</p>'+
+      '<p class="muted">Depois de finalizar as duas semifinais, a final deve ser atualizada com os vencedores.</p>'+
+    '</div>';
+}
+
+async function salvarClassificacao(){
+  const cat=document.getElementById('classificacaoCategoria')?.value;
+  if(!cat){alert('Selecione uma categoria.');return;}
+  const a1=document.getElementById('classA1')?.value;
+  const a2=document.getElementById('classA2')?.value;
+  const b1=document.getElementById('classB1')?.value;
+  const b2=document.getElementById('classB2')?.value;
+  if(!a1||!a2||!b1||!b2){alert('Selecione o 1º e 2º lugar das duas chaves.');return;}
+  if(a1===a2||b1===b2){alert('O 1º e 2º lugar da mesma chave não podem ser a mesma dupla.');return;}
+
+  const base=cat.replace(/[^A-Za-z0-9]/g,'-').toUpperCase();
+  try{
+    await apiPost('editarJogoRotaPadel',{id:base+'-SF1',dupla1:a1,dupla2:b2});
+    await apiPost('editarJogoRotaPadel',{id:base+'-SF2',dupla1:b1,dupla2:a2});
+    await carregar();
+    document.getElementById('classificacaoCategoria').value=cat;
+    renderClassificacao();
+    alert('Classificados salvos. As semifinais foram preenchidas.');
+  }catch(e){alert(e.message||'Não foi possível salvar a classificação.');}
 }
 
 function preencherSelects(){
@@ -319,7 +441,7 @@ function preencherSelects(){
 function renderResumo(){
   preencherSelects();
   document.getElementById('totalDuplas').textContent=estado.duplas.length;
-  document.getElementById('totalJogos').textContent=estado.jogos.length;
+  document.getElementById('totalJogos').textContent=contarJogosOficiais();
   document.getElementById('totalFinalizados').textContent=estado.jogos.filter(j=>String(j.status||'').toLowerCase()==='finalizado').length;
   const liberado=estado.release?new Date(estado.release):null;
   msg('statusGeral',liberado&&!Number.isNaN(liberado.getTime())&&new Date()>=liberado?'Torneio liberado para os participantes.':'Torneio ainda bloqueado para os participantes.',liberado&&new Date()>=liberado?'ok':'warn');
