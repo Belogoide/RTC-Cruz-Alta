@@ -187,9 +187,48 @@ async function salvarJogo(id){
     return;
   }
 
-  if(status==='Finalizado' && (!placar1 || !placar2)){
-    alert('Informe o placar dos sets antes de finalizar a partida.');
-    return;
+  if(status==='Finalizado'){
+    const pares=[[set1A,set1B],[set2A,set2B],[set3A,set3B]].filter(p=>p[0]!==''||p[1]!=='');
+    if(pares.length<2 || pares.some(p=>p[0]===''||p[1]==='')){
+      alert('Informe pelo menos 2 sets completos para finalizar a partida.');
+      return;
+    }
+
+    let winsA=0,winsB=0;
+    for(const p of pares){
+      const a=Number(p[0]),b=Number(p[1]);
+      if(!Number.isFinite(a)||!Number.isFinite(b)){
+        alert('Os placares dos sets devem ser numéricos.');
+        return;
+      }
+      if(a===b){
+        alert('Não há empate em padel. Cada set precisa ter um vencedor.');
+        return;
+      }
+      if(a>b)winsA++; else winsB++;
+    }
+
+    if(winsA<2 && winsB<2){
+      alert('A partida precisa ter um vencedor por 2 sets.');
+      return;
+    }
+    if(winsA>=2 && winsB>=2){
+      alert('Os sets informados geram dois vencedores. Confira o placar.');
+      return;
+    }
+  }
+
+  if(status==='Em jogo'){
+    const outra=estado.jogos.find(j=>
+      j.id!==id &&
+      j.categoria===document.getElementById('categoria').value &&
+      String(j.status||'').trim().toLowerCase()==='em jogo' &&
+      String(j.quadra||'').trim().toLowerCase()===quadra.toLowerCase()
+    );
+    if(outra){
+      alert('Essa quadra já está ocupada por outra partida em andamento.');
+      return;
+    }
   }
 
   const dados={
