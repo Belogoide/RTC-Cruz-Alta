@@ -1,18 +1,26 @@
-/*******************************************************
+/** *****************************************************
  * ROTA PADEL — BACKEND DO TORNEIO
- * Adicionar este arquivo ao projeto Apps Script APP-RTC.
- *
- * Usa a aba existente "RotaPadel" e cria:
- *   - Torneio_Config
- *   - Torneio_Jogos
- *   - Torneio_Avisos
  *
  * Formato de 6 duplas por categoria:
- *   QF1: 3 x 6
- *   QF2: 4 x 5
- *   SF1: 1 x vencedor QF2
- *   SF2: 2 x vencedor QF1
- *   FINAL: vencedor SF1 x vencedor SF2
+ *
+ * CHAVE A
+ *   D1 x D2
+ *   D1 x D3
+ *   D2 x D3
+ *
+ * CHAVE B
+ *   D4 x D5
+ *   D4 x D6
+ *   D5 x D6
+ *
+ * SEMIFINAIS
+ *   1º Chave A x 2º Chave B
+ *   1º Chave B x 2º Chave A
+ *
+ * FINAL
+ *   Vencedor SF1 x Vencedor SF2
+ *
+ * Total: 9 partidas por categoria.
  *******************************************************/
 
 const RP_RELEASE_DEFAULT = '2026-10-10T14:00:00-03:00';
@@ -237,7 +245,7 @@ function obterTorneioPorProtocolo(protocolo, adminSolicitado) {
 
   // Em "Agora em quadra" não há placar.
   const aoVivo = publicos
-    .filter(j => j.status === 'Em jogo')
+    .filter(j => String(j.status || '').trim().toLowerCase() === 'em jogo')
     .map(j => ({
       id:j.id,categoria:j.categoria,fase:j.fase,
       quadra:j.quadra,dupla1:j.dupla1,dupla2:j.dupla2
