@@ -6,604 +6,146 @@
 <title>Rota Padel — Administração</title>
 <style>
 :root{--pink:#D61264;--blue:#0056A8;--bg:#f4f6fa;--text:#18212b;--muted:#667085;--card:#fff;--line:#e4e7ec;--ok:#067647;--warn:#b54708;--danger:#b42318}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-button,input,select,textarea{font:inherit}
-a{text-decoration:none;color:inherit}
-.wrap{max-width:1180px;margin:auto;padding:18px}
-.top{background:linear-gradient(135deg,var(--pink),#b30e51);color:#fff;padding:24px 18px;border-radius:0 0 24px 24px}
-.topline{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
-.top h1{margin:8px 0 0;font-size:30px}
-.top p{margin:6px 0 0;opacity:.9}
-.badge{display:inline-flex;padding:7px 10px;border-radius:99px;background:#ffffff22;border:1px solid #ffffff44;font-size:12px;font-weight:700}
-.tabs{display:flex;gap:8px;overflow:auto;padding:15px 0}
-.tabs button{border:1px solid var(--line);background:#fff;padding:11px 14px;border-radius:11px;font-weight:700;cursor:pointer;white-space:nowrap}
-.tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 4px 18px #00000008}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.stat{background:#f8fafc;border-radius:14px;padding:15px}
-.stat span{display:block;color:var(--muted);font-size:13px}
-.stat b{display:block;font-size:26px;color:var(--blue);margin-top:6px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
-.input,.select,.textarea{width:100%;padding:12px;border:1px solid #d0d5dd;border-radius:10px;background:#fff}
-.textarea{min-height:110px;resize:vertical}
-.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
-.btn.pink{background:var(--pink)}
-.btn.alt{background:#eef4fb;color:var(--blue)}
-.btn.danger{background:#fef3f2;color:var(--danger)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.hidden{display:none!important}
-.muted{color:var(--muted)}
-.notice{padding:12px;border-radius:10px;margin-top:10px}
-.notice.ok{background:#ecfdf3;color:var(--ok)}
-.notice.warn{background:#fffaeb;color:var(--warn)}
-.notice.err{background:#fef3f2;color:var(--danger)}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:760px}
-th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:12px;color:var(--muted);text-transform:uppercase}
-.pill{display:inline-block;padding:5px 8px;border-radius:99px;background:#eef4fb;color:var(--blue);font-size:12px;font-weight:700}
-.pill.ok{background:#ecfdf3;color:var(--ok)}
-.pill.warn{background:#fffaeb;color:var(--warn)}
-.pill.danger{background:#fef3f2;color:var(--danger)}
-.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.category{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fff}
-.category b{display:block;font-size:18px;color:var(--blue)}
-.category small{color:var(--muted)}
-.match{border:1px solid var(--line);border-radius:13px;padding:13px;margin:9px 0}
-.match-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.match-teams{font-weight:700;margin:9px 0}
-.score{display:grid;grid-template-columns:1.2fr repeat(6,72px);gap:8px;align-items:end}.score-title{font-size:11px;color:var(--muted);font-weight:700;text-align:center}
-.login{max-width:440px;margin:60px auto}
-.footer-note{font-size:12px;color:var(--muted);margin-top:14px}
-@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.category-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:800px){.score{grid-template-columns:1fr 1fr 1fr}}\n@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.category-grid{grid-template-columns:1fr}.score{grid-template-columns:1fr 1fr}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}button,input,select{font:inherit}
+.wrap{max-width:1100px;margin:auto;padding:18px}.top{background:linear-gradient(135deg,var(--pink),#b30e51);color:#fff;padding:22px 18px;border-radius:0 0 22px 22px}
+.top h1{margin:8px 0 4px;font-size:28px}.top p{margin:0;opacity:.9}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 15px #00000008}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#f8fafc;border-radius:12px;padding:13px}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;color:var(--blue);font-size:24px;margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-size:12px;font-weight:700;margin:0 0 6px}.input,.select{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:9px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 13px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}.btn.pink{background:var(--pink)}.btn.alt{background:#eef4fb;color:var(--blue)}.btn.danger{background:#fef3f2;color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}.muted{color:var(--muted)}.notice{padding:10px;border-radius:9px;margin-top:10px}.ok{background:#ecfdf3;color:var(--ok)}.warn{background:#fffaeb;color:var(--warn)}.err{background:#fef3f2;color:var(--danger)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}.tabs button{border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:9px;font-weight:700;white-space:nowrap;cursor:pointer}.tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.match{border:1px solid var(--line);border-radius:12px;padding:13px;margin:9px 0}.match-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.pill{display:inline-block;padding:4px 7px;border-radius:99px;background:#eef4fb;color:var(--blue);font-size:11px;font-weight:700}.pill.ok{background:#ecfdf3;color:var(--ok)}.pill.warn{background:#fffaeb;color:var(--warn)}
+.score{display:grid;grid-template-columns:1fr repeat(6,65px);gap:7px;align-items:end;margin-top:10px}.score input{width:100%}.login{max-width:420px;margin:55px auto}
+.category{border:1px solid var(--line);border-radius:12px;padding:11px;margin:7px 0}.category b{color:var(--blue)}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.score{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
-
-<header class="top">
-  <div class="wrap">
-    <div class="topline">
-      <div>
-        <a href="index.html">← RTC Cruz Alta</a>
-        <h1>🎾 Rota Padel — Administração</h1>
-        <p>Controle do torneio, jogos, resultados e liberação.</p>
-      </div>
-      <span class="badge">ÁREA ADMINISTRATIVA</span>
-    </div>
-  </div>
-</header>
+<header class="top"><div class="wrap">
+<a href="index.html" style="color:#fff">← RTC Cruz Alta</a>
+<h1>🎾 Rota Padel — Administração</h1>
+<p>Painel simples para organizar o torneio.</p>
+</div></header>
 
 <main class="wrap">
-
 <section id="login" class="card login">
-  <h2>Acesso administrativo</h2>
-  <p class="muted">Esta página não aparece na página inicial. Acesse diretamente pela URL administrativa.</p>
-  <label for="senha">Chave de acesso</label>
-  <input id="senha" class="input" type="password" autocomplete="current-password" placeholder="Digite a chave administrativa">
-  <div class="actions" style="margin-top:10px">
-    <button class="btn" onclick="entrar()">Entrar</button>
-  </div>
-  <div id="loginMsg"></div>
+<h2>Acesso</h2>
+<label>Chave administrativa</label>
+<input id="senha" class="input" type="password" placeholder="Digite a chave">
+<div class="actions" style="margin-top:10px"><button class="btn" onclick="entrar()">Entrar</button></div>
+<div id="loginMsg"></div>
 </section>
 
 <section id="painel" class="hidden">
-
 <nav class="tabs">
-  <button class="active" onclick="aba('resumo',this)">📊 Resumo</button>
-  <button onclick="aba('jogos',this)">🎾 Jogos</button>
-  <button onclick="aba('categorias',this)">🏆 Categorias</button>
-  <button onclick="aba('classificacao',this)">📋 Classificação</button>
-  <button onclick="aba('config',this)">⚙️ Configuração</button>
-  <button onclick="aba('avisos',this)">📢 Avisos</button>
+<button class="active" onclick="aba('inicio',this)">Resumo</button>
+<button onclick="aba('torneio',this)">🎾 Torneio</button>
+<button onclick="aba('config',this)">⚙️ Configuração</button>
 </nav>
 
-<section id="resumo">
-  <div class="grid">
-    <div class="stat"><span>Duplas inscritas</span><b id="totalDuplas">0</b></div>
-    <div class="stat"><span>Limite</span><b>54</b></div>
-    <div class="stat"><span>Jogos</span><b id="totalJogos">0</b></div>
-    <div class="stat"><span>Finalizados</span><b id="totalFinalizados">0</b></div>
-  </div>
-
-  <div class="card">
-    <div class="match-top">
-      <div><h2 style="margin:0">Status do torneio</h2><p class="muted">Visão geral das categorias e vagas.</p></div>
-      <button class="btn alt" onclick="carregar()">↻ Atualizar</button><span id="ultimaAtualizacao" class="muted" style="align-self:center;font-size:12px">Atualização manual</span>
-    </div>
-    <div id="statusGeral" class="notice warn">Carregando...</div>
-  </div>
-
-  <div class="card">
-    <h2>Preenchimento por categoria</h2>
-    <div id="categoriasResumo" class="category-grid"></div>
-  </div>
+<section id="inicio">
+<div class="grid">
+<div class="stat"><span>Duplas</span><b id="totalDuplas">0</b></div>
+<div class="stat"><span>Limite</span><b>54</b></div>
+<div class="stat"><span>Jogos</span><b id="totalJogos">0</b></div>
+<div class="stat"><span>Finalizados</span><b id="totalFinalizados">0</b></div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Controle rápido</h2>
+<div id="statusGeral" class="notice warn">Carregando...</div>
+<div class="actions" style="margin-top:12px">
+<button class="btn" onclick="gerarChaveamento()">Gerar chaveamento</button>
+<button class="btn alt" onclick="carregar()">Atualizar</button>
+</div>
+<div id="geracaoMsg"></div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Categorias</h2>
+<div id="categoriasResumo"></div>
+</div>
 </section>
 
-<section id="jogos" class="hidden">
-  <div class="card">
-    <div class="grid2">
-      <div>
-        <label>Categoria</label>
-        <select id="filtroCategoria" class="select" onchange="renderJogos()">
-          <option value="">Todas as categorias</option>
-        </select>
-      </div>
-      <div>
-        <label>Status</label>
-        <select id="filtroStatus" class="select" onchange="renderJogos()">
-          <option value="">Todos</option>
-          <option>Agendado</option>
-          <option>Em jogo</option>
-          <option>Finalizado</option>
-        </select>
-      </div>
-    </div>
-  </div>
+<section id="torneio" class="hidden">
+<div class="card">
+<div class="grid2">
+<div><label>Categoria</label><select id="categoria" class="select" onchange="renderTorneio()"></select></div>
+<div><label>Filtro</label><select id="fase" class="select" onchange="renderTorneio()"><option value="">Todas as fases</option><option>Chave A</option><option>Chave B</option><option>Semifinal</option><option>Final</option></select></div>
+</div>
+</div>
 
-  <div class="card">
-    <div class="match-top">
-      <div><h2 style="margin:0">Partidas</h2><p class="muted">Altere horário, quadra, status e resultado.</p></div>
-      <button class="btn" onclick="gerarChaveamento()">Gerar/atualizar chaveamentos</button>
-    </div>
-    <div id="listaJogos"></div>
-  </div>
-</section>
+<div class="card">
+<h2 style="margin:0">Classificação das chaves</h2>
+<p class="muted">Depois dos 3 jogos de cada chave, escolha apenas 1º e 2º lugar.</p>
+<div class="grid2">
+<div>
+<h3>Chave A</h3>
+<label>1º lugar</label><select id="a1" class="select"></select>
+<label style="margin-top:8px">2º lugar</label><select id="a2" class="select"></select>
+</div>
+<div>
+<h3>Chave B</h3>
+<label>1º lugar</label><select id="b1" class="select"></select>
+<label style="margin-top:8px">2º lugar</label><select id="b2" class="select"></select>
+</div>
+</div>
+<div class="actions" style="margin-top:12px"><button class="btn" onclick="salvarClassificacao()">Salvar classificação</button></div>
+<div id="classMsg"></div>
+</div>
 
-<section id="categorias" class="hidden">
-  <div class="card">
-    <h2>Inscrições por categoria</h2>
-    <p class="muted">Cada categoria comporta até 6 duplas.</p>
-    <div id="tabelaCategorias" class="table-wrap"></div>
-  </div>
-</section>
-
-<section id="classificacao" class="hidden">
-  <div class="card">
-    <div class="match-top">
-      <div>
-        <h2 style="margin:0">Classificação</h2>
-        <p class="muted">Selecione a categoria e informe apenas quem terminou em 1º e 2º em cada chave.</p>
-      </div>
-      <div style="min-width:220px">
-        <label>Categoria</label>
-        <select id="classificacaoCategoria" class="select" onchange="renderClassificacao()">
-          <option value="">Selecione uma categoria</option>
-        </select>
-      </div>
-    </div>
-    <div id="classificacaoConteudo">
-      <p class="muted">Selecione uma categoria para começar.</p>
-    </div>
-  </div>
+<div class="card">
+<div class="match-top"><div><h2 style="margin:0">Jogos</h2><p class="muted">Aqui você controla horário, quadra, status e placar.</p></div></div>
+<div id="listaJogos"></div>
+</div>
 </section>
 
 <section id="config" class="hidden">
-  <div class="card">
-    <h2>Liberação do torneio</h2>
-    <p class="muted">Defina a data e o horário em que os participantes poderão consultar seus jogos.</p>
-    <div class="grid2">
-      <div>
-        <label>Data e hora</label>
-        <input id="release" class="input" type="datetime-local">
-      </div>
-      <div>
-        <label>Status atual</label>
-        <div id="releaseAtual" class="notice warn">Carregando...</div>
-      </div>
-    </div>
-    <div class="actions" style="margin-top:12px">
-      <button class="btn" onclick="salvarLiberacao()">Salvar data de liberação</button>
-      <button class="btn alt" onclick="liberarAgora()">Liberar agora</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Configurações do evento</h2>
-    <div class="grid2">
-      <div><label>Valor da inscrição</label><input id="valor" class="input" value="50,00"></div>
-      <div><label>WhatsApp oficial</label><input id="whatsapp" class="input" value="https://chat.whatsapp.com/H1FUXbg5TVV6LqeHCq3J66"></div>
-    </div>
-    <p class="footer-note">Os campos acima ficam preparados para integração com a configuração do torneio no Apps Script.</p>
-  </div>
+<div class="card">
+<h2 style="margin-top:0">Liberação</h2>
+<label>Data e hora</label><input id="release" class="input" type="datetime-local">
+<div id="releaseAtual" class="notice warn"></div>
+<div class="actions" style="margin-top:10px">
+<button class="btn" onclick="salvarLiberacao()">Salvar</button>
+<button class="btn alt" onclick="liberarAgora()">Liberar agora</button>
+</div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Chaveamento</h2>
+<p class="muted">Limpa somente os jogos. As 54 inscrições continuam intactas.</p>
+<button class="btn danger" onclick="zerarChaveamento()">Zerar jogos</button>
+<div id="zerarMsg"></div>
+</div>
 </section>
-
-<section id="avisos" class="hidden">
-  <div class="card">
-    <h2>Novo aviso</h2>
-    <div class="grid2">
-      <div><label>Título</label><input id="avisoTitulo" class="input" placeholder="Ex.: Alteração de horário"></div>
-      <div><label>Categoria (opcional)</label><select id="avisoCategoria" class="select"><option value="">Todas</option></select></div>
-    </div>
-    <label style="margin-top:12px">Mensagem</label>
-    <textarea id="avisoTexto" class="textarea" placeholder="Escreva o aviso que aparecerá para os participantes."></textarea>
-    <div class="actions" style="margin-top:12px"><button class="btn pink" onclick="publicarAviso()">Publicar aviso</button></div>
-  </div>
-  <div class="card">
-    <h2>Avisos publicados</h2>
-    <div id="listaAvisos"><p class="muted">Nenhum aviso carregado.</p></div>
-  </div>
-</section>
-
 </section>
 </main>
 
 <script>
 const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec';
 const CATEGORIAS=['Misto A','Misto B','Misto C','Feminino A','Feminino B','Feminino C','Masculino A','Masculino B','Masculino C'];
-let adminChave=sessionStorage.getItem('rtc_rotapadel_admin_chave')||'';
-let estado={duplas:[],jogos:[],release:null,avisos:[]};
-let atualizando=false;
+let chave=sessionStorage.getItem('rtc_rotapadel_admin_chave')||'';
+let estado={duplas:[],jogos:[],release:null};
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
-
-function aba(id,b){
-  document.querySelectorAll('#painel>section').forEach(x=>x.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-}
-
-function mostrarSucesso(text,tipo='ok'){
-  let el=document.getElementById('confirmacaoSalvar');
-  if(!el){
-    el=document.createElement('div');
-    el.id='confirmacaoSalvar';
-    document.querySelector('#jogos .card:last-child').prepend(el);
-  }
-  el.className='notice '+tipo;
-  el.textContent=text;
-  el.scrollIntoView({behavior:'smooth',block:'nearest'});
-  if(tipo==='ok') setTimeout(()=>{if(el)el.remove();},6000);
-}
-
-function msg(id,text,tipo='warn'){
-  const el=document.getElementById(id);
-  if(!el)return;
-  el.className='notice '+tipo;
-  el.textContent=text;
-}
-
-async function apiGet(params){
-  const url=API+'?'+new URLSearchParams({...params,chave:adminChave});
-  const r=await fetch(url,{cache:'no-store'});
-  const d=await r.json();
-  if(d.autorizado===false) throw new Error(d.mensagem||'Acesso administrativo não autorizado.');
-  if(d.ok===false && d.sucesso!==true) throw new Error(d.erro||d.mensagem||'Erro na consulta.');
-  return d;
-}
-
-async function apiPost(acao,dados={}){
-  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({acao,chave:adminChave,dados})});
-  const texto=await r.text();
-  if(!texto.trim()) throw new Error('O servidor não retornou resposta. Verifique a implantação do Apps Script.');
-  let d;
-  try{d=JSON.parse(texto);}catch(e){throw new Error('Resposta inválida do Apps Script: '+texto.slice(0,200));}
-  if(d.autorizado===false) throw new Error(d.mensagem||'Acesso administrativo não autorizado.');
-  if(d.status!=='ok' && d.sucesso!==true && d.ok!==true) throw new Error(d.mensagem||d.erro||'Operação não concluída.');
-  return d;
-}
-
-async function entrar(){
-  const senha=document.getElementById('senha').value.trim();
-  if(!senha){msg('loginMsg','Informe a chave administrativa.','err');return;}
-  adminChave=senha;
-  try{
-    await apiGet({tipo:'torneioAdmin'});
-    sessionStorage.setItem('rtc_rotapadel_admin_chave',adminChave);
-    document.getElementById('login').classList.add('hidden');
-    document.getElementById('painel').classList.remove('hidden');
-    await carregar();
-  }catch(e){
-    adminChave='';
-    sessionStorage.removeItem('rtc_rotapadel_admin_chave');
-    msg('loginMsg',e.message||'Chave inválida.','err');
-  }
-}
-
-async function carregar(silencioso=false){
-  if(atualizando)return;
-  atualizando=true;
-  try{
-    const d=await apiGet({tipo:'torneioAdmin'});
-    estado.duplas=d.duplas||d.inscricoes||[];
-    estado.jogos=d.jogos||[];
-    estado.release=d.release||null;
-    estado.avisos=d.avisos||[];
-    renderResumo();
-    renderJogos();
-    renderCategorias();
-    preencherSelectClassificacao();
-    renderClassificacao();
-    renderConfig();
-    renderAvisos();
-    const u=document.getElementById('ultimaAtualizacao');
-    if(u) u.textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR');
-  }catch(e){
-    if(!silencioso) alert(e.message||'Não foi possível carregar o painel.');
-  }finally{
-    atualizando=false;
-  }
-}
-
-function ehJogoOficial_(j){
-  return ['Chave A','Chave B','Semifinal','Final'].includes(String(j.fase||''))
-    && Number(j.ordem||0) >= 1;
-}
-
-function chaveJogoOficial_(j){
-  return [String(j.categoria||''),String(j.fase||''),String(j.ordem||'')].join('|');
-}
-
-function contarJogosOficiais(){
-  // O Apps Script pode ainda conter linhas antigas/duplicadas na aba Torneio_Jogos.
-  // O ADM conta somente os slots estruturais únicos do chaveamento: 9 por categoria.
-  const unicos=new Set();
-  estado.jogos.filter(ehJogoOficial_).forEach(j=>unicos.add(chaveJogoOficial_(j)));
-  return unicos.size;
-}
-
-function localizarJogoEstrutural_(cat,fase,ordem){
-  return estado.jogos.find(j =>
-    String(j.categoria||'')===String(cat) &&
-    String(j.fase||'')===String(fase) &&
-    Number(j.ordem||0)===Number(ordem)
-  );
-}
-
-function preencherSelectClassificacao(){
-  const el=document.getElementById('classificacaoCategoria');
-  if(!el)return;
-  const atual=el.value;
-  el.innerHTML='<option value="">Selecione uma categoria</option>'+CATEGORIAS.map(c=>'<option>'+esc(c)+'</option>').join('');
-  el.value=atual;
-}
-
-function jogosCategoria(cat){
-  return estado.jogos.filter(j=>j.categoria===cat && /-(A[1-3]|B[1-3]|SF[1-2]|FINAL)$/.test(String(j.id||'')));
-}
-
-function opcoesDuplas(cat,grupo){
-  const jogos=jogosCategoria(cat).filter(j=>j.fase===grupo);
-  const nomes=[];
-  jogos.forEach(j=>{
-    [j.dupla1,j.dupla2].forEach(n=>{
-      if(n && !/^1º|^2º|^Vencedor/.test(String(n)) && !nomes.includes(n)) nomes.push(n);
-    });
-  });
-  return nomes;
-}
-
-function selectClassificacao(id,valor,opcoes){
-  return '<select id="'+id+'" class="select">'+
-    '<option value="">Selecione...</option>'+
-    opcoes.map(o=>'<option value="'+esc(o)+'"'+(o===valor?' selected':'')+'>'+esc(o)+'</option>').join('')+
-    '</select>';
-}
-
-function renderClassificacao(){
-  const cat=document.getElementById('classificacaoCategoria')?.value;
-  const box=document.getElementById('classificacaoConteudo');
-  if(!box)return;
-  if(!cat){
-    box.innerHTML='<p class="muted">Selecione uma categoria para começar.</p>';
-    return;
-  }
-  const jogos=jogosCategoria(cat);
-  const sf1=jogos.find(j=>/-(SF1)$/.test(String(j.id||'')));
-  const sf2=jogos.find(j=>/-(SF2)$/.test(String(j.id||'')));
-  const optsA=opcoesDuplas(cat,'Chave A');
-  const optsB=opcoesDuplas(cat,'Chave B');
-  const grupoA=jogos.filter(j=>j.fase==='Chave A');
-  const grupoB=jogos.filter(j=>j.fase==='Chave B');
-  const todosA=grupoA.every(j=>j.status==='Finalizado');
-  const todosB=grupoB.every(j=>j.status==='Finalizado');
-
-  box.innerHTML=
-    '<div class="grid2" style="margin-top:16px">'+
-      '<div class="card" style="margin:0">'+
-        '<h3>Chave A</h3>'+
-        '<p class="muted">'+(todosA?'Os 3 jogos estão finalizados.':'Finalize os 3 jogos da Chave A antes de classificar.')+'</p>'+
-        '<label>1º lugar</label>'+selectClassificacao('classA1',sf1&&sf1.dupla1&&sf1.dupla1!=='1º Chave A'?sf1.dupla1:'',optsA)+
-        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classA2',sf2&&sf2.dupla2&&sf2.dupla2!=='2º Chave A'?sf2.dupla2:'',optsA)+
-      '</div>'+
-      '<div class="card" style="margin:0">'+
-        '<h3>Chave B</h3>'+
-        '<p class="muted">'+(todosB?'Os 3 jogos estão finalizados.':'Finalize os 3 jogos da Chave B antes de classificar.')+'</p>'+
-        '<label>1º lugar</label>'+selectClassificacao('classB1',sf2&&sf2.dupla1&&sf2.dupla1!=='1º Chave B'?sf2.dupla1:'',optsB)+
-        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classB2',sf1&&sf1.dupla2&&sf1.dupla2!=='2º Chave B'?sf1.dupla2:'',optsB)+
-      '</div>'+
-    '</div>'+
-    '<div class="actions" style="margin-top:14px">'+
-      '<button class="btn" onclick="salvarClassificacao()">Salvar classificados e liberar semifinais</button>'+
-    '</div>'+
-    '<div class="notice warn" style="margin-top:12px">O sistema não calcula desempate. Se houver empate de critérios, escolha manualmente os 1º e 2º lugares conforme a regra definida pela organização.</div>'+
-    '<div class="card" style="margin-top:14px">'+
-      '<h3>Semifinais</h3>'+
-      '<p><b>SF1:</b> '+esc(sf1?.dupla1||'1º Chave A')+' × '+esc(sf1?.dupla2||'2º Chave B')+'</p>'+
-      '<p><b>SF2:</b> '+esc(sf2?.dupla1||'1º Chave B')+' × '+esc(sf2?.dupla2||'2º Chave A')+'</p>'+
-      '<p class="muted">Depois de finalizar as duas semifinais, a final deve ser atualizada com os vencedores.</p>'+
-    '</div>';
-}
-
-async function salvarClassificacao(){
-  const cat=document.getElementById('classificacaoCategoria')?.value;
-  if(!cat){alert('Selecione uma categoria.');return;}
-  const a1=document.getElementById('classA1')?.value;
-  const a2=document.getElementById('classA2')?.value;
-  const b1=document.getElementById('classB1')?.value;
-  const b2=document.getElementById('classB2')?.value;
-  if(!a1||!a2||!b1||!b2){alert('Selecione o 1º e 2º lugar das duas chaves.');return;}
-  if(a1===a2||b1===b2){alert('O 1º e 2º lugar da mesma chave não podem ser a mesma dupla.');return;}
-
-  // Não monta o ID na mão. Localiza a semifinal real existente na planilha.
-  // Isso evita o erro "Partida não encontrada" quando o ID do Apps Script
-  // estiver diferente do padrão usado pelo frontend.
-  const sf1=localizarJogoEstrutural_(cat,'Semifinal',1);
-  const sf2=localizarJogoEstrutural_(cat,'Semifinal',2);
-
-  if(!sf1 || !sf2){
-    alert('As semifinais desta categoria não existem na aba Torneio_Jogos. Gere o chaveamento novamente antes de classificar.');
-    return;
-  }
-
-  try{
-    await apiPost('editarJogoRotaPadel',{id:sf1.id,dupla1:a1,dupla2:b2});
-    await apiPost('editarJogoRotaPadel',{id:sf2.id,dupla1:b1,dupla2:a2});
-    await carregar();
-    document.getElementById('classificacaoCategoria').value=cat;
-    renderClassificacao();
-    alert('Classificados salvos. As semifinais foram preenchidas.');
-  }catch(e){alert(e.message||'Não foi possível salvar a classificação.');}
-}
-
-function preencherSelects(){
-  ['filtroCategoria','avisoCategoria'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el)return;
-    const atual=el.value;
-    const primeiro=id==='filtroCategoria'?'<option value="">Todas as categorias</option>':'<option value="">Todas</option>';
-    el.innerHTML=primeiro+CATEGORIAS.map(c=>'<option>'+esc(c)+'</option>').join('');
-    el.value=atual;
-  });
-}
-
-function renderResumo(){
-  preencherSelects();
-  document.getElementById('totalDuplas').textContent=estado.duplas.length;
-  document.getElementById('totalJogos').textContent=contarJogosOficiais();
-  document.getElementById('totalFinalizados').textContent=estado.jogos.filter(j=>String(j.status||'').toLowerCase()==='finalizado').length;
-  const liberado=estado.release?new Date(estado.release):null;
-  msg('statusGeral',liberado&&!Number.isNaN(liberado.getTime())&&new Date()>=liberado?'Torneio liberado para os participantes.':'Torneio ainda bloqueado para os participantes.',liberado&&new Date()>=liberado?'ok':'warn');
-  document.getElementById('categoriasResumo').innerHTML=CATEGORIAS.map(c=>{
-    const n=estado.duplas.filter(d=>(d.categoriaCompleta||d.categoria||'')===c).length;
-    return '<div class="category"><b>'+esc(c)+'</b><strong>'+n+' / 6 duplas</strong><br><small>'+(n>=6?'Categoria completa':(6-n)+' vagas restantes')+'</small></div>';
-  }).join('');
-}
-
-function renderCategorias(){
-  const rows=CATEGORIAS.map(c=>{
-    const ds=estado.duplas.filter(d=>(d.categoriaCompleta||d.categoria||'')===c);
-    return '<tr><td><b>'+esc(c)+'</b></td><td>'+ds.length+'/6</td><td>'+ds.map((d,i)=>esc(d.dupla||((d.participante1||'')+' × '+(d.participante2||'')))+' <span class="muted">#'+(i+1)+'</span>').join('<br>')+'</td></tr>';
-  }).join('');
-  document.getElementById('tabelaCategorias').innerHTML='<table><thead><tr><th>Categoria</th><th>Vagas</th><th>Duplas</th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
-
-function renderJogos(){
-  const cat=document.getElementById('filtroCategoria').value;
-  const status=document.getElementById('filtroStatus').value;
-  const lista=estado.jogos.filter(j=>(!cat||j.categoria===cat)&&(!status||j.status===status));
-  document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>{
-    return '<div class="match">'+
-      '<div class="match-top"><span class="pill">'+esc(j.categoria||'')+' · '+esc(j.fase||'')+'</span><span class="pill '+(j.status==='Finalizado'?'ok':j.status==='Em jogo'?'warn':'')+'">'+esc(j.status||'Agendado')+'</span></div>'+
-      '<div class="match-teams">'+esc(j.dupla1||'A definir')+' × '+esc(j.dupla2||'A definir')+'</div>'+
-      '<div class="grid2"><div><label>Data/hora</label><input id="data_'+esc(j.id)+'" class="input" type="datetime-local" value="'+valorLocal(j.dataHora)+'"></div><div><label>Quadra</label><input id="quadra_'+esc(j.id)+'" class="input" value="'+esc(j.quadra||'')+'"></div></div>'+
-      '<div class="score" style="margin-top:10px"><div><label>Status</label><select id="status_'+esc(j.id)+'" class="select"><option>Agendado</option><option>Em jogo</option><option>Finalizado</option></select></div><div><label>1º set A</label><input id="s1a_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set1A??'')+'"></div><div><label>1º set B</label><input id="s1b_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set1B??'')+'"></div><div><label>2º set A</label><input id="s2a_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set2A??'')+'"></div><div><label>2º set B</label><input id="s2b_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set2B??'')+'"></div><div><label>3º set A</label><input id="s3a_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set3A??'')+'"></div><div><label>3º set B</label><input id="s3b_'+esc(j.id)+'" class="input" inputmode="numeric" value="'+esc(j.set3B??'')+'"></div></div>'+
-      '<div class="actions" style="margin-top:10px"><button class="btn" data-jogo-id="'+esc(j.id)+'" onclick="salvarJogo(this.dataset.jogoId)">Salvar partida</button></div>'+
-      '</div>';
-  }).join(''):'<p class="muted">Nenhuma partida encontrada.</p>';
-  lista.forEach(j=>{const s=document.getElementById('status_'+j.id);if(s)s.value=j.status||'Agendado';});
-}
-
-function valorLocal(v){
-  if(!v)return '';
-  const d=new Date(v);
-  if(Number.isNaN(d.getTime()))return '';
-  const p=n=>String(n).padStart(2,'0');
-  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
-}
-
-function renderConfig(){
-  const d=estado.release?new Date(estado.release):null;
-  if(d&&!Number.isNaN(d.getTime())){
-    document.getElementById('release').value=valorLocal(d);
-    document.getElementById('releaseAtual').textContent='Liberação: '+d.toLocaleString('pt-BR');
-  }else{
-    document.getElementById('releaseAtual').textContent='Data de liberação não configurada.';
-  }
-}
-
-function renderAvisos(){
-  document.getElementById('listaAvisos').innerHTML=estado.avisos.length
-    ? estado.avisos.map(a=>'<div class="match"><b>'+esc(a.titulo||'Aviso')+'</b><p>'+esc(a.texto||a.mensagem||'')+'</p><small class="muted">'+esc(a.categoria||'Todas as categorias')+'</small></div>').join('')
-    : '<p class="muted">Nenhum aviso publicado.</p>';
-}
-
-async function gerarChaveamento(){
-  if(!confirm('Gerar/atualizar os chaveamentos das categorias que já possuem 6 duplas?'))return;
-  try{await apiPost('gerarChaveamentoRotaPadel');await carregar();alert('Chaveamentos atualizados.');}catch(e){alert(e.message);}
-}
-
-async function salvarJogo(id){
-  const s1a=document.getElementById('s1a_'+id).value.trim();
-  const s1b=document.getElementById('s1b_'+id).value.trim();
-  const s2a=document.getElementById('s2a_'+id).value.trim();
-  const s2b=document.getElementById('s2b_'+id).value.trim();
-  const s3a=document.getElementById('s3a_'+id).value.trim();
-  const s3b=document.getElementById('s3b_'+id).value.trim();
-
-  const dados={
-    id,
-    dataHora:document.getElementById('data_'+id).value,
-    quadra:document.getElementById('quadra_'+id).value.trim(),
-    status:document.getElementById('status_'+id).value,
-
-    // Formato de Padel: até 3 sets.
-    set1A:s1a,set1B:s1b,
-    set2A:s2a,set2B:s2b,
-    set3A:s3a,set3B:s3b,
-
-    // Mantém compatibilidade com o backend antigo.
-    placar1:[s1a,s2a,s3a].join('-'),
-    placar2:[s1b,s2b,s3b].join('-')
-  };
-
-  const botao=document.querySelector('#listaJogos button[data-jogo-id="'+CSS.escape(String(id))+'"]');
-  if(botao){botao.disabled=true;botao.textContent='Salvando...';}
-  try{
-    const resposta=await apiPost('editarJogoRotaPadel',dados);
-    const jogo=estado.jogos.find(x=>String(x.id)===String(id));
-    if(jogo){
-      jogo.dataHora=dados.dataHora;
-      jogo.quadra=dados.quadra;
-      jogo.status=dados.status;
-      jogo.set1A=s1a;jogo.set1B=s1b;
-      jogo.set2A=s2a;jogo.set2B=s2b;
-      jogo.set3A=s3a;jogo.set3B=s3b;
-      jogo.placar1=dados.placar1;jogo.placar2=dados.placar2;
-    }
-    renderJogos();
-    mostrarSucesso('Partida salva com sucesso. O participante verá a alteração na próxima atualização da página dele.');
-  }catch(e){
-    mostrarSucesso(e.message||'Não foi possível salvar a partida.','err');
-  }
-}
-
-async function salvarLiberacao(){
-  const v=document.getElementById('release').value;
-  if(!v){alert('Informe a data e hora.');return;}
-  try{await apiPost('definirDataLiberacaoRotaPadel',{dataISO:new Date(v).toISOString()});await carregar();alert('Data de liberação salva.');}catch(e){alert(e.message);}
-}
-
-async function liberarAgora(){
-  if(!confirm('Liberar o torneio imediatamente para os participantes?'))return;
-  try{await apiPost('definirDataLiberacaoRotaPadel',{dataISO:new Date().toISOString()});await carregar();}catch(e){alert(e.message);}
-}
-
-async function publicarAviso(){
-  const titulo=document.getElementById('avisoTitulo').value.trim();
-  const texto=document.getElementById('avisoTexto').value.trim();
-  const categoria=document.getElementById('avisoCategoria').value;
-  if(!titulo||!texto){alert('Preencha título e mensagem.');return;}
-  try{await apiPost('publicarAvisoRotaPadel',{titulo,texto,categoria});document.getElementById('avisoTitulo').value='';document.getElementById('avisoTexto').value='';await carregar();}catch(e){alert(e.message);}
-}
-
-if(adminChave){
-  document.getElementById('senha').value=adminChave;
-  entrar();
-}
+function msg(id,text,tipo='ok'){const e=document.getElementById(id);if(!e)return;e.className='notice '+tipo;e.textContent=text;}
+function aba(id,b){document.querySelectorAll('#painel>section').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(id==='torneio')renderTorneio();}
+async function apiGet(p){const r=await fetch(API+'?'+new URLSearchParams({...p,chave}));const d=await r.json();if(d.autorizado===false)throw Error(d.mensagem||'Acesso não autorizado.');if(d.ok===false&&d.sucesso!==true)throw Error(d.erro||d.mensagem||'Erro.');return d;}
+async function apiPost(acao,dados={}){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({acao,chave,dados})});const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){throw Error('Resposta inválida do Apps Script.');}if(d.autorizado===false)throw Error(d.mensagem||'Acesso não autorizado.');if(d.status!=='ok'&&d.sucesso!==true&&d.ok!==true)throw Error(d.mensagem||d.erro||'Operação não concluída.');return d;}
+async function entrar(){const v=document.getElementById('senha').value.trim();if(!v){msg('loginMsg','Informe a chave.','err');return}chave=v;try{await apiGet({tipo:'torneioAdmin'});sessionStorage.setItem('rtc_rotapadel_admin_chave',chave);document.getElementById('login').classList.add('hidden');document.getElementById('painel').classList.remove('hidden');await carregar();}catch(e){chave='';sessionStorage.removeItem('rtc_rotapadel_admin_chave');msg('loginMsg',e.message,'err');}}
+async function carregar(){try{const d=await apiGet({tipo:'torneioAdmin'});estado.duplas=d.duplas||d.inscricoes||[];estado.jogos=d.jogos||[];estado.release=d.release||null;renderResumo();renderTorneio();renderConfig();}catch(e){alert(e.message);}}
+function oficiais(){const s=new Set();estado.jogos.forEach(j=>{if(['Chave A','Chave B','Semifinal','Final'].includes(String(j.fase||'')))s.add([j.categoria,j.fase,j.ordem].join('|'));});return s.size;}
+function renderResumo(){document.getElementById('totalDuplas').textContent=estado.duplas.length;document.getElementById('totalJogos').textContent=oficiais();document.getElementById('totalFinalizados').textContent=estado.jogos.filter(j=>String(j.status||'').toLowerCase()==='finalizado').length;const liberado=estado.release&&new Date(estado.release)<=new Date();msg('statusGeral',liberado?'Torneio liberado para os participantes.':'Torneio ainda bloqueado.',liberado?'ok':'warn');document.getElementById('categoriasResumo').innerHTML=CATEGORIAS.map(c=>{const n=estado.duplas.filter(d=>(d.categoriaCompleta||d.categoria||'')===c).length;return '<div class="category"><b>'+esc(c)+'</b> — '+n+'/6 duplas</div>'}).join('');}
+function jogosCat(cat){return estado.jogos.filter(j=>j.categoria===cat&&['Chave A','Chave B','Semifinal','Final'].includes(String(j.fase||''))).sort((a,b)=>Number(a.ordem||0)-Number(b.ordem||0));}
+function duplasGrupo(cat,fase){const n=[];jogosCat(cat).filter(j=>j.fase===fase).forEach(j=>[j.dupla1,j.dupla2].forEach(x=>{if(x&&!/^1º|^2º|^Vencedor/.test(String(x))&&!n.includes(x))n.push(x)}));return n;}
+function fill(id,opts,val){const e=document.getElementById(id);e.innerHTML='<option value="">Selecione...</option>'+opts.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');if(val)e.value=val;}
+function renderTorneio(){const c=document.getElementById('categoria');if(!c.options.length)c.innerHTML=CATEGORIAS.map(x=>'<option>'+esc(x)+'</option>').join('');const cat=c.value||CATEGORIAS[0];c.value=cat;const jogos=jogosCat(cat);const sf1=jogos.find(j=>j.fase==='Semifinal'&&Number(j.ordem)===1);const sf2=jogos.find(j=>j.fase==='Semifinal'&&Number(j.ordem)===2);const a=duplasGrupo(cat,'Chave A'),b=duplasGrupo(cat,'Chave B');fill('a1',a,sf1&&sf1.dupla1&&!/^1º/.test(sf1.dupla1)?sf1.dupla1:'');fill('a2',a,sf2&&sf2.dupla2&&!/^2º/.test(sf2.dupla2)?sf2.dupla2:'');fill('b1',b,sf2&&sf2.dupla1&&!/^1º/.test(sf2.dupla1)?sf2.dupla1:'');fill('b2',b,sf1&&sf1.dupla2&&!/^2º/.test(sf1.dupla2)?sf1.dupla2:'');const fase=document.getElementById('fase').value;const lista=jogos.filter(j=>!fase||j.fase===fase);document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>cardJogo(j)).join(''):'<p class="muted">Nenhum jogo nesta categoria.</p>';lista.forEach(j=>{const e=document.getElementById('st_'+j.id);if(e)e.value=j.status||'Agendado';});}
+function localDate(v){if(!v)return'';const d=new Date(v);if(isNaN(d))return'';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
+function cardJogo(j){return '<div class="match"><div class="match-top"><span class="pill">'+esc(j.fase)+' · Jogo '+esc(j.ordem)+'</span><span class="pill '+(j.status==='Finalizado'?'ok':j.status==='Em jogo'?'warn':'')+'">'+esc(j.status||'Agendado')+'</span></div><div style="font-size:17px;font-weight:700;margin:9px 0">'+esc(j.dupla1||'A definir')+'<br><span class="muted">×</span><br>'+esc(j.dupla2||'A definir')+'</div><div class="grid2"><div><label>Horário</label><input id="dt_'+esc(j.id)+'" class="input" type="datetime-local" value="'+localDate(j.dataHora)+'"></div><div><label>Quadra</label><input id="qd_'+esc(j.id)+'" class="input" value="'+esc(j.quadra||'')+'"></div></div><div class="score"><div><label>Status</label><select id="st_'+esc(j.id)+'" class="select"><option>Agendado</option><option>Em jogo</option><option>Finalizado</option></select></div><div><label>1A</label><input id="s1a_'+esc(j.id)+'" class="input" value="'+esc(j.set1A??'')+'"></div><div><label>1B</label><input id="s1b_'+esc(j.id)+'" class="input" value="'+esc(j.set1B??'')+'"></div><div><label>2A</label><input id="s2a_'+esc(j.id)+'" class="input" value="'+esc(j.set2A??'')+'"></div><div><label>2B</label><input id="s2b_'+esc(j.id)+'" class="input" value="'+esc(j.set2B??'')+'"></div><div><label>3A</label><input id="s3a_'+esc(j.id)+'" class="input" value="'+esc(j.set3A??'')+'"></div><div><label>3B</label><input id="s3b_'+esc(j.id)+'" class="input" value="'+esc(j.set3B??'')+'"></div></div><div class="actions" style="margin-top:9px"><button class="btn" onclick="salvarJogo(''+String(j.id).replace(/'/g,"\\'")+'')">Salvar jogo</button></div></div>';}
+async function salvarJogo(id){const g=x=>document.getElementById(x+id)?.value.trim()||'';const dados={id,dataHora:document.getElementById('dt_'+id).value,quadra:document.getElementById('qd_'+id).value.trim(),status:document.getElementById('st_'+id).value,set1A:g('s1a_'),set1B:g('s1b_'),set2A:g('s2a_'),set2B:g('s2b_'),set3A:g('s3a_'),set3B:g('s3b_'),placar1:[g('s1a_'),g('s2a_'),g('s3a_')].filter(Boolean).join('-'),placar2:[g('s1b_'),g('s2b_'),g('s3b_')].filter(Boolean).join('-')};try{await apiPost('editarJogoRotaPadel',dados);msg('geracaoMsg','Jogo salvo.','ok');await carregar();}catch(e){alert(e.message);}}
+async function salvarClassificacao(){const cat=document.getElementById('categoria').value,a1=document.getElementById('a1').value,a2=document.getElementById('a2').value,b1=document.getElementById('b1').value,b2=document.getElementById('b2').value;if(!a1||!a2||!b1||!b2){msg('classMsg','Preencha os quatro classificados.','err');return}if(a1===a2||b1===b2){msg('classMsg','1º e 2º da mesma chave não podem ser a mesma dupla.','err');return}const sf1=jogosCat(cat).find(j=>j.fase==='Semifinal'&&Number(j.ordem)===1),sf2=jogosCat(cat).find(j=>j.fase==='Semifinal'&&Number(j.ordem)===2);if(!sf1||!sf2){msg('classMsg','Gere o chaveamento primeiro.','err');return}try{await apiPost('editarJogoRotaPadel',{id:sf1.id,dupla1:a1,dupla2:b2});await apiPost('editarJogoRotaPadel',{id:sf2.id,dupla1:b1,dupla2:a2});msg('classMsg','Classificação salva e semifinais preenchidas.');await carregar();}catch(e){msg('classMsg',e.message,'err');}}
+async function gerarChaveamento(){if(!confirm('Gerar novamente o chaveamento? Isso limpa os jogos existentes e preserva as inscrições.'))return;try{await apiPost('gerarChaveamentoRotaPadel');msg('geracaoMsg','Chaveamento gerado: 9 jogos por categoria.');await carregar();}catch(e){msg('geracaoMsg',e.message,'err');}}
+async function zerarChaveamento(){if(!confirm('Zerar somente os jogos? As inscrições serão preservadas.'))return;try{await apiPost('zerarChaveamentoRotaPadel');msg('zerarMsg','Jogos zerados. As inscrições foram preservadas.');await carregar();}catch(e){msg('zerarMsg',e.message,'err');}}
+function renderConfig(){if(!estado.release)return;const d=new Date(estado.release);if(!isNaN(d)){document.getElementById('release').value=localDate(d);document.getElementById('releaseAtual').textContent='Atual: '+d.toLocaleString('pt-BR');}}
+async function salvarLiberacao(){const v=document.getElementById('release').value;if(!v)return alert('Informe a data e hora.');try{await apiPost('definirDataLiberacaoRotaPadel',{dataISO:new Date(v).toISOString()});await carregar();}catch(e){alert(e.message);}}
+async function liberarAgora(){if(!confirm('Liberar agora?'))return;try{await apiPost('definirDataLiberacaoRotaPadel',{dataISO:new Date().toISOString()});await carregar();}catch(e){alert(e.message);}}
+if(chave){document.getElementById('senha').value=chave;entrar();}
 </script>
 </body>
 </html>
