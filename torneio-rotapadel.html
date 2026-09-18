@@ -240,7 +240,7 @@ async function carregarDados(){
   mostrarMensagem('Consultando seu torneio...');
 
   try{
-    const url=API+'?tipo=torneio&protocolo='+encodeURIComponent(protocolo);
+    const url=API+'?tipo=torneio&protocolo='+encodeURIComponent(protocolo)+'&_='+Date.now();
     const resposta=await fetch(url,{cache:'no-store'});
     const d=await resposta.json();
 
@@ -303,9 +303,10 @@ function renderJogos(){
   // diretamente dos jogos recebidos. Assim a tela não fica estática
   // mesmo que a implantação do Apps Script ainda esteja na versão anterior.
   const listaJogos=Array.isArray(dados.jogos)?dados.jogos:[];
-  const aoVivo=listaJogos.filter(j=>
-    String(j.status||'').trim().toLowerCase()==='em jogo'
-  );
+  const aoVivoApi=Array.isArray(dados.aoVivo)?dados.aoVivo:[];
+  const aoVivo=aoVivoApi.length
+    ? aoVivoApi
+    : listaJogos.filter(j=>String(j.status||'').trim().toLowerCase()==='em jogo');
 
   document.getElementById('liveBody').innerHTML=aoVivo.length
     ? aoVivo.map(j=>
