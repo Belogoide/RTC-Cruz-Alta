@@ -305,10 +305,12 @@ function renderJogos(){
   // diretamente dos jogos recebidos. Assim a tela não fica estática
   // mesmo que a implantação do Apps Script ainda esteja na versão anterior.
   const listaJogos=Array.isArray(dados.jogos)?dados.jogos:[];
-  const aoVivoApi=Array.isArray(dados.aoVivo)?dados.aoVivo:[];
-  const aoVivo=aoVivoApi.length
-    ? aoVivoApi
-    : listaJogos.filter(j=>String(j.status||'').trim().toLowerCase()==='em jogo');
+  // "Agora em quadra" considera TODAS as partidas em andamento
+  // desta categoria, independentemente da quadra.
+  const aoVivo=listaJogos.filter(j=>{
+    const status=String(j.status||'').trim().toLowerCase();
+    return status==='em jogo';
+  });
 
   document.getElementById('liveBody').innerHTML=aoVivo.length
     ? aoVivo.map(j=>
