@@ -328,8 +328,29 @@ async function carregar(silencioso=false){
   }
 }
 
+function ehJogoOficial_(j){
+  return ['Chave A','Chave B','Semifinal','Final'].includes(String(j.fase||''))
+    && Number(j.ordem||0) >= 1;
+}
+
+function chaveJogoOficial_(j){
+  return [String(j.categoria||''),String(j.fase||''),String(j.ordem||'')].join('|');
+}
+
 function contarJogosOficiais(){
-  return estado.jogos.filter(j => /-(A[1-3]|B[1-3]|SF[1-2]|FINAL)$/.test(String(j.id||''))).length;
+  // O Apps Script pode ainda conter linhas antigas/duplicadas na aba Torneio_Jogos.
+  // O ADM conta somente os slots estruturais únicos do chaveamento: 9 por categoria.
+  const unicos=new Set();
+  estado.jogos.filter(ehJogoOficial_).forEach(j=>unicos.add(chaveJogoOficial_(j)));
+  return unicos.size;
+}
+
+function localizarJogoEstrutural_(cat,fase,ordem){
+  return estado.jogos.find(j =>
+    String(j.categoria||'')===String(cat) &&
+    String(j.fase||'')===String(fase) &&
+    Number(j.ordem||0)===Number(ordem)
+  );
 }
 
 function preencherSelectClassificacao(){
@@ -416,10 +437,20 @@ async function salvarClassificacao(){
   if(!a1||!a2||!b1||!b2){alert('Selecione o 1º e 2º lugar das duas chaves.');return;}
   if(a1===a2||b1===b2){alert('O 1º e 2º lugar da mesma chave não podem ser a mesma dupla.');return;}
 
-  const base=cat.replace(/[^A-Za-z0-9]/g,'-').toUpperCase();
+  // Não monta o ID na mão. Localiza a semifinal real existente na planilha.
+  // Isso evita o erro "Partida não encontrada" quando o ID do Apps Script
+  // estiver diferente do padrão usado pelo frontend.
+  const sf1=localizarJogoEstrutural_(cat,'Semifinal',1);
+  const sf2=localizarJogoEstrutural_(cat,'Semifinal',2);
+
+  if(!sf1 || !sf2){
+    alert('As semifinais desta categoria não existem na aba Torneio_Jogos. Gere o chaveamento novamente antes de classificar.');
+    return;
+  }
+
   try{
-    await apiPost('editarJogoRotaPadel',{id:base+'-SF1',dupla1:a1,dupla2:b2});
-    await apiPost('editarJogoRotaPadel',{id:base+'-SF2',dupla1:b1,dupla2:a2});
+    await apiPost('editarJogoRotaPadel',{id:sf1.id,dupla1:a1,dupla2:b2});
+    await apiPost('editarJogoRotaPadel',{id:sf2.id,dupla1:b1,dupla2:a2});
     await carregar();
     document.getElementById('classificacaoCategoria').value=cat;
     renderClassificacao();
