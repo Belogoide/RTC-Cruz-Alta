@@ -103,6 +103,72 @@ function inscricaoAceitaTorneio_(r) {
     || (aceite === '' && status === '');
 }
 
+/* =========================================================
+   FLUXO PARTICIPANTE — FONTE ÚNICA NO APPS SCRIPT
+========================================================= */
+
+function normalizarTextoRotaPadel_(valor) {
+  return String(valor || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function duplaCorrespondeInscricaoRotaPadel_(texto, inscricao) {
+  if (!inscricao) return false;
+  const t = normalizarTextoRotaPadel_(texto);
+  const p1 = normalizarTextoRotaPadel_(inscricao.p1);
+  const p2 = normalizarTextoRotaPadel_(inscricao.p2);
+  return !!p1 && !!p2 && t.includes(p1) && t.includes(p2);
+}
+
+function dataJogoRotaPadel_(j) {
+  if (!j || !j.dataHora) return null;
+  const d = new Date(j.dataHora);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function prioridadeFaseRotaPadel_(fase) {
+  return {'Chave A':1,'Chave B':1,'Semifinal':2,'Final':3}[String(fase || '')] || 99;
+}
+
+function ordenarJogosRotaPadel_(a,b) {
+  const da=dataJogoRotaPadel_(a);
+  const db=dataJogoRotaPadel_(b);
+  if(da && db) return da.getTime()-db.getTime();
+  if(da && !db) return -1;
+  if(!da && db) return 1;
+  const fase=prioridadeFaseRotaPadel_(a.fase)-prioridadeFaseRotaPadel_(b.fase);
+  return fase || (Number(a.ordem||0)-Number(b.ordem||0));
+}
+
+function proximoJogoRotaPadel_(publicos,minha) {
+  if(!minha) return null;
+
+  const meusJogos=publicos.filter(j =>
+    duplaCorrespondeInscricaoRotaPadel_(j.dupla1,minha) ||
+    duplaCorrespondeInscricaoRotaPadel_(j.dupla2,minha)
+  );
+
+  const emJogo=meusJogos
+    .filter(j=>normalizarTextoRotaPadel_(j.status)==='em jogo')
+    .sort(ordenarJogosRotaPadel_);
+
+  if(emJogo.length) return emJogo[0];
+
+  const futuros=meusJogos
+    .filter(j=>normalizarTextoRotaPadel_(j.status)!=='finalizado')
+    .filter(j=>{
+      const a=String(j.dupla1||''), b=String(j.dupla2||'');
+      return !/^1º Chave|^2º Chave|^Vencedor SF/i.test(a) &&
+             !/^1º Chave|^2º Chave|^Vencedor SF/i.test(b);
+    })
+    .sort(ordenarJogosRotaPadel_);
+
+  return futuros.length ? futuros[0] : null;
+}
+
 /**
  * Gera/regera somente o chaveamento estrutural.
  * As duplas são preenchidas quando houver exatamente 6 inscritas aceitas.
@@ -270,11 +336,14 @@ function obterTorneioPorProtocolo(protocolo, adminSolicitado) {
 
   // Em "Agora em quadra" não há placar.
   const aoVivo = publicos
-    .filter(j => String(j.status || '').trim().toLowerCase() === 'em jogo')
+    .filter(j => normalizarTextoRotaPadel_(j.status) === 'em jogo')
     .map(j => ({
-      id:j.id,categoria:j.categoria,fase:j.fase,
+      id:j.id,categoria:j.categoria,fase:j.fase,ordem:j.ordem,
       quadra:j.quadra,dupla1:j.dupla1,dupla2:j.dupla2
-    }));
+    }))
+    .sort(ordenarJogosRotaPadel_);
+
+  const meuJogo = proximoJogoRotaPadel_(publicos,minha);
 
   return {
     ok:true,
@@ -285,6 +354,20 @@ function obterTorneioPorProtocolo(protocolo, adminSolicitado) {
       protocolo:minha.protocolo,
       participante1:minha.p1,
       participante2:minha.p2
+    } : null,
+    meuJogo:meuJogo ? {
+      id:meuJogo.id,
+      categoria:meuJogo.categoria,
+      fase:meuJogo.fase,
+      ordem:meuJogo.ordem,
+      dataHora:meuJogo.dataHora,
+      quadra:meuJogo.quadra,
+      dupla1:meuJogo.dupla1,
+      dupla2:meuJogo.dupla2,
+      status:meuJogo.status,
+      placar1:meuJogo.placar1,
+      placar2:meuJogo.placar2,
+      vencedor:meuJogo.vencedor
     } : null,
     jogos:publicos,
     resultados:resultados,
