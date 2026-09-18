@@ -173,6 +173,31 @@ function gerarChaveamentoRotaPadel() {
  * Publica somente os dados da categoria do protocolo.
  * Nunca devolve telefone/e-mail.
  */
+/**
+ * ZERA SOMENTE O CHAVEAMENTO DO TORNEIO.
+ * Preserva as inscrições em RotaPadel.
+ * Remove todos os jogos, placares, classificação, horários e resultados.
+ * Depois disso, execute gerarChaveamentoRotaPadel() para recriar do zero.
+ */
+function zerarChaveamentoRotaPadel(){
+  const sh = obterAbaTorneio_('Torneio_Jogos', [
+    'ID','Categoria','Fase','Ordem','DataHora','Quadra',
+    'Dupla1','Dupla2','Status','Placar1','Placar2',
+    'Vencedor','FinalizadoEm'
+  ]);
+
+  if(sh.getLastRow() > 1){
+    sh.getRange(2,1,sh.getLastRow()-1,13).clearContent();
+  }
+
+  SpreadsheetApp.flush();
+
+  return {
+    sucesso:true,
+    mensagem:'Chaveamento zerado. As inscrições foram preservadas.'
+  };
+}
+
 function obterTorneioPorProtocolo(protocolo, adminSolicitado) {
   prepararTabelasRotaPadel_();
 
