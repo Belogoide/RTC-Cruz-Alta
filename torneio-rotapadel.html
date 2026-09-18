@@ -272,8 +272,21 @@ async function carregarDados(){
   }
 }
 
+
+function ordenarJogosParticipante(a,b){
+  const da=a.dataHora?new Date(a.dataHora):null;
+  const db=b.dataHora?new Date(b.dataHora):null;
+  const va=da && !Number.isNaN(da.getTime());
+  const vb=db && !Number.isNaN(db.getTime());
+  if(va&&vb)return da.getTime()-db.getTime();
+  if(va&&!vb)return -1;
+  if(!va&&vb)return 1;
+  const fase={'Chave A':1,'Chave B':1,'Semifinal':2,'Final':3};
+  return (fase[a.fase]||99)-(fase[b.fase]||99) || (Number(a.ordem)||0)-(Number(b.ordem)||0);
+}
+
 function renderJogos(){
-  const lista=Array.isArray(dados.jogos)?dados.jogos:[];
+  const lista=(Array.isArray(dados.jogos)?dados.jogos:[]).slice().sort(ordenarJogosParticipante);
   document.getElementById('listaJogos').innerHTML=lista.length
     ? lista.map(j=>{
         const finalizado=String(j.status||'').toLowerCase()==='finalizado';
@@ -301,16 +314,14 @@ function renderJogos(){
   });
   document.getElementById('sDuplas').textContent=duplas.size;
 
-  // Usa aoVivo da API quando disponível e, como fallback, deriva
-  // diretamente dos jogos recebidos. Assim a tela não fica estática
-  // mesmo que a implantação do Apps Script ainda esteja na versão anterior.
+  // O Apps Script é a fonte oficial do status.
+  const aoVivoApi=Array.isArray(dados.aoVivo)?dados.aoVivo:[];
   const listaJogos=Array.isArray(dados.jogos)?dados.jogos:[];
   // "Agora em quadra" considera TODAS as partidas em andamento
   // desta categoria, independentemente da quadra.
-  const aoVivo=listaJogos.filter(j=>{
-    const status=String(j.status||'').trim().toLowerCase();
-    return status==='em jogo';
-  });
+  const aoVivo=aoVivoApi.length
+    ? aoVivoApi
+    : listaJogos.filter(j=>String(j.status||'').trim().toLowerCase()==='em jogo');
 
   document.getElementById('liveBody').innerHTML=aoVivo.length
     ? aoVivo.map(j=>
@@ -322,27 +333,27 @@ function renderJogos(){
       ).join('')
     : 'Nenhuma partida em andamento.';
 
-  const meu=dados.meuJogo || encontrarMeuJogo(lista);
-  document.getElementById('meuJogo').innerHTML=meu
-    ? '<b>'+esc(formatarDataHora(meu.dataHora))+'</b> · '+esc(meu.quadra||'Quadra a definir')+
-      '<br>'+esc(meu.dupla1||'A definir')+' × '+esc(meu.dupla2||'A definir')+
-      '<br><span class="pill">'+esc(meu.fase||'')+' · '+esc(meu.status||'Agendado')+'</span>'
-    : 'Nenhum próximo jogo localizado.';
-}
+  const meu=dados.meuJogo || null;
+  const elMeu=document.getElementById('meuJogo');
 
-function encontrarMeuJogo(lista){
-  if(!dados || !dados.inscricao) return lista.find(j=>j.status==='Agendado')||null;
-  const nomes=[
-    dados.inscricao.participante1,
-    dados.inscricao.participante2,
-    dados.inscricao.dupla
-  ].filter(Boolean).map(x=>String(x).toLowerCase());
+  if(!meu){
+    elMeu.innerHTML='<span class="muted">Nenhuma próxima partida definida ainda.</span>';
+    return;
+  }
 
-  return lista.find(j=>{
-    const a=String(j.dupla1||'').toLowerCase();
-    const b=String(j.dupla2||'').toLowerCase();
-    return nomes.some(n=>a.includes(n)||b.includes(n));
-  })||null;
+  const status=String(meu.status||'').trim().toLowerCase();
+  const titulo=status==='em jogo'
+    ? '<strong style="color:var(--pink);font-size:18px">🔴 VOCÊ ESTÁ EM QUADRA AGORA</strong>'
+    : '<strong style="color:var(--blue);font-size:18px">🎯 SEU PRÓXIMO JOGO</strong>';
+
+  elMeu.innerHTML=
+    titulo+
+    '<div style="margin-top:10px"><b>'+esc(formatarDataHora(meu.dataHora))+'</b> · <b>'+esc(meu.quadra||'Quadra a definir')+'</b></div>'+
+    '<div style="margin-top:6px">'+esc(meu.dupla1||'A definir')+' × '+esc(meu.dupla2||'A definir')+'</div>'+
+    '<div style="margin-top:6px"><span class="pill">'+esc(meu.fase||'')+' · '+esc(meu.status||'Agendado')+'</span></div>'+
+    (status==='em jogo'
+      ? '<p class="muted" style="margin-bottom:0">A partida está em andamento. O resultado aparecerá após a finalização.</p>'
+      : '<p class="muted" style="margin-bottom:0">Este cartão muda automaticamente quando o administrador atualizar o jogo.</p>');
 }
 
 function renderResultados(){
