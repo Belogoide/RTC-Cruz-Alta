@@ -365,10 +365,10 @@ function jogosCategoria(cat){
   return estado.jogos.filter(j=>j.categoria===cat && /-(A[1-3]|B[1-3]|SF[1-2]|FINAL)$/.test(String(j.id||'')));
 }
 
-function opcoesDuplas(cat){
-  const jogos=jogosCategoria(cat);
+function opcoesDuplas(cat,grupo){
+  const jogos=jogosCategoria(cat).filter(j=>j.fase===grupo);
   const nomes=[];
-  jogos.filter(j=>j.fase==='Chave A'||j.fase==='Chave B').forEach(j=>{
+  jogos.forEach(j=>{
     [j.dupla1,j.dupla2].forEach(n=>{
       if(n && !/^1º|^2º|^Vencedor/.test(String(n)) && !nomes.includes(n)) nomes.push(n);
     });
@@ -394,7 +394,8 @@ function renderClassificacao(){
   const jogos=jogosCategoria(cat);
   const sf1=jogos.find(j=>/-(SF1)$/.test(String(j.id||'')));
   const sf2=jogos.find(j=>/-(SF2)$/.test(String(j.id||'')));
-  const opts=opcoesDuplas(cat);
+  const optsA=opcoesDuplas(cat,'Chave A');
+  const optsB=opcoesDuplas(cat,'Chave B');
   const grupoA=jogos.filter(j=>j.fase==='Chave A');
   const grupoB=jogos.filter(j=>j.fase==='Chave B');
   const todosA=grupoA.every(j=>j.status==='Finalizado');
@@ -405,14 +406,14 @@ function renderClassificacao(){
       '<div class="card" style="margin:0">'+
         '<h3>Chave A</h3>'+
         '<p class="muted">'+(todosA?'Os 3 jogos estão finalizados.':'Finalize os 3 jogos da Chave A antes de classificar.')+'</p>'+
-        '<label>1º lugar</label>'+selectClassificacao('classA1',sf1&&sf1.dupla1&&sf1.dupla1!=='1º Chave A'?sf1.dupla1:'',opts)+
-        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classA2',sf2&&sf2.dupla2&&sf2.dupla2!=='2º Chave A'?sf2.dupla2:'',opts)+
+        '<label>1º lugar</label>'+selectClassificacao('classA1',sf1&&sf1.dupla1&&sf1.dupla1!=='1º Chave A'?sf1.dupla1:'',optsA)+
+        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classA2',sf2&&sf2.dupla2&&sf2.dupla2!=='2º Chave A'?sf2.dupla2:'',optsA)+
       '</div>'+
       '<div class="card" style="margin:0">'+
         '<h3>Chave B</h3>'+
         '<p class="muted">'+(todosB?'Os 3 jogos estão finalizados.':'Finalize os 3 jogos da Chave B antes de classificar.')+'</p>'+
-        '<label>1º lugar</label>'+selectClassificacao('classB1',sf2&&sf2.dupla1&&sf2.dupla1!=='1º Chave B'?sf2.dupla1:'',opts)+
-        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classB2',sf1&&sf1.dupla2&&sf1.dupla2!=='2º Chave B'?sf1.dupla2:'',opts)+
+        '<label>1º lugar</label>'+selectClassificacao('classB1',sf2&&sf2.dupla1&&sf2.dupla1!=='1º Chave B'?sf2.dupla1:'',optsB)+
+        '<label style="margin-top:10px">2º lugar</label>'+selectClassificacao('classB2',sf1&&sf1.dupla2&&sf1.dupla2!=='2º Chave B'?sf1.dupla2:'',optsB)+
       '</div>'+
     '</div>'+
     '<div class="actions" style="margin-top:14px">'+
