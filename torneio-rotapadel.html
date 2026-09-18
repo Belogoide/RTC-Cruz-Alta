@@ -242,7 +242,9 @@ async function carregarDados(){
   try{
     const url=API+'?tipo=torneio&protocolo='+encodeURIComponent(protocolo)+'&_='+Date.now();
     const resposta=await fetch(url,{cache:'no-store'});
-    const d=await resposta.json();
+    const texto=await resposta.text();
+    console.log('RotaPadel API resposta:',texto);
+    const d=JSON.parse(texto);
 
     if(!d.ok && d.sucesso!==true){
       throw new Error(d.erro||d.error||d.mensagem||'Protocolo não localizado.');
