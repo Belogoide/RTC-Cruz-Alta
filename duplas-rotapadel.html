@@ -100,7 +100,7 @@ function textoNormalizado(v){
 }
 
 function obterModalidade(r){
-  const valor=String(r.modalidade||r.Modalidade||'').trim();
+  const valor=String(r.modalidade??r.Modalidade??'').trim();
   const n=textoNormalizado(valor);
   if(n.includes('misto')) return 'Misto';
   if(n.includes('fem')) return 'Feminino';
@@ -109,12 +109,15 @@ function obterModalidade(r){
 }
 
 function obterCategoria(r){
-  const valor=String(r.categoria||r.Categoria||'').trim().toUpperCase();
-  return ['A','B','C'].includes(valor)?valor:'';
+  const direta=String(r.categoria??r.Categoria??'').trim().toUpperCase();
+  if(['A','B','C'].includes(direta)) return direta;
+  const completa=textoNormalizado(r.categoriaCompleta??r.categoria_completa??'');
+  const encontrada=completa.match(/\b([ABC])\b/);
+  return encontrada?encontrada[1]:'';
 }
 
 function obterCategoriaCompleta(r){
-  const direta=String(r.categoriaCompleta||r.categoria_completa||r.categoriaCompletaTorneio||'').trim();
+  const direta=String(r.categoriaCompleta??r.categoria_completa??r.categoriaCompletaTorneio??'').trim();
   if(direta) return direta;
   const m=obterModalidade(r), c=obterCategoria(r);
   return m&&c ? `${m} ${c}` : '';
@@ -126,11 +129,27 @@ function obterNome(r,chave){
     : ['p2','participante2','participante2Nome','Participante 2','P2'];
 
   for(const campo of campos){
-    const valor=String(r[campo] ?? '').trim();
+    const valor=String(r?.[campo]??'').trim();
     if(valor) return valor;
   }
-
   return '';
+}
+
+function normalizarResposta(dados){
+  if(typeof dados==='string'){
+    try{dados=JSON.parse(dados);}catch(_){return []}
+  }
+  if(Array.isArray(dados)) return dados;
+  if(Array.isArray(dados?.inscricoes)) return dados.inscricoes;
+  if(typeof dados?.inscricoes==='string'){
+    try{
+      const lista=JSON.parse(dados.inscricoes);
+      if(Array.isArray(lista)) return lista;
+    }catch(_){ }
+  }
+  if(Array.isArray(dados?.data?.inscricoes)) return dados.data.inscricoes;
+  if(Array.isArray(dados?.result?.inscricoes)) return dados.result.inscricoes;
+  return [];
 }
 
 function inscricaoPublica(r){
@@ -139,9 +158,12 @@ function inscricaoPublica(r){
   const modalidade=obterModalidade(r);
   const categoria=obterCategoria(r);
   return {
-    p1,p2,modalidade,categoria,
-    completa:obterCategoriaCompleta(r),
-    valida:!!(p1&&p2&&modalidade&&categoria)
+    p1:p1||'Participante 1',
+    p2:p2||'Participante 2',
+    modalidade,
+    categoria,
+    completa:obterCategoriaCompleta(r)||`${modalidade||'Modalidade'} ${categoria||''}`.trim(),
+    valida:!!(modalidade&&categoria)
   };
 }
 
@@ -189,17 +211,30 @@ function render(){
 }
 
 async function carregar(){
+  $('estado').style.display='block';
   $('estado').className='estado info';
   $('estado').textContent='Carregando inscrições...';
   try{
-    const resposta=await fetch(API+'?tipo=rotapadel');
-    if(!resposta.ok) throw new Error('Não foi possível consultar as inscrições.');
+    const separador=API.includes('?')?'&':'?';
+    const resposta=await fetch(API+separador+'tipo=rotapadel&_='+Date.now(),{cache:'no-store'});
+    if(!resposta.ok) throw new Error(`Não foi possível consultar as inscrições. HTTP ${resposta.status}`);
     const dados=await resposta.json();
-    inscricoes=Array.isArray(dados.inscricoes)?dados.inscricoes:[];
+    inscricoes=normalizarResposta(dados);
+
     render();
+
+    const totalServidor=Number(dados?.total);
+    const totalRenderizado=filtrar().length;
+    if(Number.isFinite(totalServidor) && totalServidor>0 && totalRenderizado===0){
+      $('estado').className='estado erro';
+      $('estado').textContent=`A API retornou ${totalServidor} inscrições, mas nenhuma pôde ser classificada. Verifique os campos modalidade/categoria do retorno.`;
+      return;
+    }
+
     $('estado').style.display='none';
     $('atualizacao').textContent=`Atualizado em ${new Date().toLocaleString('pt-BR')}`;
   }catch(e){
+    console.error('Erro ao carregar duplas Rota Padel:',e);
     $('estado').className='estado erro';
     $('estado').textContent=e.message||'Não foi possível carregar as inscrições.';
   }
