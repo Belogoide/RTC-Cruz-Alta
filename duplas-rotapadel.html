@@ -121,7 +121,16 @@ function obterCategoriaCompleta(r){
 }
 
 function obterNome(r,chave){
-  return String(r[chave]||r[chave==='p1'?'participante1Nome':'participante2Nome']||'').trim();
+  const campos = chave === 'p1'
+    ? ['p1','participante1','participante1Nome','Participante 1','P1']
+    : ['p2','participante2','participante2Nome','Participante 2','P2'];
+
+  for(const campo of campos){
+    const valor=String(r[campo] ?? '').trim();
+    if(valor) return valor;
+  }
+
+  return '';
 }
 
 function inscricaoPublica(r){
