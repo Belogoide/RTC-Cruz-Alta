@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duplas Rota Padel | RTC Cruz Alta</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--rp-pink:#D61264;--rp-blue:#0056A8;--rp-bg:#f5f6f8;--rp-text:#18212b;--rp-muted:#667085;--rp-line:#e4e7ec}
+body{background:var(--rp-bg);color:var(--rp-text)}
+.duplas-shell{max-width:980px;margin:0 auto;padding:18px 16px 40px}
+.link-voltar{display:inline-block;margin-bottom:18px;color:var(--rp-blue);font-weight:700;text-decoration:none}
+.duplas-header{background:linear-gradient(135deg,var(--rp-pink),#b30e51);color:#fff;border-radius:0 0 24px 24px;padding:30px 24px;margin:0 -16px 18px}
+.duplas-header .eyebrow{margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.12em;opacity:.9}
+.duplas-header h1{margin:0;font-size:34px;line-height:1.05}
+.duplas-header h1 span{color:#fff}
+.duplas-header p{margin:12px 0 0;opacity:.92;line-height:1.5}
+.filtros{background:#fff;border:1px solid var(--rp-line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 3px 15px #00000008}
+.filtros-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.filtro label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}
+.filtro select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;color:var(--rp-text);font:inherit}
+.resumo{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:14px 0 10px;flex-wrap:wrap}
+.resumo strong{font-size:20px;color:var(--rp-blue)}
+.resumo small{color:var(--rp-muted)}
+.categorias{display:grid;gap:12px}
+.categoria-card{background:#fff;border:1px solid var(--rp-line);border-radius:16px;overflow:hidden;box-shadow:0 3px 15px #00000008}
+.categoria-topo{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f8fafc;padding:13px 16px;border-bottom:1px solid var(--rp-line)}
+.categoria-topo h2{margin:0;font-size:18px;color:var(--rp-blue)}
+.contador{background:#eef4fb;color:var(--rp-blue);padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.lista{padding:8px 12px}
+.dupla{display:grid;grid-template-columns:42px 1fr;gap:10px;align-items:center;padding:13px 4px;border-bottom:1px solid #f0f2f5}
+.dupla:last-child{border-bottom:0}
+.numero{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--rp-pink);color:#fff;font-weight:800;font-size:13px}
+.dupla strong{display:block;font-size:15px;line-height:1.35}
+.vazio{padding:22px 16px;text-align:center;color:var(--rp-muted)}
+.estado{padding:14px;border-radius:12px;margin-top:12px;font-size:14px}
+.estado.erro{background:#fef3f2;color:#b42318}
+.estado.info{background:#eef4fb;color:var(--rp-blue)}
+.carregando{color:var(--rp-muted);padding:25px;text-align:center}
+.atualizacao{margin-top:12px;text-align:right;color:var(--rp-muted);font-size:12px}
+@media(max-width:640px){
+ .duplas-header h1{font-size:29px}
+ .filtros-grid{grid-template-columns:1fr}
+ .categoria-topo h2{font-size:16px}
+}
+</style>
+</head>
+<body>
+<main class="duplas-shell">
+  <a class="link-voltar" href="index.html">← Voltar para o início</a>
+
+  <header class="duplas-header">
+    <p class="eyebrow">RTC CRUZ ALTA</p>
+    <h1>🎾 Rota Padel<br><span>Duplas inscritas</span></h1>
+    <p>Consulte as duplas registradas por modalidade e categoria.</p>
+  </header>
+
+  <section class="filtros">
+    <div class="filtros-grid">
+      <div class="filtro">
+        <label for="modalidade">Modalidade</label>
+        <select id="modalidade">
+          <option value="">Todas</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Misto">Misto</option>
+        </select>
+      </div>
+      <div class="filtro">
+        <label for="categoria">Categoria</label>
+        <select id="categoria">
+          <option value="">Todas</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <div class="resumo">
+    <div><strong id="total">0 duplas</strong><br><small id="subResumo">Carregando inscrições...</small></div>
+  </div>
+
+  <div id="estado" class="estado info">Carregando inscrições...</div>
+  <section id="categorias" class="categorias" aria-live="polite"></section>
+  <div id="atualizacao" class="atualizacao"></div>
+</main>
+
+<script>
+const API='https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec';
+const ORDEM=['Masculino A','Masculino B','Masculino C','Feminino A','Feminino B','Feminino C','Misto A','Misto B','Misto C'];
+let inscricoes=[];
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+function textoNormalizado(v){
+  return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+}
+
+function obterModalidade(r){
+  const valor=String(r.modalidade||r.Modalidade||'').trim();
+  const n=textoNormalizado(valor);
+  if(n.includes('misto')) return 'Misto';
+  if(n.includes('fem')) return 'Feminino';
+  if(n.includes('masc')) return 'Masculino';
+  return valor;
+}
+
+function obterCategoria(r){
+  const valor=String(r.categoria||r.Categoria||'').trim().toUpperCase();
+  return ['A','B','C'].includes(valor)?valor:'';
+}
+
+function obterCategoriaCompleta(r){
+  const direta=String(r.categoriaCompleta||r.categoria_completa||r.categoriaCompletaTorneio||'').trim();
+  if(direta) return direta;
+  const m=obterModalidade(r), c=obterCategoria(r);
+  return m&&c ? `${m} ${c}` : '';
+}
+
+function obterNome(r,chave){
+  return String(r[chave]||r[chave==='p1'?'participante1Nome':'participante2Nome']||'').trim();
+}
+
+function inscricaoPublica(r){
+  const p1=obterNome(r,'p1');
+  const p2=obterNome(r,'p2');
+  const modalidade=obterModalidade(r);
+  const categoria=obterCategoria(r);
+  return {
+    p1,p2,modalidade,categoria,
+    completa:obterCategoriaCompleta(r),
+    valida:!!(p1&&p2&&modalidade&&categoria)
+  };
+}
+
+function filtrar(){
+  const modalidade=$('modalidade').value;
+  const categoria=$('categoria').value;
+  return inscricoes
+    .map(inscricaoPublica)
+    .filter(x=>x.valida)
+    .filter(x=>!modalidade||x.modalidade===modalidade)
+    .filter(x=>!categoria||x.categoria===categoria);
+}
+
+function render(){
+  const dados=filtrar();
+  $('total').textContent=`${dados.length} ${dados.length===1?'dupla':'duplas'}`;
+  const m=$('modalidade').value;
+  const c=$('categoria').value;
+  $('subResumo').textContent=(m||c)?`${m||'Todas as modalidades'} · ${c?`Categoria ${c}`:'Todas as categorias'}`:'Todas as modalidades e categorias';
+
+  const grupos={};
+  dados.forEach(d=>{
+    const chave=d.completa||`${d.modalidade} ${d.categoria}`;
+    if(!grupos[chave]) grupos[chave]=[];
+    grupos[chave].push(d);
+  });
+
+  const chaves=Object.keys(grupos).sort((a,b)=>{
+    const ia=ORDEM.indexOf(a), ib=ORDEM.indexOf(b);
+    return (ia<0?999:ia)-(ib<0?999:ib);
+  });
+
+  if(!dados.length){
+    $('categorias').innerHTML='<div class="categoria-card"><div class="vazio">Nenhuma dupla encontrada para os filtros selecionados.</div></div>';
+    return;
+  }
+
+  $('categorias').innerHTML=chaves.map(cat=>{
+    const lista=grupos[cat];
+    return `<article class="categoria-card">
+      <div class="categoria-topo"><h2>${esc(cat)}</h2><span class="contador">${lista.length} ${lista.length===1?'dupla':'duplas'}</span></div>
+      <div class="lista">${lista.map((d,i)=>`<div class="dupla"><span class="numero">${i+1}</span><div><strong>${esc(d.p1)} / ${esc(d.p2)}</strong></div></div>`).join('')}</div>
+    </article>`;
+  }).join('');
+}
+
+async function carregar(){
+  $('estado').className='estado info';
+  $('estado').textContent='Carregando inscrições...';
+  try{
+    const resposta=await fetch(API+'?tipo=rotapadel');
+    if(!resposta.ok) throw new Error('Não foi possível consultar as inscrições.');
+    const dados=await resposta.json();
+    inscricoes=Array.isArray(dados.inscricoes)?dados.inscricoes:[];
+    render();
+    $('estado').style.display='none';
+    $('atualizacao').textContent=`Atualizado em ${new Date().toLocaleString('pt-BR')}`;
+  }catch(e){
+    $('estado').className='estado erro';
+    $('estado').textContent=e.message||'Não foi possível carregar as inscrições.';
+  }
+}
+
+$('modalidade').addEventListener('change',render);
+$('categoria').addEventListener('change',render);
+carregar();
+</script>
+</body>
+</html>
