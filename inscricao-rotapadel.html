@@ -150,6 +150,8 @@ const VALOR_INSCRICAO = 50;
 const API = "https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec";
 const PIX_COPIA_COLA = "00020126360014br.gov.bcb.pix011462942312000171520400005303986540550.005802BR5925ROTARACT_CLUB_DE_CRUZ_ALT6009Cruz_Alta610998025-13062130509RotaPadel6304EA7A";
 const chaveStorage = 'rtc_rotapadel_inscricoes';
+const chaveEnvio = 'rtc_rotapadel_envio_em_andamento';
+let submissaoEmAndamento = false;
 const form = document.getElementById('formInscricao');
 const sucesso = document.getElementById('sucesso');
 const inscricoes = () => JSON.parse(localStorage.getItem(chaveStorage) || '[]');
@@ -188,11 +190,36 @@ function restaurarAreaPix() {
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const totalAtual = await buscarVagas();
-  if (totalAtual >= LIMITE) { alert('As 60 duplas já foram preenchidas.'); atualizarVagas(); return; }
+
+  // Trava imediatamente, antes de qualquer await, evitando dois POSTs
+  // quando o usuário toca/clica duas vezes em poucos segundos.
+  if (submissaoEmAndamento) return;
+  submissaoEmAndamento = true;
 
   const dados = Object.fromEntries(new FormData(form).entries());
-  inscricaoAtual = dados;
+  const chave = [
+    [dados.participante1Nome, dados.participante2Nome]
+      .map(v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim())
+      .sort().join('|'),
+    [dados.participante1Telefone, dados.participante2Telefone]
+      .map(v => String(v || '').replace(/\D/g,'')).sort().join('|'),
+    String(dados.modalidade || '').trim().toLowerCase(),
+    String(dados.categoria || '').trim().toUpperCase()
+  ].join('::');
+
+  try {
+    const anterior = JSON.parse(sessionStorage.getItem(chaveEnvio) || 'null');
+    if (anterior && anterior.chave === chave && Date.now() - Number(anterior.timestamp || 0) < 15000) {
+      throw new Error('Esta dupla já está sendo registrada. Aguarde alguns segundos antes de tentar novamente.');
+    }
+    sessionStorage.setItem(chaveEnvio, JSON.stringify({ chave, timestamp: Date.now() }));
+  } catch (erro) {
+    if (erro.message === 'Esta dupla já está sendo registrada. Aguarde alguns segundos antes de tentar novamente.') {
+      submissaoEmAndamento = false;
+      alert(erro.message);
+      return;
+    }
+  }
 
   const botao = form.querySelector('button[type="submit"]');
   const textoBotao = botao.innerHTML;
@@ -231,6 +258,7 @@ form.addEventListener('submit', async (event) => {
     console.error(erro);
     alert(erro.message || 'Não foi possível registrar a inscrição. Tente novamente.');
   } finally {
+    submissaoEmAndamento = false;
     botao.disabled = false;
     botao.innerHTML = textoBotao;
   }
