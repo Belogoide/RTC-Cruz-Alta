@@ -58,11 +58,11 @@ a{text-decoration:none;color:inherit}
 <main class="wrap">
 <section class="card">
   <strong>Seu protocolo</strong>
-  <p class="muted">Informe uma vez. O protocolo ficará salvo neste dispositivo.</p>
+  <p class="muted">Digite o protocolo e clique em <b>Buscar</b> para consultar seu torneio.</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <input id="protocolo" class="input" placeholder="Ex.: RP-ABC123" autocomplete="off">
-    <button class="btn" onclick="salvarProtocolo()">Entrar</button>
-    <button class="btn alt" onclick="trocarProtocolo()">Trocar protocolo</button>
+    <button id="btnBuscar" class="btn" type="button" onclick="buscarProtocolo()">Buscar</button>
+    <button class="btn alt" type="button" onclick="trocarProtocolo()">Trocar protocolo</button>
   </div>
   <p id="salvo" class="muted"></p>
   <div id="mensagem" class="hidden"></div>
@@ -79,12 +79,12 @@ a{text-decoration:none;color:inherit}
 <section id="inicio">
   <div id="bloqueio" class="card lock">
     <strong>🔒 Torneio ainda não liberado</strong>
-    <span>O acesso dos participantes será liberado em <b id="dataLiberacao">verificando...</b>.</span>
+    <span>O acesso dos participantes será liberado em <b id="dataLiberacao">consulte seu protocolo</b>.</span>
   </div>
 
-  <div id="semProtocolo" class="card lock hidden">
+  <div id="semProtocolo" class="card lock">
     <strong>Informe seu protocolo</strong>
-    <span>Use o protocolo da sua inscrição para visualizar somente a sua categoria e chaveamento.</span>
+    <span>Digite o protocolo da sua inscrição e clique em Buscar para visualizar sua categoria e chaveamento.</span>
   </div>
 
   <div id="conteudo" class="hidden">
@@ -157,12 +157,14 @@ function esc(s){
   }[m]));
 }
 
-function salvarProtocolo(){
+function buscarProtocolo(){
   const v=document.getElementById('protocolo').value.trim();
+
   if(!v){
     mostrarMensagem('Informe o protocolo da inscrição.','erro');
     return;
   }
+
   protocolo=v;
   localStorage.setItem('rtc_rotapadel_protocolo',v);
   carregarDados();
@@ -172,13 +174,22 @@ function trocarProtocolo(){
   localStorage.removeItem('rtc_rotapadel_protocolo');
   protocolo='';
   dados=null;
+  releaseServidor=null;
   document.getElementById('protocolo').value='';
   document.getElementById('salvo').textContent='';
+  mostrarMensagem('');
   render();
 }
 
 function mostrarMensagem(texto,tipo=''){
   const el=document.getElementById('mensagem');
+
+  if(!texto){
+    el.className='hidden';
+    el.textContent='';
+    return;
+  }
+
   el.className=tipo==='erro'?'error':'muted';
   el.textContent=texto;
 }
@@ -197,26 +208,29 @@ function liberado(){
 function atualizarDataLiberacao(){
   const el=document.getElementById('dataLiberacao');
   if(!el) return;
+
   el.textContent=releaseServidor
     ? releaseServidor.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})
-    : 'verificando...';
+    : 'consulte seu protocolo';
 }
 
 function render(){
   const ok=liberado();
+
   atualizarDataLiberacao();
-  document.getElementById('bloqueio').classList.toggle('hidden',ok);
-  document.getElementById('semProtocolo').classList.toggle('hidden',!ok || !!protocolo);
-  document.getElementById('conteudo').classList.toggle('hidden',!ok || !protocolo);
+
+  document.getElementById('bloqueio').classList.toggle('hidden',ok && !!dados);
+  document.getElementById('semProtocolo').classList.toggle('hidden',!!dados);
+  document.getElementById('conteudo').classList.toggle('hidden',!dados);
+
   document.getElementById('protocolo').value=protocolo;
-  document.getElementById('salvo').textContent=protocolo?'Protocolo salvo neste dispositivo: '+protocolo:'';
+  document.getElementById('salvo').textContent=protocolo?'Último protocolo informado: '+protocolo:'';
 
   if(!dados){
     renderVazio();
     return;
   }
 
-  document.getElementById('conteudo').classList.remove('hidden');
   document.getElementById('sCategoria').textContent=dados.categoria||'—';
   renderJogos();
   renderResultados();
@@ -225,25 +239,30 @@ function render(){
 }
 
 function renderVazio(){
-  document.getElementById('listaJogos').innerHTML='<p class="muted">Informe seu protocolo para consultar.</p>';
-  document.getElementById('listaResultados').innerHTML='<p class="muted">Informe seu protocolo para consultar.</p>';
-  document.getElementById('bracket').innerHTML='<p class="muted">Informe seu protocolo para consultar.</p>';
+  document.getElementById('listaJogos').innerHTML='<p class="muted">Digite o protocolo e clique em Buscar para consultar.</p>';
+  document.getElementById('listaResultados').innerHTML='<p class="muted">Digite o protocolo e clique em Buscar para consultar.</p>';
+  document.getElementById('bracket').innerHTML='<p class="muted">Digite o protocolo e clique em Buscar para consultar.</p>';
   document.getElementById('liveBody').textContent='Nenhuma partida em andamento.';
-  document.getElementById('meuJogo').textContent='Informe seu protocolo para consultar.';
+  document.getElementById('meuJogo').textContent='Digite o protocolo e clique em Buscar para consultar.';
 }
 
 async function carregarDados(){
-  render();
-
   if(!protocolo) return;
 
+  const botao=document.getElementById('btnBuscar');
+  const textoBotao=botao.textContent;
+
+  botao.disabled=true;
+  botao.textContent='Buscando...';
   mostrarMensagem('Consultando seu torneio...');
 
   try{
     const url=API+'?tipo=torneio&protocolo='+encodeURIComponent(protocolo)+'&_='+Date.now();
     const resposta=await fetch(url,{cache:'no-store'});
     const texto=await resposta.text();
+
     console.log('RotaPadel API resposta:',texto);
+
     const d=JSON.parse(texto);
 
     if(!d.ok && d.sucesso!==true){
@@ -258,20 +277,31 @@ async function carregarDados(){
     if(d.liberado===false){
       dados=null;
       render();
+      mostrarMensagem('O torneio ainda não foi liberado para consulta.','erro');
       return;
     }
 
     dados=d;
     mostrarMensagem('');
     render();
+
   }catch(e){
     dados=null;
     render();
     mostrarMensagem(e.message||'Não foi possível carregar o torneio.','erro');
     console.error(e);
+  }finally{
+    botao.disabled=false;
+    botao.textContent=textoBotao;
   }
 }
 
+document.getElementById('protocolo').addEventListener('keydown',function(event){
+  if(event.key==='Enter'){
+    event.preventDefault();
+    buscarProtocolo();
+  }
+});
 
 function ordenarJogosParticipante(a,b){
   const da=a.dataHora?new Date(a.dataHora):null;
@@ -287,12 +317,14 @@ function ordenarJogosParticipante(a,b){
 
 function renderJogos(){
   const lista=(Array.isArray(dados.jogos)?dados.jogos:[]).slice().sort(ordenarJogosParticipante);
+
   document.getElementById('listaJogos').innerHTML=lista.length
     ? lista.map(j=>{
         const finalizado=String(j.status||'').toLowerCase()==='finalizado';
         const placar=finalizado && (j.placar1!=='' || j.placar2!=='')
           ? '<br><b>Resultado: '+esc(j.placar1)+' × '+esc(j.placar2)+'</b>'
           : '';
+
         return '<div class="match">'+
           '<b>'+esc(formatarDataHora(j.dataHora))+'</b>'+
           '<div><b>'+esc(j.dupla1||'A definir')+'</b> × <b>'+esc(j.dupla2||'A definir')+'</b>'+
@@ -308,17 +340,17 @@ function renderJogos(){
   document.getElementById('sFinalizadas').textContent=lista.filter(j=>String(j.status||'').toLowerCase()==='finalizado').length;
 
   const duplas=new Set();
+
   lista.forEach(j=>{
     if(j.dupla1 && !String(j.dupla1).toLowerCase().startsWith('vencedor')) duplas.add(j.dupla1);
     if(j.dupla2 && !String(j.dupla2).toLowerCase().startsWith('vencedor')) duplas.add(j.dupla2);
   });
+
   document.getElementById('sDuplas').textContent=duplas.size;
 
-  // O Apps Script é a fonte oficial do status.
   const aoVivoApi=Array.isArray(dados.aoVivo)?dados.aoVivo:[];
   const listaJogos=Array.isArray(dados.jogos)?dados.jogos:[];
-  // "Agora em quadra" considera TODAS as partidas em andamento
-  // desta categoria, independentemente da quadra.
+
   const aoVivo=aoVivoApi.length
     ? aoVivoApi
     : listaJogos.filter(j=>String(j.status||'').trim().toLowerCase()==='em jogo');
@@ -353,7 +385,7 @@ function renderJogos(){
     '<div style="margin-top:6px"><span class="pill">'+esc(meu.fase||'')+' · '+esc(meu.status||'Agendado')+'</span></div>'+
     (status==='em jogo'
       ? '<p class="muted" style="margin-bottom:0">A partida está em andamento. O resultado aparecerá após a finalização.</p>'
-      : '<p class="muted" style="margin-bottom:0">Este cartão muda automaticamente quando o administrador atualizar o jogo.</p>');
+      : '<p class="muted" style="margin-bottom:0">Clique em Buscar novamente quando quiser atualizar os dados.</p>');
 }
 
 function renderResultados(){
@@ -421,6 +453,7 @@ function renderExtras(){
   }
 
   const valor=extras.valorInscricao;
+
   if(valor){
     document.getElementById('infoEvento').textContent='Inscrição: R$ '+Number(valor).toFixed(2).replace('.',',')+'. Consulte nesta área os horários, quadras e informações oficiais.';
   }
@@ -434,8 +467,6 @@ function formatarDataHora(valor){
 }
 
 render();
-carregarDados();
-setInterval(carregarDados,5000);
 </script>
 </body>
 </html>
