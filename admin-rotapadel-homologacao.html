@@ -126,30 +126,44 @@ function aba(id,b){document.querySelectorAll('main>section[id]').forEach(x=>x.cl
 function msg(id,text,tipo='ok'){const e=document.getElementById(id);if(!e)return;e.className='notice '+tipo;e.textContent=text;}
 
 function cenarioInicial(mostrar=true){
+  const nomesPorCategoria={
+    'Misto A':['Alex / Bruno','Carlos / Daniel','Edu / Felipe','Gustavo / Henrique','Igor / João','Kaique / Lucas'],
+    'Misto B':['Marcelo / Nina','Otávio / Paula','Rafael / Sofia','Thiago / Valentina','Wesley / Yasmin','André / Beatriz'],
+    'Misto C':['Caio / Clara','Diego / Elisa','Fábio / Gabriela','Hugo / Isabela','Julio / Laura','Murilo / Manuela'],
+    'Feminino A':['Amanda / Bianca','Camila / Débora','Eduarda / Fernanda','Gabriela / Helena','Isadora / Júlia','Larissa / Mariana'],
+    'Feminino B':['Ana / Bia','Clara / Dani','Julia / Luiza','Marina / Carol','Paula / Renata','Sofia / Vitória'],
+    'Feminino C':['Alice / Bruna','Cecília / Diana','Evelyn / Flávia','Giovana / Heloísa','Ingrid / Karina','Letícia / Natália'],
+    'Masculino A':['João / Pedro','Lucas / Rafael','Bruno / Diego','Caio / André','Felipe / Vitor','Gustavo / Matheus'],
+    'Masculino B':['Arthur / Bernardo','Cauã / Davi','Enzo / Gabriel','Heitor / Isaac','Miguel / Nicolas','Otávio / Pietro'],
+    'Masculino C':['Alan / Alex','Breno / César','Danilo / Everton','Fernando / Guilherme','Henrique / Ícaro','Jeferson / Kauã']
+  };
+
+  let contador=1;
+  const duplas=[];
+  CATEGORIAS.forEach(cat=>{
+    (nomesPorCategoria[cat]||[]).forEach(nome=>{
+      duplas.push({
+        id:'H'+String(contador++).padStart(3,'0'),
+        categoriaCompleta:cat,
+        nome
+      });
+    });
+  });
+
   estado={
     release:new Date(Date.now()+30*60*1000).toISOString(),
-    duplas:[
-      {id:'H001',categoriaCompleta:'Masculino A',nome:'João / Pedro'},
-      {id:'H002',categoriaCompleta:'Masculino A',nome:'Lucas / Rafael'},
-      {id:'H003',categoriaCompleta:'Masculino A',nome:'Bruno / Diego'},
-      {id:'H004',categoriaCompleta:'Masculino A',nome:'Caio / André'},
-      {id:'H005',categoriaCompleta:'Masculino A',nome:'Felipe / Vitor'},
-      {id:'H006',categoriaCompleta:'Masculino A',nome:'Gustavo / Matheus'},
-      {id:'H007',categoriaCompleta:'Feminino B',nome:'Ana / Bia'},
-      {id:'H008',categoriaCompleta:'Feminino B',nome:'Clara / Dani'},
-      {id:'H009',categoriaCompleta:'Feminino B',nome:'Julia / Luiza'},
-      {id:'H010',categoriaCompleta:'Feminino B',nome:'Marina / Carol'},
-      {id:'H011',categoriaCompleta:'Misto C',nome:'Nina / Eduardo'},
-      {id:'H012',categoriaCompleta:'Misto C',nome:'Paula / Henrique'}
-    ],
-    jogos:[],
-    release:new Date(Date.now()+30*60*1000).toISOString()
+    duplas,
+    jogos:[]
   };
-  gerarJogosMock(false);
-  salvar();carregar();
-  if(mostrar)msg('cenarioMsg','Cenário reiniciado com dados fictícios.');
-}
 
+  gerarJogosMock(false);
+  salvar();
+  renderResumo();
+  renderTorneio();
+  renderConfig();
+
+  if(mostrar)msg('cenarioMsg','Cenário reiniciado com 54/54 duplas preenchidas — 6 em cada categoria.');
+}
 function gerarJogosMock(salvarEstado=true){
   const novas=[];
   const grupos=['Masculino A','Feminino B','Misto C'];
