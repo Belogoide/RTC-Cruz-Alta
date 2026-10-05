@@ -235,7 +235,7 @@ form.addEventListener('submit', async (event) => {
     const retorno = await resposta.json();
     if (retorno.status !== 'ok') throw new Error(retorno.mensagem || 'Não foi possível registrar a inscrição.');
 
-    inscricaoAtual.id = retorno.id;
+    inscricaoAtual = { ...dados, id: retorno.id };
     document.getElementById('mensagemSucesso').textContent = `${dados.participante1Nome} e ${dados.participante2Nome}, a modalidade ${dados.modalidade} — categoria ${dados.categoria} — foi reservada.`;
     document.getElementById('protocolo').textContent = `Protocolo: ${retorno.id}`;
     prepararPix();
