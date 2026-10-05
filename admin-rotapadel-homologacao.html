@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rota Padel — Homologação</title>
+<style>
+:root{--pink:#D61264;--blue:#0056A8;--bg:#f4f6fa;--text:#18212b;--muted:#667085;--card:#fff;--line:#e4e7ec;--ok:#067647;--warn:#b54708;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}button,input,select{font:inherit}
+.wrap{max-width:1100px;margin:auto;padding:18px}.top{background:linear-gradient(135deg,var(--pink),#b30e51);color:#fff;padding:22px 18px;border-radius:0 0 22px 22px}.top h1{margin:8px 0 4px;font-size:28px}.top p{margin:0;opacity:.9}
+.badge{display:inline-block;background:#fff;color:var(--pink);padding:5px 9px;border-radius:99px;font-size:11px;font-weight:800}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 15px #00000008}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#f8fafc;border-radius:12px;padding:13px}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;color:var(--blue);font-size:24px;margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-size:12px;font-weight:700;margin:0 0 6px}.input,.select{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:9px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 13px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}.btn.pink{background:var(--pink)}.btn.alt{background:#eef4fb;color:var(--blue)}.btn.danger{background:#fef3f2;color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.muted{color:var(--muted)}.notice{padding:10px;border-radius:9px;margin-top:10px}.ok{background:#ecfdf3;color:var(--ok)}.warn{background:#fffaeb;color:var(--warn)}.err{background:#fef3f2;color:var(--danger)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0}.tabs button{border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:9px;font-weight:700;white-space:nowrap;cursor:pointer}.tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.match{border:1px solid var(--line);border-radius:12px;padding:13px;margin:9px 0}.match-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.pill{display:inline-block;padding:4px 7px;border-radius:99px;background:#eef4fb;color:var(--blue);font-size:11px;font-weight:700}.pill.ok{background:#ecfdf3;color:var(--ok)}.pill.warn{background:#fffaeb;color:var(--warn)}
+.score{display:grid;grid-template-columns:1fr repeat(6,65px);gap:7px;align-items:end;margin-top:10px}.score input{width:100%}.category{border:1px solid var(--line);border-radius:12px;padding:11px;margin:7px 0}
+.demo{border:2px dashed var(--pink);background:#fff8fb}.hidden{display:none!important}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.score{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a href="index.html" style="color:#fff">← RTC Cruz Alta</a>
+<div style="margin-top:12px"><span class="badge">HOMOLOGAÇÃO — NÃO É O TORNEIO REAL</span></div>
+<h1>🎾 Rota Padel — Painel do Operador</h1>
+<p>Ambiente de treinamento para testar o fluxo do dia do torneio.</p>
+</div></header>
+
+<main class="wrap">
+<section class="card demo">
+<strong>Ambiente seguro de teste</strong>
+<p class="muted" style="margin-bottom:0">Todas as alterações desta página ficam somente neste navegador. Nenhuma inscrição, jogo, horário ou resultado é enviado para a planilha oficial.</p>
+</section>
+
+<nav class="tabs">
+<button class="active" onclick="aba('inicio',this)">Resumo</button>
+<button onclick="aba('torneio',this)">🎾 Torneio</button>
+<button onclick="aba('config',this)">⚙️ Configuração</button>
+</nav>
+
+<section id="inicio">
+<div class="grid">
+<div class="stat"><span>Duplas</span><b id="totalDuplas">0</b></div>
+<div class="stat"><span>Limite</span><b>54</b></div>
+<div class="stat"><span>Jogos</span><b id="totalJogos">0</b></div>
+<div class="stat"><span>Finalizados</span><b id="totalFinalizados">0</b></div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Controle rápido</h2>
+<div id="statusGeral" class="notice warn"></div>
+<div class="actions" style="margin-top:12px">
+<button class="btn" onclick="gerarChaveamento()">Gerar chaveamento de teste</button>
+<button class="btn alt" onclick="carregar()">Atualizar painel</button>
+</div>
+<div id="geracaoMsg"></div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Categorias</h2>
+<div id="categoriasResumo"></div>
+</div>
+</section>
+
+<section id="torneio" class="hidden">
+<div class="card">
+<div class="grid2">
+<div><label>Categoria</label><select id="categoria" class="select" onchange="renderTorneio()"></select></div>
+<div><label>Filtro</label><select id="fase" class="select" onchange="renderTorneio()"><option value="">Todas as fases</option><option>Chave A</option><option>Chave B</option><option>Semifinal</option><option>Final</option></select></div>
+</div>
+</div>
+
+<div class="card">
+<h2 style="margin:0">Classificação das chaves</h2>
+<p class="muted">Simule a escolha dos classificados para as semifinais.</p>
+<div class="grid2">
+<div><h3>Chave A</h3><label>1º lugar</label><select id="a1" class="select"></select><label style="margin-top:8px">2º lugar</label><select id="a2" class="select"></select></div>
+<div><h3>Chave B</h3><label>1º lugar</label><select id="b1" class="select"></select><label style="margin-top:8px">2º lugar</label><select id="b2" class="select"></select></div>
+</div>
+<div class="actions" style="margin-top:12px"><button class="btn" onclick="salvarClassificacao()">Salvar classificação</button></div>
+<div id="classMsg"></div>
+</div>
+
+<div class="card">
+<h2 style="margin:0">🎾 Controle das partidas</h2>
+<p class="muted">Teste o fluxo: Agendado → Em jogo → Finalizado.</p>
+<div id="aoVivoAdmin" class="notice warn"></div>
+<div id="listaJogos"></div>
+</div>
+</section>
+
+<section id="config" class="hidden">
+<div class="card">
+<h2 style="margin-top:0">Liberação</h2>
+<label>Data e hora</label><input id="release" class="input" type="datetime-local">
+<div id="releaseAtual" class="notice warn"></div>
+<div class="actions" style="margin-top:10px"><button class="btn" onclick="salvarLiberacao()">Salvar</button><button class="btn alt" onclick="liberarAgora()">Liberar agora</button></div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Teste controlado</h2>
+<p class="muted">Use estes botões para preparar diferentes cenários de operação.</p>
+<div class="actions">
+<button class="btn alt" onclick="cenarioInicial()">Reiniciar cenário</button>
+<button class="btn pink" onclick="cenarioAoVivo()">Criar partida em andamento</button>
+<button class="btn alt" onclick="cenarioFinal()">Criar partida finalizada</button>
+</div>
+<div id="cenarioMsg"></div>
+</div>
+<div class="card">
+<h2 style="margin-top:0">Chaveamento</h2>
+<p class="muted">Zera somente os jogos de homologação. As duplas de teste permanecem.</p>
+<button class="btn danger" onclick="zerarChaveamento()">Zerar jogos de teste</button>
+<div id="zerarMsg"></div>
+</div>
+</section>
+</main>
+
+<script>
+const CATEGORIAS=['Misto A','Misto B','Misto C','Feminino A','Feminino B','Feminino C','Masculino A','Masculino B','Masculino C'];
+const STORAGE='rtc_rotapadel_homologacao_v1';
+let estado={duplas:[],jogos:[],release:null};
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function salvar(){localStorage.setItem(STORAGE,JSON.stringify(estado));}
+function carregar(){const salvo=localStorage.getItem(STORAGE);if(salvo){try{estado=JSON.parse(salvo)}catch(e){}}if(!estado.duplas?.length)cenarioInicial(false);renderResumo();renderTorneio();renderConfig();}
+function aba(id,b){document.querySelectorAll('main>section[id]').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(id==='torneio')renderTorneio();}
+function msg(id,text,tipo='ok'){const e=document.getElementById(id);if(!e)return;e.className='notice '+tipo;e.textContent=text;}
+
+function cenarioInicial(mostrar=true){
+  estado={
+    release:new Date(Date.now()+30*60*1000).toISOString(),
+    duplas:[
+      {id:'H001',categoriaCompleta:'Masculino A',nome:'João / Pedro'},
+      {id:'H002',categoriaCompleta:'Masculino A',nome:'Lucas / Rafael'},
+      {id:'H003',categoriaCompleta:'Masculino A',nome:'Bruno / Diego'},
+      {id:'H004',categoriaCompleta:'Masculino A',nome:'Caio / André'},
+      {id:'H005',categoriaCompleta:'Masculino A',nome:'Felipe / Vitor'},
+      {id:'H006',categoriaCompleta:'Masculino A',nome:'Gustavo / Matheus'},
+      {id:'H007',categoriaCompleta:'Feminino B',nome:'Ana / Bia'},
+      {id:'H008',categoriaCompleta:'Feminino B',nome:'Clara / Dani'},
+      {id:'H009',categoriaCompleta:'Feminino B',nome:'Julia / Luiza'},
+      {id:'H010',categoriaCompleta:'Feminino B',nome:'Marina / Carol'},
+      {id:'H011',categoriaCompleta:'Misto C',nome:'Nina / Eduardo'},
+      {id:'H012',categoriaCompleta:'Misto C',nome:'Paula / Henrique'}
+    ],
+    jogos:[],
+    release:new Date(Date.now()+30*60*1000).toISOString()
+  };
+  gerarJogosMock(false);
+  salvar();carregar();
+  if(mostrar)msg('cenarioMsg','Cenário reiniciado com dados fictícios.');
+}
+
+function gerarJogosMock(salvarEstado=true){
+  const novas=[];
+  const grupos=['Masculino A','Feminino B','Misto C'];
+  grupos.forEach(cat=>{
+    const ds=estado.duplas.filter(d=>d.categoriaCompleta===cat);
+    if(ds.length<4)return;
+    const a=ds.slice(0,3),b=ds.slice(3,6);
+    let ordem=1;
+    [[a[0],a[1]],[a[0],a[2]],[a[1],a[2]]].forEach(p=>novas.push(jogo(cat,'Chave A',ordem++,p[0],p[1],1)));
+    [[b[0],b[1]],[b[0],b[2]],[b[1],b[2]]].forEach(p=>novas.push(jogo(cat,'Chave B',ordem++,p[0],p[1],1)));
+    novas.push(jogo(cat,'Semifinal',1,null,null,2));
+    novas.push(jogo(cat,'Semifinal',2,null,null,2));
+    novas.push(jogo(cat,'Final',1,null,null,3));
+  });
+  estado.jogos=novas;
+  if(salvarEstado)salvar();
+}
+function jogo(cat,fase,ordem,d1,d2,dias){
+  const base=new Date();base.setHours(base.getHours()+dias*2+ordem);
+  return {id:'HJ-'+cat.replace(/\W/g,'')+'-'+fase.replace(/\W/g,'')+'-'+ordem,categoria:cat,fase,ordem,dataHora:base.toISOString(),quadra:'Quadra '+((ordem%3)+1),dupla1:d1?.nome||'',dupla2:d2?.nome||'',status:'Agendado',set1A:'',set1B:'',set2A:'',set2B:'',set3A:'',set3B:''};
+}
+function gerarChaveamento(){gerarJogosMock();msg('geracaoMsg','Chaveamento de homologação gerado. Nada foi enviado ao sistema oficial.');carregar();}
+function zerarChaveamento(){if(!confirm('Zerar somente os jogos de homologação?'))return;estado.jogos=[];salvar();msg('zerarMsg','Jogos de teste zerados.');carregar();}
+function renderResumo(){
+  document.getElementById('totalDuplas').textContent=estado.duplas.length;
+  document.getElementById('totalJogos').textContent=estado.jogos.length;
+  document.getElementById('totalFinalizados').textContent=estado.jogos.filter(j=>j.status==='Finalizado').length;
+  const liberado=estado.release&&new Date(estado.release)<=new Date();
+  msg('statusGeral',liberado?'Torneio liberado para os participantes.':'Torneio ainda bloqueado para participantes.',liberado?'ok':'warn');
+  document.getElementById('categoriasResumo').innerHTML=CATEGORIAS.map(c=>{const n=estado.duplas.filter(d=>d.categoriaCompleta===c).length;return '<div class="category"><b>'+esc(c)+'</b> — '+n+'/6 duplas</div>'}).join('');
+}
+function jogosCat(cat){return estado.jogos.filter(j=>j.categoria===cat).sort((a,b)=>Number(a.ordem)-Number(b.ordem));}
+function duplasGrupo(cat,fase){const n=[];jogosCat(cat).filter(j=>j.fase===fase).forEach(j=>[j.dupla1,j.dupla2].forEach(x=>{if(x&&!/^1º|^2º|^Vencedor/.test(String(x))&&!n.includes(x))n.push(x)}));return n;}
+function fill(id,opts,val){const e=document.getElementById(id);e.innerHTML='<option value="">Selecione...</option>'+opts.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');if(val)e.value=val;}
+function renderTorneio(){
+  const c=document.getElementById('categoria');
+  if(!c.options.length)c.innerHTML=CATEGORIAS.map(x=>'<option>'+esc(x)+'</option>').join('');
+  const cat=c.value||CATEGORIAS[0];c.value=cat;
+  const jogos=jogosCat(cat),a=duplasGrupo(cat,'Chave A'),b=duplasGrupo(cat,'Chave B');
+  fill('a1',a);fill('a2',a);fill('b1',b);fill('b2',b);
+  const aoVivo=jogos.filter(j=>j.status==='Em jogo');
+  document.getElementById('aoVivoAdmin').className='notice '+(aoVivo.length?'warn':'ok');
+  document.getElementById('aoVivoAdmin').innerHTML=aoVivo.length?'<b>🔴 Agora em quadra</b><br>'+aoVivo.map(j=>esc(j.quadra)+' — '+esc(j.dupla1)+' × '+esc(j.dupla2)).join('<br>'):'🟢 Nenhuma partida em quadra nesta categoria.';
+  const fase=document.getElementById('fase').value,lista=jogos.filter(j=>!fase||j.fase===fase);
+  document.getElementById('listaJogos').innerHTML=lista.length?lista.map(j=>cardJogo(j)).join(''):'<p class="muted">Nenhum jogo nesta categoria.</p>';
+}
+function localDate(v){if(!v)return'';const d=new Date(v);if(isNaN(d))return'';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
+function cardJogo(j){
+ return '<div class="match"><div class="match-top"><span class="pill">'+esc(j.fase)+' · Jogo '+esc(j.ordem)+'</span><span class="pill '+(j.status==='Finalizado'?'ok':j.status==='Em jogo'?'warn':'')+'">'+esc(j.status)+'</span></div><div style="font-size:17px;font-weight:700;margin:9px 0">'+esc(j.dupla1||'A definir')+'<br><span class="muted">×</span><br>'+esc(j.dupla2||'A definir')+'</div><div class="grid2"><div><label>Horário</label><input id="dt_'+esc(j.id)+'" class="input" type="datetime-local" value="'+localDate(j.dataHora)+'"></div><div><label>Quadra</label><input id="qd_'+esc(j.id)+'" class="input" value="'+esc(j.quadra||'')+'"></div></div><div class="score"><div><label>Status</label><select id="st_'+esc(j.id)+'" class="select"><option>Agendado</option><option>Em jogo</option><option>Finalizado</option></select></div><div><label>1A</label><input id="s1a_'+esc(j.id)+'" class="input" value="'+esc(j.set1A)+'"></div><div><label>1B</label><input id="s1b_'+esc(j.id)+'" class="input" value="'+esc(j.set1B)+'"></div><div><label>2A</label><input id="s2a_'+esc(j.id)+'" class="input" value="'+esc(j.set2A)+'"></div><div><label>2B</label><input id="s2b_'+esc(j.id)+'" class="input" value="'+esc(j.set2B)+'"></div><div><label>3A</label><input id="s3a_'+esc(j.id)+'" class="input" value="'+esc(j.set3A)+'"></div><div><label>3B</label><input id="s3b_'+esc(j.id)+'" class="input" value="'+esc(j.set3B)+'"></div></div><div class="actions" style="margin-top:9px"><button class="btn" data-id="'+esc(j.id)+'" onclick="salvarJogo(this.dataset.id)">Salvar jogo</button></div></div>';
+}
+function salvarJogo(id){
+  const j=estado.jogos.find(x=>x.id===id);if(!j)return;
+  const g=x=>document.getElementById(x+id)?.value.trim()||'';
+  const status=document.getElementById('st_'+id).value,quadra=document.getElementById('qd_'+id).value.trim();
+  if(status==='Em jogo'&&!quadra){alert('Informe a quadra antes de colocar a partida em jogo.');return;}
+  const sets=[[g('s1a_'),g('s1b_')],[g('s2a_'),g('s2b_')],[g('s3a_'),g('s3b_')]];
+  if(status==='Finalizado'){
+    const completos=sets.filter(s=>s[0]!==''||s[1]!=='');
+    if(completos.length<2||completos.some(s=>s[0]===''||s[1]==='')){alert('Informe pelo menos 2 sets completos.');return;}
+    let a=0,b=0;for(const s of completos){const x=Number(s[0]),y=Number(s[1]);if(!Number.isFinite(x)||!Number.isFinite(y)||x===y){alert('Confira os placares dos sets.');return}x>y?a++:b++}
+    if(a<2&&b<2){alert('A partida precisa ter um vencedor por 2 sets.');return}
+    if(a>=2&&b>=2){alert('Placar inválido: há dois vencedores.');return}
+  }
+  if(status==='Em jogo'){const ocupada=estado.jogos.find(x=>x.id!==id&&x.categoria===j.categoria&&x.status==='Em jogo'&&String(x.quadra).toLowerCase()===quadra.toLowerCase());if(ocupada){alert('Essa quadra já está ocupada.');return}}
+  j.status=status;j.quadra=quadra;j.dataHora=document.getElementById('dt_'+id).value;
+  j.set1A=g('s1a_');j.set1B=g('s1b_');j.set2A=g('s2a_');j.set2B=g('s2b_');j.set3A=g('s3a_');j.set3B=g('s3b_');
+  salvar();renderResumo();renderTorneio();msg('geracaoMsg','Jogo atualizado no ambiente de homologação.'); 
+}
+function salvarClassificacao(){const cat=document.getElementById('categoria').value,a1=document.getElementById('a1').value,a2=document.getElementById('a2').value,b1=document.getElementById('b1').value,b2=document.getElementById('b2').value;if(!a1||!a2||!b1||!b2){msg('classMsg','Preencha os quatro classificados.','err');return}if(a1===a2||b1===b2){msg('classMsg','1º e 2º da mesma chave não podem ser a mesma dupla.','err');return}const sf=estado.jogos.filter(j=>j.categoria===cat&&j.fase==='Semifinal');if(sf.length<2){msg('classMsg','Gere o chaveamento primeiro.','err');return}sf[0].dupla1=a1;sf[0].dupla2=b2;sf[1].dupla1=b1;sf[1].dupla2=a2;salvar();msg('classMsg','Classificação salva e semifinais preenchidas.');renderTorneio();}
+function salvarLiberacao(){const v=document.getElementById('release').value;if(!v)return alert('Informe a data e hora.');estado.release=new Date(v).toISOString();salvar();renderResumo();renderConfig();}
+function liberarAgora(){estado.release=new Date().toISOString();salvar();renderResumo();renderConfig();msg('releaseAtual','Torneio liberado agora no ambiente de homologação.','ok');}
+function renderConfig(){if(!estado.release)return;const d=new Date(estado.release);document.getElementById('release').value=localDate(d);document.getElementById('releaseAtual').textContent='Atual: '+d.toLocaleString('pt-BR');}
+function cenarioAoVivo(){const j=estado.jogos.find(x=>x.categoria==='Masculino A'&&x.fase==='Chave A');if(!j)return;j.status='Em jogo';j.quadra='Quadra 1';salvar();renderResumo();renderTorneio();msg('cenarioMsg','Cenário criado: uma partida está em jogo na Quadra 1.');}
+function cenarioFinal(){const j=estado.jogos.find(x=>x.categoria==='Masculino A'&&x.fase==='Chave A');if(!j)return;j.status='Finalizado';j.quadra='Quadra 1';j.set1A='6';j.set1B='3';j.set2A='6';j.set2B='4';j.set3A='';j.set3B='';salvar();renderResumo();renderTorneio();msg('cenarioMsg','Cenário criado: partida finalizada com 2 sets a 0.');}
+
+carregar();
+</script>
+</body>
+</html>
