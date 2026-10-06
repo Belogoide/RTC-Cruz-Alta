@@ -46,9 +46,9 @@
   </header>
 
   <section class="status-vagas" aria-live="polite">
-    <div class="status-vagas-topo"><span>Vagas preenchidas</span><strong id="vagasTexto">0 / 54 duplas</strong></div>
-    <div class="barra-vagas"><span id="barraVagas"></span></div>
-    <small id="vagasMensagem">Ainda temos vagas disponíveis.</small>
+    <div class="status-vagas-topo"><span>Duplas inscritas</span><strong id="vagasTexto">0 duplas</strong></div>
+    <div class="barra-vagas"><span id="barraVagas" style="width:100%"></span></div>
+    <small id="vagasMensagem">Inscrições abertas para todas as categorias.</small>
   </section>
 
   <form id="formInscricao" class="form-inscricao">
@@ -65,7 +65,7 @@
           <legend>Participante 2</legend>
           <label>Nome completo<input name="participante2Nome" required maxlength="80" placeholder="Ex.: Bruno Lima"></label>
           <label>WhatsApp<input name="participante2Telefone" required inputmode="tel" maxlength="20" placeholder="(55) 99999-9999"></label>
-          <label>E-mail><input name="participante2Email" required type="email" maxlength="100" placeholder="voce@email.com"></label>
+          <label>E-mail<input name="participante2Email" required type="email" maxlength="100" placeholder="voce@email.com"></label>
         </fieldset>
       </div>
     </section>
@@ -145,7 +145,6 @@
 </div>
 
 <script>
-const LIMITE = 54;
 const VALOR_INSCRICAO = 50;
 const API = "https://script.google.com/macros/s/AKfycbwDCL7f6okS3ookXfp30g3mklfSmpDaKYc83b3cpY7eUrxoY00G3dHY3mvMJaPtcNRSbw/exec";
 const PIX_COPIA_COLA = "00020126360014br.gov.bcb.pix011462942312000171520400005303986540550.005802BR5925ROTARACT_CLUB_DE_CRUZ_ALT6009Cruz_Alta610998025-13062130509RotaPadel6304EA7A";
@@ -171,9 +170,9 @@ async function buscarVagas() {
 
 async function atualizarVagas() {
   const total = await buscarVagas();
-  document.getElementById('vagasTexto').textContent = `${total} / ${LIMITE} duplas`;
-  document.getElementById('barraVagas').style.width = `${Math.min(total / LIMITE * 100, 100)}%`;
-  document.getElementById('vagasMensagem').textContent = total >= LIMITE ? 'Inscrições encerradas: limite atingido.' : `${LIMITE - total} ${LIMITE - total === 1 ? 'vaga disponível' : 'vagas disponíveis'}.`;
+  document.getElementById('vagasTexto').textContent = `${total} duplas`;
+  document.getElementById('barraVagas').style.width = '100%';
+  document.getElementById('vagasMensagem').textContent = 'Inscrições abertas para todas as categorias.';
   document.getElementById('valorPix').textContent = VALOR_INSCRICAO.toFixed(2).replace('.', ',');
 }
 
